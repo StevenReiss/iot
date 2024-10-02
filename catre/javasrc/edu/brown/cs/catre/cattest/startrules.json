@@ -1,12 +1,367 @@
 [
-{
-    "CREATED": 1720709418716,
-    "DEVICEID": "iQsign_BGR8yt9M_1",
-    "DESCRIPTION": "Set sign to Working at Home",
-    "USERDESC": false,
-    "TRIGGER": false,
-    "CONDITIONS": [
-	{
+      {
+	"CREATED": 1723652945102,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Xmas break: unavailable",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "Xmas break",
+	  "USERDESC": false,
+	  "LABEL": "Xmas break",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 0,
+	    "TODATETIME": 1736139600000,
+	    "DESCRIPTION": "12/20/24 - 1/6/25UNTIL 1/6/25 from 5:00 PM - 12:00 AM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1734732000000,
+	    "ALLDAY": false,
+	    "LABEL": "12/20/24 - 1/6/25UNTIL 1/6/25 from 5:00 PM - 12:00 AM",
+	    "NAME": "12/20/24_-_1/6/25UNTIL_1/6/25_from_5:00_PM_-_12:00_AM"
+	  },
+	  "NAME": "Xmas break"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_VSCRSLKobOYmYaywxUhouZBe"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Xmas break",
+	  "USERDESC": false,
+	  "LABEL": "Xmas break",
+	  "_id": "ACTION_VtTMZwiLEpDpByGgXoxmVzeE",
+	  "PARAMETERS": {
+	    "setTo": "Xmas Holidays",
+	    "otherText": "Back January 6"
+	  },
+	  "NAME": "Xmas break"
+	}],
+	"LABEL": "Xmas break",
+	"PRIORITY": 732.03125,
+	"_id": "RULE_lQNFNEIhIIeyhxOWbSoXAfCI",
+	"NAME": "Xmas break"
+      },
+      {
+	"CREATED": 1724070095334,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Thanksgiving vacation",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "Thankgiving break",
+	  "USERDESC": false,
+	  "LABEL": "Thankgiving break",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 0,
+	    "TODATETIME": 1733144400000,
+	    "DESCRIPTION": "11/27/24 - 12/2/24UNTIL 12/2/24 from 12:00 AM - 8:00 AM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1732683600000,
+	    "ALLDAY": false,
+	    "LABEL": "11/27/24 - 12/2/24UNTIL 12/2/24 from 12:00 AM - 8:00 AM",
+	    "NAME": "11/27/24_-_12/2/24UNTIL_12/2/24_from_12:00_AM_-_8:00_AM"
+	  },
+	  "NAME": "Thankgiving break"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_LRvwhwEmaVwrfsHkksRMfFFE"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Thankgiving",
+	  "USERDESC": false,
+	  "LABEL": "Thankgiving",
+	  "_id": "ACTION_QoEsYCElhKSjrlXbJbqizkaH",
+	  "PARAMETERS": {
+	    "setTo": "Thanksgiving",
+	    "otherText": "Back on Monday"
+	  },
+	  "NAME": "Thankgiving"
+	}],
+	"LABEL": "Thanksgiving",
+	"PRIORITY": 728.125,
+	"_id": "RULE_jsbgdoFkmUWvDoeUIIJttHQF",
+	"NAME": "Thanksgiving"
+      },
+      {
+	"CREATED": 1724071639358,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "CSCI2340 class",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "CSCI 2340 class time",
+	  "USERDESC": false,
+	  "LABEL": "CSCI 2340 class time",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 7,
+	    "TODATETIME": 1734031800000,
+	    "DESCRIPTION": "9/5/24 - 12/12/24UNTIL 12/12/24 from 1:00 PM - 2:30 PM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1725555600000,
+	    "ALLDAY": false,
+	    "DAYS": "TUE,THU",
+	    "LABEL": "9/5/24 - 12/12/24UNTIL 12/12/24 from 1:00 PM - 2:30 PM",
+	    "NAME": "9/5/24_-_12/12/24UNTIL_12/12/24_from_1:00_PM_-_2:30_PM"
+	  },
+	  "NAME": "CSCI 2340 class time"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_RcXIZCtgUQLyrCgMSRQHkDqi"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "In class",
+	  "USERDESC": false,
+	  "LABEL": "In class",
+	  "_id": "ACTION_dlWxGwWTLdIvGbwZRZkcAMpU",
+	  "PARAMETERS": {
+	    "setTo": "Teaching CSC\u0087I2340",
+	    "otherText": "Back at 2:30"
+	  },
+	  "NAME": "In class"
+	}],
+	"LABEL": "CSCI2340 class",
+	"PRIORITY": 664.0625,
+	"_id": "RULE_xOMyGGgBpNfyuMKQpUIejWnq",
+	"NAME": "CSCI2340 class"
+      },
+      {
+	"CREATED": 1724069414566,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Holiday: unavailable",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [
+	  {
+	    "SHARED": false,
+	    "OPERATOR": "EQL",
+	    "DESCRIPTION": "Not in",
+	    "USERDESC": false,
+	    "TRIGGER": false,
+	    "LABEL": "Not in",
+	    "STATE": "NOT_PRESENT",
+	    "TYPE": "Parameter",
+	    "PARAMREF": {
+	      "DEVICE": "Unknown",
+	      "PARAMETER": "Unknown"
+	    },
+	    "NAME": "Not in"
+	  },
+	  {
+	    "FIELDS": [{
+	      "MATCHOP": "MATCH",
+	      "MATCHVALUE": "Holiday",
+	      "NAME": "CALENDAR"
+	    }],
+	    "SHARED": false,
+	    "DESCRIPTION": "Holiday on calendar",
+	    "USERDESC": false,
+	    "LABEL": "Holiday on calendar",
+	    "TYPE": "CalendarEvent",
+	    "PARAMREF": {
+	      "DEVICE": "GCAL_UNIV_OVQYRdFMEoeejLyWbIapklBC",
+	      "LABEL": "Google Calendar for spr.EVENTS",
+	      "PARAMETER": "EVENTS"
+	    },
+	    "NAME": "Holiday on calendar"
+	  },
+	  {
+	    "SHARED": false,
+	    "OPERATOR": "EQL",
+	    "DESCRIPTION": "Not at home",
+	    "USERDESC": false,
+	    "TRIGGER": false,
+	    "LABEL": "Not at home",
+	    "STATE": "NOT_PRESENT",
+	    "TYPE": "Parameter",
+	    "PARAMREF": {
+	      "DEVICE": "Unknown",
+	      "PARAMETER": "Unknown"
+	    },
+	    "NAME": "Not at home"
+	  }
+	],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_dqXBIKbiaIEmQcxYRciAKzoC"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Holiday: not working",
+	  "USERDESC": false,
+	  "LABEL": "Holiday: not working",
+	  "_id": "ACTION_glLXBJjmjfSnelwzpFWIytdo",
+	  "PARAMETERS": {"setTo": "Holiday"},
+	  "NAME": "Holiday: not working"
+	}],
+	"LABEL": "Holiday",
+	"PRIORITY": 664.0625,
+	"_id": "RULE_tqoQvNPRdFFptBsnurCkwddw",
+	"NAME": "Holiday"
+      },
+      {
+	"CREATED": 1724155560212,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Monday Office Hours",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "Monday office hours slot",
+	  "USERDESC": false,
+	  "LABEL": "Monday office hours slot",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 7,
+	    "TODATETIME": 1734379200000,
+	    "DESCRIPTION": "9/9/24 - 12/16/24UNTIL 12/16/24 from 1:00 PM - 3:00 PM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1725901200000,
+	    "ALLDAY": false,
+	    "DAYS": "MON",
+	    "LABEL": "9/9/24 - 12/16/24UNTIL 12/16/24 from 1:00 PM - 3:00 PM",
+	    "NAME": "9/9/24_-_12/16/24UNTIL_12/16/24_from_1:00_PM_-_3:00_PM"
+	  },
+	  "NAME": "Monday office hours slot"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_vXtdQlGODxgrUPxiMBliyJQm"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Zoom office hours",
+	  "USERDESC": false,
+	  "LABEL": "Zoom office hours",
+	  "_id": "ACTION_zcVhJrNrvlafntshTaXDoUry",
+	  "PARAMETERS": {
+	    "setTo": "Office Hours",
+	    "otherText": "Check on Zoom"
+	  },
+	  "NAME": "Zoom office hours"
+	}],
+	"LABEL": "Monday Office Hours",
+	"PRIORITY": 568.75,
+	"_id": "RULE_twLEgjweOqEzuQuImmuzzDTZ",
+	"NAME": "Monday Office Hours"
+      },
+      {
+	"CREATED": 1724155695680,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Thursday office hours",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "Thursday Office Hours",
+	  "USERDESC": false,
+	  "LABEL": "Thursday Office Hours",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 7,
+	    "TODATETIME": 1734026400000,
+	    "DESCRIPTION": "9/5/24 - 12/12/24UNTIL 12/12/24 from 11:30 AM - 1:00 PM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1725550200000,
+	    "ALLDAY": false,
+	    "DAYS": "THU",
+	    "LABEL": "9/5/24 - 12/12/24UNTIL 12/12/24 from 11:30 AM - 1:00 PM",
+	    "NAME": "9/5/24_-_12/12/24UNTIL_12/12/24_from_11:30_AM_-_1:00_PM"
+	  },
+	  "NAME": "Thursday Office Hours"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_SZpGVcJLaUvpxWFfCsgSzzRh"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Office Hours",
+	  "USERDESC": false,
+	  "LABEL": "Office Hours",
+	  "_id": "ACTION_kdIIgbQCttSYMOwyMvAulWIG",
+	  "PARAMETERS": {
+	    "setTo": "Office Hours",
+	    "otherText": "In CIT 403"
+	  },
+	  "NAME": "Office Hours"
+	}],
+	"LABEL": "Thursday office hours",
+	"PRIORITY": 537.5,
+	"_id": "RULE_UxMsiUczJwKxyEEguoLjGzhS",
+	"NAME": "Thursday office hours"
+      },
+      {
+	"CREATED": 1724155272568,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Faculty meeting",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "Faculty meeting slot",
+	  "USERDESC": false,
+	  "LABEL": "Faculty meeting slot",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 7,
+	    "TODATETIME": 1734458400000,
+	    "DESCRIPTION": "9/3/24 - 12/17/24UNTIL 12/17/24 from 12:00 PM - 1:00 PM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1725379200000,
+	    "ALLDAY": false,
+	    "DAYS": "TUE",
+	    "LABEL": "9/3/24 - 12/17/24UNTIL 12/17/24 from 12:00 PM - 1:00 PM",
+	    "NAME": "9/3/24_-_12/17/24UNTIL_12/17/24_from_12:00_PM_-_1:00_PM"
+	  },
+	  "NAME": "Faculty meeting slot"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_gHhwpZAxizSGcMWPkKoCTELt"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "In faculty meeting",
+	  "USERDESC": false,
+	  "LABEL": "In faculty meeting",
+	  "_id": "ACTION_jtoiDUsxOJKpNJOYCJwJQulc",
+	  "PARAMETERS": {
+	    "setTo": "Facuty Meeting",
+	    "otherText": "Back at 2:30"
+	  },
+	  "NAME": "In faculty meeting"
+	}],
+	"LABEL": "Faculty meeting",
+	"PRIORITY": 500,
+	"_id": "RULE_HbcnAQYMhWJZjzbVCRckHmuB",
+	"NAME": "Faculty meeting"
+      },
+      {
+	"CREATED": 1720709418716,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Set sign to Working at Home",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [
+	  {
 	    "SHARED": false,
 	    "OPERATOR": "EQL",
 	    "DESCRIPTION": "Check if working at home",
@@ -16,68 +371,244 @@
 	    "STATE": "WORKING",
 	    "TYPE": "Parameter",
 	    "PARAMREF": {
-		"DEVICE": "COMPUTER_MONITOR_Brown-F1QWPJJ9-XOyEptfqTQkxgTjV",
-		"LABEL": "Monitor status on Brown-F1QWPJJ9.WorkStatus",
-		"PARAMETER": "WorkStatus"
+	      "DEVICE": "COMPUTER_MONITOR_Brown-F1QWPJJ9-XOyEptfqTQkxgTjV",
+	      "LABEL": "Monitor status on Brown-F1QWPJJ9.Presence",
+	      "PARAMETER": "Presence"
 	    },
 	    "NAME": "Working at home"
-	},
-	{
+	  },
+	  {
 	    "SHARED": false,
 	    "OPERATOR": "NEQ",
 	    "DESCRIPTION": "Not on Zoom",
+	    "USERDESC": false,
 	    "TRIGGER": false,
 	    "LABEL": "Not on Zoom",
 	    "STATE": "ON_ZOOM",
-	    "MINTIME": 0,
-	    "MAXTIME": 10,
 	    "TYPE": "Parameter",
 	    "PARAMREF": {
-		"DEVICE": "COMPUTER_MONITOR_Brown-F1QWPJJ9-XOyEptfqTQkxgTjV",
-		"PARAMETER": "ZoomStatus"
+	      "DEVICE": "COMPUTER_MONITOR_Brown-F1QWPJJ9-XOyEptfqTQkxgTjV",
+	      "LABEL": "Monitor status on Brown-F1QWPJJ9.ZoomStatus",
+	      "PARAMETER": "ZoomStatus"
 	    },
 	    "NAME": "Not on Zoom"
-	},
-	{
+	  },
+	  {
 	    "SHARED": false,
 	    "OPERATOR": "LEQ",
 	    "DESCRIPTION": "Comfortable temperature",
+	    "USERDESC": false,
 	    "TRIGGER": false,
 	    "LABEL": "Comfortable temperature",
 	    "STATE": "76.8",
 	    "TYPE": "Parameter",
 	    "PARAMREF": {
-		"DEVICE": "2b9b605c-f357-41d0-8aca-d7119ad7865a",
-		"PARAMETER": "temperature"
+	      "DEVICE": "2b9b605c-f357-41d0-8aca-d7119ad7865a",
+	      "LABEL": "TCC Thermostat H-C-Hum.temperature",
+	      "PARAMETER": "temperature"
 	    },
 	    "NAME": "Comfortable temperature"
-	}
-    ],
-    "ACTIONS": [{
-	"TRANSITION": {
+	  }
+	],
+	"ACTIONS": [{
+	  "TRANSITION": {
 	    "TRANSITION": "setSign",
 	    "DEVICE": "iQsign_BGR8yt9M_1",
 	    "_id": "TRANSREF_ujpdUadAIdDifpCgMRUVvmVf"
-	},
-	"NEEDSNAME": false,
-	"DESCRIPTION": "Set sign to Working At Home",
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Set sign to Working At Home",
+	  "USERDESC": false,
+	  "LABEL": "Set sign to Working At Home",
+	  "_id": "ACTION_txdLxtDrqZxtnkUUFyDoGpPu",
+	  "PARAMETERS": {"setTo": "Working at Home"},
+	  "NAME": "SetSign=WorkingAtHome"
+	}],
+	"LABEL": "Set sign to Working at Home",
+	"PRIORITY": 500,
+	"_id": "RULE_aIRlbJhDwWdsjyjjnUtcfPYc",
+	"NAME": "Set sign to Working at Home"
+      },
+      {
+	"CREATED": 1724337028105,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Zoom at Work",
 	"USERDESC": false,
-	"LABEL": "Set sign to Working At Home",
-	"_id": "ACTION_txdLxtDrqZxtnkUUFyDoGpPu",
-	"PARAMETERS": {"setTo": "Working at Home"},
-	"NAME": "SetSign=WorkingAtHome"
-    }],
-    "LABEL": "Set sign to Working at Home",
-    "PRIORITY": 500,
-    "_id": "RULE_aIRlbJhDwWdsjyjjnUtcfPYc",
-    "NAME": "Set sign to Working at Home"
-}
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "OPERATOR": "EQL",
+	  "DESCRIPTION": "Zoom at work",
+	  "USERDESC": false,
+	  "TRIGGER": false,
+	  "LABEL": "Zoom at work",
+	  "STATE": "UNKNOWN",
+	  "TYPE": "Parameter",
+	  "PARAMREF": {
+	    "DEVICE": "COMPUTER_MONITOR_fred4-gKQTRZecrHhabIZY",
+	    "LABEL": "Monitor status on fred4.ZoomStatus",
+	    "PARAMETER": "ZoomStatus"
+	  },
+	  "NAME": "Zoom at work"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_pQkmJoFHkXKXNTOkxPiMZXBB"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Zoom at Work",
+	  "USERDESC": false,
+	  "LABEL": "Zoom at Work",
+	  "_id": "ACTION_ZsmDfKLTCjBTwBAjJiOMMROP",
+	  "PARAMETERS": {"setTo": "In Meeting"},
+	  "NAME": "Zoom at Work"
+	}],
+	"LABEL": "Zoom at Work",
+	"PRIORITY": 475,
+	"_id": "RULE_BNOAWeTPXaCxIUaxiULzoijY",
+	"NAME": "Zoom at Work"
+      },
+      {
+	"CREATED": 1724336873408,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Zoom at Home",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "OPERATOR": "EQL",
+	  "DESCRIPTION": "Zoom at home",
+	  "USERDESC": false,
+	  "TRIGGER": false,
+	  "LABEL": "Zoom at home",
+	  "STATE": "UNKNOWN",
+	  "TYPE": "Parameter",
+	  "PARAMREF": {
+	    "DEVICE": "COMPUTER_MONITOR_Brown-F1QWPJJ9-XOyEptfqTQkxgTjV",
+	    "LABEL": "COMPUTER_MONITOR_Brown-F1QWPJJ9.ZoomStatus",
+	    "PARAMETER": "ZoomStatus"
+	  },
+	  "NAME": "Zoom at home"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_TJFQVaEjWbxXQMGdWymAwXac"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "On zoom at home",
+	  "USERDESC": false,
+	  "LABEL": "On zoom at home",
+	  "_id": "ACTION_VzCuiDLqrxXAYNBmphcqkBJU",
+	  "PARAMETERS": {"setTo": "In Meeting"},
+	  "NAME": "On zoom at home"
+	}],
+	"LABEL": "Zoom at Home",
+	"PRIORITY": 450,
+	"_id": "RULE_ApIqacagTfMGdbsEAXipfLKH",
+	"NAME": "Zoom at Home"
+      },
+      {
+	"CREATED": 1724338168320,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "Scheduled Meeting",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "FIELDS": [
+	    {
+	      "MATCHOP": "NOMATCH",
+	      "MATCHVALUE": "LJR",
+	      "NAME": "TITLE"
+	    },
+	    {
+	      "MATCHOP": "ISNULL",
+	      "NAME": "ALLDAY"
+	    }
+	  ],
+	  "SHARED": false,
+	  "DESCRIPTION": "Personal Calendar Event",
+	  "USERDESC": false,
+	  "LABEL": "Personal Calendar Event",
+	  "TYPE": "CalendarEvent",
+	  "PARAMREF": {
+	    "DEVICE": "GCAL_UNIV_OVQYRdFMEoeejLyWbIapklBC",
+	    "LABEL": "Google Calendar for spr.EVENTS",
+	    "PARAMETER": "EVENTS"
+	  },
+	  "NAME": "Personal Calendar Event"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_OxkvcFpGomPdTmHOOJLfIjRb"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Scheduled Meeting",
+	  "USERDESC": false,
+	  "LABEL": "Scheduled Meeting",
+	  "_id": "ACTION_QpUSXHGoBPARyDTJRZRjseoL",
+	  "PARAMETERS": {
+	    "setTo": "In Meeting",
+	    "otherText": "Back at $(END)"
+	  },
+	  "NAME": "Scheduled Meeting"
+	}],
+	"LABEL": "Scheduled Meeting",
+	"PRIORITY": 425,
+	"_id": "RULE_yNsFRLKDnJhRsuOdLQDXlNIY",
+	"NAME": "Scheduled Meeting"
+      },
+      {
+	"CREATED": 1724715540660,
+	"DEVICEID": "iQsign_BGR8yt9M_1",
+	"DESCRIPTION": "After hours",
+	"USERDESC": false,
+	"TRIGGER": false,
+	"CONDITIONS": [{
+	  "SHARED": false,
+	  "DESCRIPTION": "After Work Hours",
+	  "USERDESC": false,
+	  "LABEL": "After Work Hours",
+	  "TYPE": "Time",
+	  "EVENT": {
+	    "INTERVAL": 7,
+	    "TODATETIME": 1734497940000,
+	    "DESCRIPTION": "8/26/24 - 12/17/24UNTIL 12/17/24 from 3:30 PM - 11:59 PM",
+	    "USERDESC": false,
+	    "FROMDATETIME": 1724700600000,
+	    "ALLDAY": false,
+	    "DAYS": "MON,TUE,WED,THU",
+	    "LABEL": "8/26/24 - 12/17/24UNTIL 12/17/24 from 3:30 PM - 11:59 PM",
+	    "NAME": "8/26/24_-_12/17/24UNTIL_12/17/24_from_3:30_PM_-_11:59_PM"
+	  },
+	  "NAME": "After Work Hours"
+	}],
+	"ACTIONS": [{
+	  "TRANSITION": {
+	    "TRANSITION": "setSign",
+	    "DEVICE": "iQsign_BGR8yt9M_1",
+	    "_id": "TRANSREF_AvVXlxPhJaqprMULopBuQnHQ"
+	  },
+	  "NEEDSNAME": false,
+	  "DESCRIPTION": "Gone for the day",
+	  "USERDESC": false,
+	  "LABEL": "Gone for the day",
+	  "_id": "ACTION_sqPUFpAVIYOmJqnNmFuREUty",
+	  "PARAMETERS": {
+	    "setTo": "Gone Home",
+	    "otherText": "Available Tomorrow"
+	  },
+	  "NAME": "Gone for the day"
+	}],
+	"LABEL": "After hours",
+	"PRIORITY": 300,
+	"_id": "RULE_VsBEcqAAnxXTbHVPgfkzqTCm",
+	"NAME": "After hours"
+      }
 ]
-
-
-
-
-
-
-
 
