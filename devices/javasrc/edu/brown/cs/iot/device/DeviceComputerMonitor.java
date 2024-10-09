@@ -802,7 +802,7 @@ private PhoneOption getPhoneStatus()
          String ln = rdr.readLine();
          if (ln == null) break;
          ln = ln.toUpperCase();
-         if (ln.contains("Failed")) continue;
+         if (ln.contains("FAILED")) continue;
          if (s1 != null && ln.contains(s1)) return PhoneOption.PRESENT;
          if (s2 != null && ln.contains(s2)) return PhoneOption.PRESENT;
        }

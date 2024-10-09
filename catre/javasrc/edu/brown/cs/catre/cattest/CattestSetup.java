@@ -219,10 +219,12 @@ private void runSetup()
    
    CatreLog.logI("CATTEST","Add gcal bridge = " + rslt6a.toString(2));
 
-   JSONObject rslt4 = CattestUtil.sendJson("POST","/bridge/add",
-	 "CATRESESSION",sid,"BRIDGE","samsung",
-	 "AUTH_TOKEN",stacc);
-   sid = rslt4.getString("CATRESESSION");
+   if (stacc != null) {
+      JSONObject rslt4 = CattestUtil.sendJson("POST","/bridge/add",
+            "CATRESESSION",sid,"BRIDGE","samsung",
+            "AUTH_TOKEN",stacc);
+      sid = rslt4.getString("CATRESESSION");
+    }
    
    JSONObject rslt6b = CattestUtil.sendJson("GET","/bridge/list",
          "CATRESESSION",sid);
