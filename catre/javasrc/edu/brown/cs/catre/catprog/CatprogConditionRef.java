@@ -143,7 +143,7 @@ CatprogConditionRef(CatprogConditionRef cr)
 }
 
 
-private class CondChanged implements CatreConditionListener {
+private final class CondChanged implements CatreConditionListener {
 
    @Override public void conditionError(CatreCondition cc,Throwable t) {
       fireError(t);

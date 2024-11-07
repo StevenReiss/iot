@@ -97,7 +97,7 @@ private Map<String,CatprogCondition> shared_conditions;
 /*										*/
 /********************************************************************************/
 
-public CatprogProgram(CatreUniverse uu)
+CatprogProgram(CatreUniverse uu)
 {
    super("PROG_");
 
@@ -541,7 +541,7 @@ private class Updater implements Runnable {
 
 
 
-private class RuleConditionHandler implements CatreConditionListener {
+private final class RuleConditionHandler implements CatreConditionListener {
 
    @Override public void conditionOn(CatreCondition cc,CatrePropertySet p) {
       conditionChange(cc);
@@ -619,7 +619,7 @@ private void resetTriggers()
 /*										*/
 /********************************************************************************/
 
-private static class RuleComparator implements Comparator<CatreRule> {
+private static final class RuleComparator implements Comparator<CatreRule> {
 
    @Override public int compare(CatreRule r1,CatreRule r2) {
       double v = r1.getPriority() - r2.getPriority();

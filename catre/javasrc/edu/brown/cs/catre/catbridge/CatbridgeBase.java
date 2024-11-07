@@ -173,7 +173,7 @@ protected CatbridgeBase createBridge(CatreUniverse u)
 }
 
 
-abstract protected CatbridgeBase createInstance(CatreUniverse u,CatreBridgeAuthorization auth);
+protected abstract CatbridgeBase createInstance(CatreUniverse u,CatreBridgeAuthorization auth);
 
 
 

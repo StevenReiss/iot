@@ -63,7 +63,7 @@ void fromJson(CatreStore store,Map<String,Object>  o);
 String getDataUID(); 
 
 
-public default JSONObject getJsonObject()
+default JSONObject getJsonObject()
 {
    Map<String,Object> map = toJson();
    JSONObject obj = new JSONObject(map);

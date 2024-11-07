@@ -188,7 +188,7 @@ public String handleForgotPassword(HttpExchange e,CatreSession cs)
 /*	Handle Login								*/
 /*										*/
 /********************************************************************************/
-
+ 
 public String handleLogin(HttpExchange e, CatreSession cs)
 {
    if (cs == null) return CatserveServer.jsonError(cs,"Bad session");
@@ -200,14 +200,14 @@ public String handleLogin(HttpExchange e, CatreSession cs)
    String salt = CatserveServer.getParameter(e,"SALT");
    String salt1 = cs.getValue("SALT");
    CatreLog.logD("CATSERVE","LOGIN " + username + " " + pwd + " " + salt);
-
+   
    if (username == null || pwd == null) {
       return CatserveServer.jsonError(cs,"Missing username or password");
-   }
+    }
    else if (salt == null || salt1 == null || !salt.equals(salt1)) {
       return CatserveServer.jsonError(cs,"Bad setup");
-   }
-   else{
+    }
+   else {
       CatreUser cu = catre_control.getDatabase().findUser(username,pwd,salt);
       if (cu == null) {
          return CatserveServer.jsonError(cs,"Bad user name or password");
@@ -217,7 +217,7 @@ public String handleLogin(HttpExchange e, CatreSession cs)
          cs.saveSession(catre_control);
          return CatserveServer.jsonResponse(cs,"TEMPORARY",cu.isTemporary());
        }
-   }
+    }
 }
 
 

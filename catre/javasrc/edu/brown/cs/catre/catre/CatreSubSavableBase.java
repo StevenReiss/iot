@@ -39,7 +39,7 @@ package edu.brown.cs.catre.catre;
 import java.util.HashMap;
 import java.util.Map;
 
-abstract public class CatreSubSavableBase implements CatreSubSavable, CatreIdentifiable
+public abstract class CatreSubSavableBase implements CatreSubSavable, CatreIdentifiable
 {
 
 

@@ -59,7 +59,7 @@ import edu.brown.cs.catre.catserve.CatserveServer;
 import edu.brown.cs.catre.catstore.CatstoreFactory;
 import edu.brown.cs.ivy.file.IvyLog.LogLevel;
 
-public class CatmainMain implements CatmainConstants, CatreController
+public final class CatmainMain implements CatmainConstants, CatreController
 {
 
 
@@ -70,7 +70,7 @@ public class CatmainMain implements CatmainConstants, CatreController
 /*										*/
 /********************************************************************************/
 
-public static void main(String [] args)
+public static void main(String [] args) 
 {
    CatmainMain main = new CatmainMain(args);
 
@@ -175,7 +175,7 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
 @Override
 public CatreUniverse createUniverse(String name,CatreUser cu)
 {
-   try{
+   try {
       CatreUniverse universe = model_factory.createUniverse(this,name,cu);
       
       cu.setUniverse(universe);

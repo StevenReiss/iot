@@ -89,7 +89,8 @@ import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreUniverse;
 
 /**
- *      Need to authorize additional test users at https://console.cloud.google.com/apis/credentials/consent?project=catre-372313
+ *      Need to authorize additional test users at 
+ *         https://console.cloud.google.com/apis/credentials/consent?project=catre-372313
  *      before they can successfully use this package.
  **/
 /**
@@ -106,7 +107,7 @@ import edu.brown.cs.catre.catre.CatreUniverse;
  *
  **/
 
-class CatbridgeGoogleCalendar extends CatbridgeBase
+class CatbridgeGoogleCalendar extends CatbridgeBase 
 {
 
 
@@ -141,13 +142,15 @@ private static final List<String> SCOPES =
 
 public static final int OAUTH_PORT = 8888;
 
-private static String HOLIDAYS;
+private static String holiday_calendar; 
 
 static {
    try {
-      HOLIDAYS = URLEncoder.encode("en.usa#holiday@group.v.calendar.google.com","UTF-8");
+      holiday_calendar = URLEncoder.encode("en.usa#holiday@group.v.calendar.google.com","UTF-8");
     }
-   catch (UnsupportedEncodingException e) { }
+   catch (UnsupportedEncodingException e) { 
+      holiday_calendar = "en.usa#holiday@group.v.calendar.google.com";
+    }
 }
 
 
@@ -226,14 +229,14 @@ private void setupAuthorizedCalendars()
        }
       else {
          CatreStore cs = getUniverse().getCatre().getDatabase();
-         if (cd.getId().equals(HOLIDAYS)) haveholidays = true;
+         if (cd.getId().equals(holiday_calendar)) haveholidays = true;
          if (cs.validateCalendar(getUniverse().getUser(),cnm,pwd)) {
             use.add(cd);
           }
        }
     }
    if (!haveholidays) {
-      CalendarData cd = google_access.findCalendar(HOLIDAYS,"*");
+      CalendarData cd = google_access.findCalendar(holiday_calendar,"*");
       if (cd != null) use.add(cd);
     }
    
@@ -435,7 +438,7 @@ private synchronized CalendarData findCalendar(String id,String pwd)
 
 
 
-private class CredRefresher implements CredentialRefreshListener {
+private final class CredRefresher implements CredentialRefreshListener {
 
    @Override public void onTokenErrorResponse(Credential cred,TokenErrorResponse resp) {
       CatreLog.logE("CATBRIDGE","Token error response " + resp + " " +

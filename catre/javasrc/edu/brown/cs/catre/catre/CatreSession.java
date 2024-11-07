@@ -39,7 +39,7 @@ package edu.brown.cs.catre.catre;
 
 import com.sun.net.httpserver.HttpExchange;
 
-public interface CatreSession extends CatreSavable {
+public interface CatreSession extends CatreSavable { 
 
    CatreUser getUser(CatreController cc);
 
@@ -57,7 +57,7 @@ public interface CatreSession extends CatreSavable {
 
    String getValue(String key);
 
-   String jsonResponse(Object ... val);
+   String jsonResponse(Object... val);
 
    String getParameter(HttpExchange e,String id);
 

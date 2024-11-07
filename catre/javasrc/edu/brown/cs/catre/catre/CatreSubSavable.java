@@ -50,7 +50,7 @@ public interface CatreSubSavable extends CatreJson
  **/ 
 
 @OverridingMethodsMustInvokeSuper
-public default Map<String,Object> toJson() {
+default Map<String,Object> toJson() {
    return new HashMap<>();
 }
 

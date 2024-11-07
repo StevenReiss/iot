@@ -92,7 +92,7 @@ public CatreStore getStore()
 /*										*/
 /********************************************************************************/
 
-private static class UsersTable implements CatreTable {
+private final class UsersTable implements CatreTable {
 
    @Override public String getTableName()		{ return "CatreUsers"; }
 
@@ -106,7 +106,7 @@ private static class UsersTable implements CatreTable {
       return new CatstoreUser(store,data);
     }
 
-}	// end of inner class UsersTable
+}	// end of inner class UsersTable 
 
 
 

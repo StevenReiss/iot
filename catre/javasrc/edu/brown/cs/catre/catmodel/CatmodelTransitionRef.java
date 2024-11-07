@@ -49,10 +49,11 @@ import edu.brown.cs.catre.catre.CatreReferenceListener;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreUniverseListener;
 
-class CatmodelTransitionRef extends CatreSubSavableBase implements CatmodelConstants, CatreTransitionRef, CatreDeviceListener, CatreUniverseListener
+class CatmodelTransitionRef extends CatreSubSavableBase implements CatmodelConstants,
+      CatreTransitionRef, CatreDeviceListener, CatreUniverseListener
 {
 
-
+ 
 /********************************************************************************/
 /*                                                                              */
 /*      Private Storage                                                         */

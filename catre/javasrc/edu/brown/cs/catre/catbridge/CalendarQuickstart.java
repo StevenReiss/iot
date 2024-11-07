@@ -88,11 +88,11 @@ private static final String CREDENTIALS_FILE_PATH = "/pro/iot/secret/gcal-creds.
 /**
  * Creates an authorized Credential object.
  *
- * @param HTTP_TRANSPORT The network HTTP Transport.
+ * @param httptransport The network HTTP Transport.
  * @return An authorized Credential object.
  * @throws IOException If the credentials.json file cannot be found.
  */
-private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
+private static Credential getCredentials(final NetHttpTransport httptransport)
    throws IOException {
    // Load client secrets.
    FileReader in = new FileReader(CREDENTIALS_FILE_PATH);
@@ -105,7 +105,7 @@ private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
    f2.delete();
     
    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-         HTTP_TRANSPORT, JSON_FACTORY, 
+         httptransport, JSON_FACTORY, 
          clientSecrets, SCOPES)
          .setDataStoreFactory(new FileDataStoreFactory(f1))
          .setAccessType("offline")
@@ -121,13 +121,13 @@ private static Credential getCredentials(final NetHttpTransport HTTP_TRANSPORT)
    return credential;
 }
 
-public static void main(String... args) throws IOException, GeneralSecurityException {
+public static void main(String... args) throws IOException, GeneralSecurityException { 
    // Build a new authorized API client service.
-   final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+   final NetHttpTransport httptransport = GoogleNetHttpTransport.newTrustedTransport();
    Calendar service =
-      new Calendar.Builder(HTTP_TRANSPORT, 
+      new Calendar.Builder(httptransport, 
             JSON_FACTORY,
-            getCredentials(HTTP_TRANSPORT))
+            getCredentials(httptransport))
       .setApplicationName(APPLICATION_NAME)
       .build();
    
@@ -153,16 +153,17 @@ public static void main(String... args) throws IOException, GeneralSecurityExcep
    List<Event> items = events.getItems();
    if (items.isEmpty()) {
       System.out.println("No upcoming events found.");
-    } else {
-       System.out.println("Upcoming events");
-       for (Event event : items) {
-          DateTime start = event.getStart().getDateTime();
-          if (start == null) {
-             start = event.getStart().getDate();
-           }
-          System.out.printf("%s (%s)\n", event.getSummary(), start);
-        }
-     }
+    }
+   else {
+      System.out.println("Upcoming events");
+      for (Event event : items) {
+         DateTime start = event.getStart().getDateTime();
+         if (start == null) {
+            start = event.getStart().getDate();
+          }
+         System.out.printf("%s (%s)\n", event.getSummary(), start);
+       }
+    }
    
    Events e1 = service.events().list("en.usa#holiday@group.v.calendar.google.com")
    .setMaxResults(10)
@@ -173,16 +174,17 @@ public static void main(String... args) throws IOException, GeneralSecurityExcep
    List<Event> i1 = e1.getItems();
    if (i1.isEmpty()) {
       System.out.println("No upcoming events found.");
-    } else {
-       System.out.println("Upcoming events");
-       for (Event event : i1) {
-          DateTime start = event.getStart().getDateTime();
-          if (start == null) {
-             start = event.getStart().getDate();
-           }
-          System.out.printf("%s (%s)\n", event.getSummary(), start);
-        }
-     }
+    } 
+   else {
+      System.out.println("Upcoming events");
+      for (Event event : i1) {
+         DateTime start = event.getStart().getDateTime();
+         if (start == null) {
+            start = event.getStart().getDate();
+          }
+         System.out.printf("%s (%s)\n", event.getSummary(), start);
+       }
+    }
 }
 
 

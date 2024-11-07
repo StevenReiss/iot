@@ -30,23 +30,26 @@
  *  OF THIS SOFTWARE.                                                           *
  *                                                                              *
  ********************************************************************************/
-
+ 
 package edu.brown.cs.catre.catserve;
 
-public class ResponseException extends Exception {
-    private int statusCode;
-    private String responseMessage;
+public class ResponseException extends Exception { 
+    private int status_code;
+    private String response_message;
 
     public ResponseException(int statuscode, String responsemessage) {
-        this.statusCode = statuscode;
-        this.responseMessage = responsemessage;
+        status_code = statuscode;
+        response_message = responsemessage;
     }
 
     public int getStatus() {
-        return statusCode;
+        return status_code;
     }
 
     public String getMessage() {
-        return responseMessage;
+        return response_message;
     }
 }
+
+
+/* end of ResponseException.java */

@@ -59,8 +59,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-public class DeviceComputerMonitor extends DeviceBase
-{
+public final class DeviceComputerMonitor extends DeviceBase
+{ 
 
 
 /********************************************************************************/
@@ -69,7 +69,7 @@ public class DeviceComputerMonitor extends DeviceBase
 /*                                                                              */
 /********************************************************************************/
 
-public static void main(String ... args)
+public static void main(String... args)
 {
    DeviceComputerMonitor mon = new DeviceComputerMonitor(args);
    mon.start();
@@ -315,7 +315,7 @@ private void setupPython()
 
 
 
-private boolean checkCommand(String rslt,String ... cmd)
+private boolean checkCommand(String rslt,String... cmd)
 {
    ProcessBuilder bp = new ProcessBuilder(cmd);
    bp.redirectError(ProcessBuilder.Redirect.DISCARD);

@@ -65,7 +65,7 @@ private String  unit_type;
 
 private static String  api_key = null;
 
-private static final String weather_url =
+private static final String WEATHER_URL =
    "https://api.opeopenwenweathermap.org/data/2.5/weather?$(WHERE)&APPID=$(APPID)&units=$(UNITS)";
 
 private static long UPDATE_RATE = 10 * T_MINUTE;
@@ -77,12 +77,12 @@ private static long UPDATE_RATE = 10 * T_MINUTE;
 /*                                                                              */
 /********************************************************************************/
 
-public CatdevWeatherDevice(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
+CatdevWeatherDevice(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 {
    super(uu,UPDATE_RATE);
    
    city_name = null;
-   unit_type = "imperial";
+   unit_type = "imperial"; 
    
    setupKeys();
    
@@ -153,7 +153,7 @@ private void setupKeys()
 
 @Override protected String getUrl()
 {
-   String orig = weather_url;
+   String orig = WEATHER_URL;
    
    Map<String,String> zmap = new HashMap<>();
    

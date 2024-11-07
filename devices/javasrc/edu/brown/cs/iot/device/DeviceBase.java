@@ -221,7 +221,7 @@ protected void handlePoll()				{ }
 /*										*/
 /********************************************************************************/
 
-private void setupAccess() throws IOException
+private void setupAccess() throws IOException 
 {
    File f1 = new File(System.getProperty("user.home"));
    File f2 = new File(f1,".config");
@@ -236,7 +236,7 @@ private void setupAccess() throws IOException
       obj.put(CONFIG_PAT,personal_token);
       try (FileWriter fw = new FileWriter(f4)) {
 	 fw.write(obj.toString(2));
-       };
+       }
     }
    else {
       try (FileReader fr = new FileReader(f4)) {
@@ -244,7 +244,7 @@ private void setupAccess() throws IOException
 	 JSONObject obj = new JSONObject(cnts);
 	 user_id = obj.getString(CONFIG_UID);
 	 personal_token = obj.getString(CONFIG_PAT);
-       };
+       }
     }
 
    access_token = null;
@@ -423,7 +423,7 @@ protected void sendParameterEvent(String param,Object val)
 /*										*/
 /********************************************************************************/
 
-static public String randomString(int len)
+public static String randomString(int len)
 {
    StringBuffer buf = new StringBuffer();
    int cln = RANDOM_CHARS.length();
@@ -438,7 +438,7 @@ static public String randomString(int len)
 
 
 
-static public String secureHash(String s)
+public static String secureHash(String s)
 {
    try {
       MessageDigest md = MessageDigest.getInstance("SHA-512");
@@ -490,7 +490,7 @@ public static String loadFile(InputStream ins) throws IOException
 
 
 
-protected JSONObject sendToCedes(String nm,Object ... args)
+protected JSONObject sendToCedes(String nm,Object... args)
 {
    JSONObject obj = buildJson(args);
 
@@ -555,7 +555,7 @@ protected String getHostName()
 	 InetAddress lh = InetAddress.getLocalHost();
 	 h = lh.getCanonicalHostName();
        }
-      catch (IOException e ) { }
+      catch (IOException e) { }
     }
 
    if (h == null) h = "localhost";
@@ -569,7 +569,7 @@ protected String getHostName()
 }
 
 
-protected JSONObject buildJson(Object ... args)
+protected JSONObject buildJson(Object... args)
 {
    JSONObject rslt = new JSONObject();
    for (int i = 0; i < args.length-1; i += 2) {

@@ -132,7 +132,7 @@ CatprogConditionOr(CatprogConditionOr cc)
 
 
 
-private class CondChanged implements CatreConditionListener {
+private final class CondChanged implements CatreConditionListener {
 
    @Override public void conditionError(CatreCondition cc,Throwable t) {
       active_state.noteError(cc,t);
