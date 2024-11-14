@@ -42,8 +42,18 @@ import edu.brown.cs.catre.catre.CatreActionValues;
 import edu.brown.cs.catre.catre.CatreParameter;
 import edu.brown.cs.catre.catre.CatreParameterSet;
 
-class CatmodelActionValues extends HashMap<String, Object> implements CatreActionValues
+class CatmodelActionValues extends HashMap<String,Object> implements CatreActionValues
 {
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Private storage                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+private static final long serialVersionUID = 1;
+
 
 
 /********************************************************************************/
