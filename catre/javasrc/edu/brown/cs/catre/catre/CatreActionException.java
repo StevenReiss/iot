@@ -41,6 +41,17 @@ package edu.brown.cs.catre.catre;
 public class CatreActionException extends CatreException
 {
 
+
+/********************************************************************************/
+/*                                                                              */
+/*      Private storage                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+private static final long serialVersionUID = 1;
+
+
+
 /********************************************************************************/
 /*										*/
 /*	Constructors								*/
