@@ -66,6 +66,7 @@ bin/tokens
 pubspec.lock
 catre/tokens/StoredCredential*
 RunnerTests
+signmaker/lib/ivy.jar
 
 # Ignore Gradle project-specific cache directory
 .gradle
