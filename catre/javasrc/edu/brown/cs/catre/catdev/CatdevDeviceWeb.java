@@ -2,7 +2,8 @@
 /*										*/
 /*		CatdevDeviceWeb.java						*/
 /*										*/
-/*	Generic web-based sensor						*//*										  */
+/*	Generic web-based sensor						*/
+/*										*/
 /********************************************************************************/
 /*	Copyright 2023 Brown University -- Steven P. Reiss			*/
 /*********************************************************************************
@@ -34,7 +35,7 @@
 
 
 package edu.brown.cs.catre.catdev;
-
+ 
 import java.util.Map;
 import java.util.TimerTask;
 
@@ -44,7 +45,7 @@ import edu.brown.cs.catre.catre.CatreUniverse;
 public abstract class CatdevDeviceWeb extends CatdevDevice
 {
 
-
+ 
 /********************************************************************************/
 /*										*/
 /*	Private Storage 							*/
@@ -120,10 +121,10 @@ protected void setPollRate(long rate)
 }
 
 
-abstract protected String getUrl();
+protected abstract String getUrl();
 
 
-abstract protected void handleContents(String cnts);
+protected abstract void handleContents(String cnts);
 
 
 
@@ -189,7 +190,7 @@ public synchronized void setPolling(long time)
 }
 
 
-private class Updater extends TimerTask {
+private final class Updater extends TimerTask {
 
    @Override public void run() {
       updateCurrentState();

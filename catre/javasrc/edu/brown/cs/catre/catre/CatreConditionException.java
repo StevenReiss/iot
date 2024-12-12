@@ -48,6 +48,8 @@ public class CatreConditionException extends CatreException
 /*										*/
 /********************************************************************************/
 
+private static final long serialVersionUID = 1;
+
 
 
 /********************************************************************************/

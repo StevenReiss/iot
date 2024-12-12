@@ -167,7 +167,7 @@ public void setupSession(CatreUser user)
 /*										*/
 /********************************************************************************/
 
-@Override public String jsonResponse(Object ... val)
+@Override public String jsonResponse(Object... val)
 {
    return CatserveServer.jsonResponse(this,val);
 }

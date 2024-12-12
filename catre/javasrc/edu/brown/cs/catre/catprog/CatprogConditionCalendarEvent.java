@@ -310,7 +310,7 @@ private static class FieldMatch extends CatreSubSavableBase {
       super(cs,map);
     }
    
-   boolean match(CatreCalendarEvent evt) {
+   boolean match(CatreCalendarEvent evt) { 
       String fval = evt.getProperties().get(field_name);
       
       boolean match = false;
@@ -327,16 +327,16 @@ private static class FieldMatch extends CatreSubSavableBase {
             break;
          case ISNULL :
             if (fval == null || fval.isEmpty()) return true;
-            else return false;
+            return false;
          case ISNONNULL :
             if (fval != null && !fval.isEmpty()) return true;
-            else return false;
+            return false;
          case MATCH :
             if (match) return true;
-            else return false;
+            return false;
          case NOMATCH :
             if (!match) return true;
-            else return false;
+            return false;
        }
      
       return true;

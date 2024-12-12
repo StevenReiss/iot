@@ -60,6 +60,7 @@ function restRouter(restful) {
    restful.all("/rest/ping", handlePing);
    restful.get("/rest/login", handlePrelogin);
    restful.post("/rest/login", handleLogin);
+   restful.get("/rest/register", handlePrelogin);
    restful.post("/rest/register", handleRegister);
    restful.post("/rest/forgotpassword", auth.handleForgotPassword);
    restful.all("/rest/logout", handleLogout);
@@ -567,4 +568,7 @@ function defSort(d1, d2) {
 exports.restRouter = restRouter;
 
 /* end of module rest */
+
+
+
 

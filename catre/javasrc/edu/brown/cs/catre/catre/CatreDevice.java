@@ -148,14 +148,14 @@ boolean isCalendarDevice();
  **/ 
 
 CatreUniverse getUniverse();
-
+ 
 
 
 /**
  *      Return the contoller
  **/
 
-public default CatreController getCatre()       { return getUniverse().getCatre(); }
+default CatreController getCatre()       { return getUniverse().getCatre(); }
 
 
 
@@ -163,7 +163,7 @@ public default CatreController getCatre()       { return getUniverse().getCatre(
  *      Check if this device is dependent on another
  **/
 
-public boolean isDependentOn(CatreDevice device);
+boolean isDependentOn(CatreDevice device);
 
 
 
@@ -171,10 +171,10 @@ public boolean isDependentOn(CatreDevice device);
  *      Return bridge if this is a basic device.  Otherwise return null.
  **/
 
-public CatreBridge getBridge();
+CatreBridge getBridge();
 
 
-public String getDeviceId();
+String getDeviceId();
 
 
 boolean validateDevice();

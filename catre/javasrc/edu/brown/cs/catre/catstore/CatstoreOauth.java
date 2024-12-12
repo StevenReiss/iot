@@ -351,7 +351,7 @@ private static class OauthCodeData extends CatreSavableBase {
 /*                                                                              */
 /********************************************************************************/
 
-private static class TokensTable implements CatreTable {
+private static final class TokensTable implements CatreTable {
 
    @Override public String getTableName()       { return "CatreOauthTokens"; }
    
@@ -370,7 +370,7 @@ private static class TokensTable implements CatreTable {
 
 
 
-private static class CodesTable implements CatreTable {
+private static final class CodesTable implements CatreTable { 
 
 @Override public String getTableName()       { return "CatreOauthCodes"; }
 

@@ -57,7 +57,7 @@ import java.io.InputStream;
 class CattestUtil implements CattestConstants
 {
 
-
+ 
 
 /********************************************************************************/
 /*										*/
@@ -89,7 +89,7 @@ static void setTestHost(String host)
 /*										*/
 /********************************************************************************/
 
-static JSONObject sendGet(String file,Object ... val) 
+static JSONObject sendGet(String file,Object... val) 
 {
    Map<String,Object> map = new HashMap<>();
    if (val.length > 1) {
@@ -104,7 +104,7 @@ static JSONObject sendGet(String file,Object ... val)
 }
 
 
-static JSONObject sendJson(String method,String file,Object ... val)
+static JSONObject sendJson(String method,String file,Object... val)
 {
    Map<String,Object> map = new HashMap<>();
    if (val.length > 1) {
@@ -231,7 +231,7 @@ static void startCatre()
       try {
          Thread.sleep(1000);
       }
-      catch (InterruptedException e) { };
+      catch (InterruptedException e) { }
     }
 }
 

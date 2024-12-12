@@ -302,7 +302,7 @@ private boolean checkMinute(Calendar c)
 /*										*/
 /********************************************************************************/
 
-private BitSet decodeSet(String what,int min,int max)
+private BitSet decodeSet(String what,int min,int max) 
 {
    BitSet rslt = new BitSet();
    
@@ -343,7 +343,8 @@ private BitSet decodeSet(String what,int min,int max)
 		  rslt.set(i);
 		  last = i;
 		}
-	       from = to = -1;
+	       from = -1;
+               to = -1;
 	     }
 	    else {
 	       if (tok.hasMoreTokens()) next = tok.nextToken();
@@ -455,7 +456,7 @@ private String computeDescription()
 /*										*/
 /********************************************************************************/
 
-private class RecheckTimer extends TimerTask {
+private final class RecheckTimer extends TimerTask {
    
    @Override public void run() {
       setupTimer();
@@ -465,7 +466,7 @@ private class RecheckTimer extends TimerTask {
 
 
 
-private class TriggerTimer extends TimerTask {
+private final class TriggerTimer extends TimerTask {
    
    @Override public void run() {
       fireTrigger(null);

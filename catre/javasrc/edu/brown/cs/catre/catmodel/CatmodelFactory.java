@@ -64,7 +64,7 @@ private CatreController catre_control;
 /*	Constructors								*/
 /*										*/
 /********************************************************************************/
-
+ 
 public CatmodelFactory(CatreController cc)
 {
    catre_control = cc;
@@ -93,7 +93,7 @@ public CatreUniverse createUniverse(CatreController cc,String name,CatreUser cu)
 /*										*/
 /********************************************************************************/
 
-private static class UniverseTable implements CatreTable {
+private static final class UniverseTable implements CatreTable {
 
    @Override public String getTableName()		{ return "CatreUniverses"; }
 

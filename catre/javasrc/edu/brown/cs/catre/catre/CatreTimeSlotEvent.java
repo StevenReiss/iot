@@ -66,7 +66,7 @@ List<Calendar> getSlots(Calendar from,Calendar to);
 boolean canOverlap(CatreTimeSlotEvent evt);
 
 
-public static Calendar startOfDay(Calendar c)
+static Calendar startOfDay(Calendar c)
 {
    if (c == null) {
       c = Calendar.getInstance();
@@ -82,7 +82,7 @@ public static Calendar startOfDay(Calendar c)
 
 
 
-public static Calendar startOfNextDay(Calendar c)
+static Calendar startOfNextDay(Calendar c)
 {
    Calendar c1 = startOfDay(c);
    c1.add(Calendar.DAY_OF_YEAR,1);

@@ -191,7 +191,7 @@ private void setupTimer()
 /*										*/
 /********************************************************************************/
 
-private class CondChecker extends TimerTask {
+private final class CondChecker extends TimerTask {
 
    @Override public void run() {
       setTime();

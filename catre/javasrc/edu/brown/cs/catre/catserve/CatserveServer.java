@@ -112,6 +112,8 @@ private ArrayList<Route> route_interceptors;
 private int preroute_index;
 
 
+
+
 /********************************************************************************/
 /*										*/
 /*	Constructors								*/
@@ -121,6 +123,8 @@ private int preroute_index;
 public CatserveServer(CatreController cc)
 {
    // Create an HTTPS server (secure)
+   // This allows others to talk securely
+   
    try {
       SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -138,17 +142,17 @@ public CatserveServer(CatreController cc)
 	 p.loadFromXML(fis);
        }
       catch (IOException e) { }
-      String keystore_pwd = p.getProperty("jkspwd");
+      String keystorepwd = p.getProperty("jkspwd");
 
       System.err.println("HOST: " + IvyExecQuery.getHostName());
-      if (IvyExecQuery.getHostName().contains("geode.local")) keystore_pwd = null;
-      if (IvyExecQuery.getHostName().contains("Brown-")) keystore_pwd = null;
+      if (IvyExecQuery.getHostName().contains("geode.local")) keystorepwd = null;
+      if (IvyExecQuery.getHostName().contains("Brown-")) keystorepwd = null;
 
-      if (keystore_pwd != null) {
+      if (keystorepwd != null) {
 	 HttpsServer server = HttpsServer.create(new InetSocketAddress(HTTPS_PORT), 0);
 	 http_server = server;
 	 // makeSecure(getSSLFactory(f3,keystore_pwd, sslContext),null);
-	 char[] keystorePassword = keystore_pwd.toCharArray();
+	 char[] keystorePassword = keystorepwd.toCharArray();
 	 KeyStore keyStore = KeyStore.getInstance("JKS");
 	 FileInputStream keystoreInputStream = new FileInputStream(f3);
 	 keyStore.load(keystoreInputStream, keystorePassword);
@@ -177,29 +181,41 @@ public CatserveServer(CatreController cc)
    route_interceptors = new ArrayList<>();
    preroute_index = 0;
 
+   setupRoutes();
+
+   http_server.createContext("/", new CatreHandler());
+
+   http_server.setExecutor(new ServerExecutor());
+
+   cc.register(new SessionTable());
+}
+
+
+private void setupRoutes()
+{
    addRoute("ALL","/ping",this::handlePing);
    addRoute("ALL",this::handleParameters);
    addRoute("ALL",session_manager::setupSession);
-   addRoute("ALL",this::handleLogging);
+   addRoute("ALL",this::handleLogging); 
    
    addRoute("ALL","/static",this::handleStatic);
-
+   
    addRoute("GET","/login",this::handlePrelogin);
    addRoute("POST","/login",auth_manager::handleLogin);
    addRoute("POST","/register",auth_manager::handleRegister);
    addRoute("GET","/logout",this::handleLogout);
    addRoute("POST","/forgotpassword",this::handleForgotPassword);
-
+   
    // might want to handle favicon
-
+   
    addRoute("ALL",this::handleAuthorize);
    addRoute("POST","/changepassword",auth_manager::handleChangePassword);
-
+   
    addRoute("ALL",this::handleUserAuthorize);
-
+   
    addRoute("ALL","/keypair",this::handleKeyPair);
    addRoute("POST","/removeuser",this::handleRemoveUser);
-
+   
    addRoute("POST","/bridge/add",this::handleAddBridge);
    addRoute("GET","/bridge/list",this::handleListBridges);
    addRoute("GET","/universe",this::handleGetUniverse);
@@ -217,24 +233,18 @@ public CatserveServer(CatreController cc)
    addRoute("POST","/rule/edit",this::handleEditRule);
    addRoute("POST","/rule/validate",this::handleValidateRule);
    addRoute("POST","/rule/remove",this::handleRemoveRule);
-
+   
    addRoute("POST","/rule/:ruleid/edit",this::handleEditRule);
    addRoute("POST","/rule/:ruleid/remove",this::handleRemoveRule);
    addRoute("POST","/rule/:ruleid/priority",this::handleSetRulePriority);
-   
-
-   http_server.createContext("/", new CatreHandler());
-
-   http_server.setExecutor(new ServerExecutor());
-
-   cc.register(new SessionTable());
 }
 
 
-private class CatreHandler implements HttpHandler {
+
+private final class CatreHandler implements HttpHandler {
 
    @Override public void handle(HttpExchange e) throws IOException {
-      for(Route interceptor : route_interceptors){
+      for (Route interceptor : route_interceptors){
          String resp = interceptor.handle(e);
          if (resp != null) {
             sendResponse(e, resp);
@@ -325,7 +335,7 @@ private String handleParameters(HttpExchange e)
 {
    Map<String,List<String>> params = parseQueryParameters(e);
    if (!e.getRequestMethod().equals("GET")) {
-      synchronized(params) {
+      synchronized (params) {
          try {
             // Parse the request body and populate the filemap
             parsePostParameters(e,params);
@@ -809,7 +819,7 @@ static void sendResponse(HttpExchange exchange, String response,int rcode)
 {
    CatreLog.logD("CATSERVE","Sending response: " + response);
    
-   try{
+   try {
       exchange.sendResponseHeaders(rcode, response.getBytes().length);
       OutputStream os = exchange.getResponseBody();
       os.write(response.getBytes());
@@ -1125,7 +1135,7 @@ public boolean parsePostParameters(HttpExchange exchange,Map<String,List<String>
    else if (json) {
       if (cntlen == 0) cntlen = 2*1024*1024;
       String cnts = "";
-      char buf[] = new char[512];
+      char [] buf = new char[512];
       while (cntlen > 0) {
 	 int rln = Math.min(cntlen,512);
 	 int aln = br.read(buf,0,rln);
@@ -1242,7 +1252,7 @@ public static @Tainted String getParameter(HttpExchange e,String name)
 static void setParameter(HttpExchange exchange,String name,String val)
 {
    Map<String,List<String>> parameters = (Map<String,List<String>>) exchange.getAttribute("paramMap");
-   synchronized(parameters){
+   synchronized (parameters){
       if (val == null) {
          parameters.remove(name);
        }
@@ -1278,7 +1288,7 @@ static @Tainted JSONObject getJson(HttpExchange exchange,String fld)
 /*										*/
 /********************************************************************************/
 
-private class ServerExecutor implements Executor {
+private final class ServerExecutor implements Executor {
 
    @Override public void execute(Runnable r) {
       catre_control.submit(r);
@@ -1293,7 +1303,7 @@ private class ServerExecutor implements Executor {
 /*										*/
 /********************************************************************************/
 
-private static class SessionTable implements CatreTable {
+private static final class SessionTable implements CatreTable {
 
    @Override public String getTableName()    { return "CatreSessions"; }
 

@@ -291,7 +291,7 @@ protected void fireTrigger(CatrePropertySet input)
 }
 
 
-protected void fireOff()
+protected void fireOff() 
 {
    CatreLog.logD("CATPROG","Off firing for condition " + getName() +
          " " + condition_handlers.getListenerCount());
@@ -301,7 +301,7 @@ protected void fireOff()
       CondState cs = cond_state;
       if (!cs.setOff()) return;
 
-      for(CatreConditionListener ch : condition_handlers) {
+      for (CatreConditionListener ch : condition_handlers) {
 	 try {
 	    ch.conditionOff(this);
 	  }
@@ -417,7 +417,8 @@ private class CondState {
     }
 
    boolean setOff() {
-      CatreLog.logD("CATPROG","Set Condition " + getName() + " STATE OFF");     if (error_condition == null && on_parameters == null) return false;
+      CatreLog.logD("CATPROG","Set Condition " + getName() + " STATE OFF");  
+      if (error_condition == null && on_parameters == null) return false;
       error_condition = null;
       on_parameters = null;
       return true;

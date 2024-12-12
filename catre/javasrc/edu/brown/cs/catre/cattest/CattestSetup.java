@@ -51,10 +51,10 @@ import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatreUtil;
 import edu.brown.cs.ivy.file.IvyFile;
 
-public class CattestSetup implements CattestConstants, CatreJson
+public final class CattestSetup implements CattestConstants, CatreJson
 {
 
-
+ 
 
 /********************************************************************************/
 /*										*/
@@ -134,7 +134,7 @@ private CattestSetup(String [] args)
 /*										*/
 /********************************************************************************/
 
-private void runSetup()
+private void runSetup() 
 {
    File logindata = new File("/private/iot/secret/catrelogin");
    if (!logindata.exists()) {
@@ -219,10 +219,12 @@ private void runSetup()
    
    CatreLog.logI("CATTEST","Add gcal bridge = " + rslt6a.toString(2));
 
-   JSONObject rslt4 = CattestUtil.sendJson("POST","/bridge/add",
-	 "CATRESESSION",sid,"BRIDGE","samsung",
-	 "AUTH_TOKEN",stacc);
-   sid = rslt4.getString("CATRESESSION");
+   if (stacc != null) {
+      JSONObject rslt4 = CattestUtil.sendJson("POST","/bridge/add",
+            "CATRESESSION",sid,"BRIDGE","samsung",
+            "AUTH_TOKEN",stacc);
+      sid = rslt4.getString("CATRESESSION");
+    }
    
    JSONObject rslt6b = CattestUtil.sendJson("GET","/bridge/list",
          "CATRESESSION",sid);
@@ -258,6 +260,31 @@ private void runSetup()
       CatreLog.logI("CATTEST","Universe after cleaning = " + rslt9c.toString(2)); 
     }
    
+   JSONArray rules = loadRules(ruledata);
+   
+   for (int i = 0; i < rules.length(); ++i) {
+      JSONObject robj = rules.getJSONObject(i);
+      JSONObject rslt10 = CattestUtil.sendJson("POST","/rule/add",
+            "CATRESESSION",sid,"RULE",robj);
+      CatreLog.logI("CATTEST","Add Rule = " + rslt10.toString(2));
+    }
+
+   JSONObject rslt11 = CattestUtil.sendJson("GET","/rules",
+	 "CATRESESSION",sid);
+   CatreLog.logI("CATTEST","Rules: " + rslt11.toString(2));
+   
+   JSONObject rslt12 = CattestUtil.sendJson("GET","/universe",
+	 "CATRESESSION",sid);
+   CatreLog.logI("CATTEST","Universe = " + rslt12.toString(2));
+   
+   System.exit(0);
+}
+
+
+
+
+private JSONArray loadRules(File ruledata)
+{
    JSONArray rules = null;
    try (FileReader fr = new FileReader(ruledata)) {
       String cnts = IvyFile.loadFile(fr);
@@ -289,22 +316,7 @@ private void runSetup()
       rules = buildJsonArray(rul0);
     }
    
-   for (int i = 0; i < rules.length(); ++i) {
-      JSONObject robj = rules.getJSONObject(i);
-      JSONObject rslt10 = CattestUtil.sendJson("POST","/rule/add",
-            "CATRESESSION",sid,"RULE",robj);
-      CatreLog.logI("CATTEST","Add Rule = " + rslt10.toString(2));
-    }
-
-   JSONObject rslt11 = CattestUtil.sendJson("GET","/rules",
-	 "CATRESESSION",sid);
-   CatreLog.logI("CATTEST","Rules: " + rslt11.toString(2));
-   
-   JSONObject rslt12 = CattestUtil.sendJson("GET","/universe",
-	 "CATRESESSION",sid);
-   CatreLog.logI("CATTEST","Universe = " + rslt12.toString(2));
-   
-   System.exit(0);
+   return rules;
 }
 
 

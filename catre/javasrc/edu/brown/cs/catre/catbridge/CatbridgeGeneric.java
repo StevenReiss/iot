@@ -168,8 +168,8 @@ protected CatbridgeBase createInstance(CatreUniverse u,CatreBridgeAuthorization 
       case "PARAMETER" :
 	 CatreParameter param = dev.findParameter(evt.getString("PARAMETER"));
 	 if (param == null) {
-            CatreLog.logD("CATBRIDGE","GENERIC EVENT PARAMETER NOT FOUND " + 
-                  evt.getString("PARAMETER"));
+            CatreLog.logE("CATBRIDGE","Generic event parameter not found " + 
+                  evt.getString("PARAMETER") + " for " + dev.getName());
             return;
           }
 	 Object val = evt.get("VALUE");

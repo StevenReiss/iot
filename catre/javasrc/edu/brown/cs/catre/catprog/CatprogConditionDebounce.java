@@ -184,7 +184,7 @@ public void fromJson(CatreStore cs,Map<String,Object> map)
 
 
 
-private class CondChanged implements CatreConditionListener {
+private final class CondChanged implements CatreConditionListener { 
    
    @Override public void conditionError(CatreCondition cc,Throwable t) {
       active_state.noteError(t);

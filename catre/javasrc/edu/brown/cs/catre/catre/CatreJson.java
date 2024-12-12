@@ -59,7 +59,7 @@ public interface CatreJson
 /*										*/
 /********************************************************************************/
 
-public default String [] getUIDArrayToSave(List<? extends CatreIdentifiable> elts)
+default String [] getUIDArrayToSave(List<? extends CatreIdentifiable> elts)
 {
    String [] rslt = new String[elts.size()];
    int ct = 0;
@@ -70,7 +70,7 @@ public default String [] getUIDArrayToSave(List<? extends CatreIdentifiable> elt
 }
 
 
-public default List<Object> getSubObjectArrayToSave(Collection<? extends CatreSubSavable> elts)
+default List<Object> getSubObjectArrayToSave(Collection<? extends CatreSubSavable> elts)
 {
    List<Object> rslt = new ArrayList<>();
    for (CatreSubSavable s : elts) {
@@ -80,7 +80,7 @@ public default List<Object> getSubObjectArrayToSave(Collection<? extends CatreSu
 }
 
 
-public default String getUIDToSave(CatreIdentifiable e)
+default String getUIDToSave(CatreIdentifiable e)
 {
    if (e == null) return null;
 
@@ -95,7 +95,7 @@ public default String getUIDToSave(CatreIdentifiable e)
 /*										*/
 /********************************************************************************/
 
-public default String getSavedString(Map<String,Object> map,String key,String dflt)
+default String getSavedString(Map<String,Object> map,String key,String dflt)
 {
    Object ov = map.get(key);
    if (ov == null) ov = dflt;
@@ -104,7 +104,7 @@ public default String getSavedString(Map<String,Object> map,String key,String df
    return ov.toString();
 }
 
-public default long getSavedLong(Map<String,Object> map,String key,Number v)
+default long getSavedLong(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
    if (ov != null) {
@@ -116,7 +116,7 @@ public default long getSavedLong(Map<String,Object> map,String key,Number v)
 
 
 @SuppressWarnings("unchecked")
-public default <T extends Enum<T>> T getSavedEnum(Map<String,Object> map,String key,T dflt)
+default <T extends Enum<T>> T getSavedEnum(Map<String,Object> map,String key,T dflt)
 {
    Enum<?> v = dflt;
    String s = getSavedString(map,key,null);
@@ -136,7 +136,7 @@ public default <T extends Enum<T>> T getSavedEnum(Map<String,Object> map,String 
 }
 
 
-public default int getSavedInt(Map<String,Object> map,String key,Number v)
+default int getSavedInt(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
    if (ov != null) {
@@ -147,7 +147,7 @@ public default int getSavedInt(Map<String,Object> map,String key,Number v)
 }
 
 
-public default Integer getOptSavedInt(Map<String,Object> map,String key,Number v)
+default Integer getOptSavedInt(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
    if (ov == null) return null;
@@ -162,7 +162,7 @@ public default Integer getOptSavedInt(Map<String,Object> map,String key,Number v
 }
 
 
-public default double getSavedDouble(Map<String,Object> map,String key,Number v)
+default double getSavedDouble(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
    if (ov != null) {
@@ -172,7 +172,7 @@ public default double getSavedDouble(Map<String,Object> map,String key,Number v)
    return v.doubleValue();
 }
 
-public default Double getOptSavedDouble(Map<String,Object> map,String key,Number v)
+default Double getOptSavedDouble(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
    if (ov != null) {
@@ -189,7 +189,7 @@ public default Double getOptSavedDouble(Map<String,Object> map,String key,Number
    return v.doubleValue();
 }
 
-public default Boolean getSavedBool(Map<String,Object> map,String key,Boolean v)
+default Boolean getSavedBool(Map<String,Object> map,String key,Boolean v)
 {
    Object ov = map.get(key);
    if (ov != null) {
@@ -208,7 +208,7 @@ public default Boolean getSavedBool(Map<String,Object> map,String key,Boolean v)
 }
 
 
-public default Date getSavedDate(Map<String,Object> map,String key,Date v)
+default Date getSavedDate(Map<String,Object> map,String key,Date v)
 {
    Object ov = map.get(key);
    if (ov == null) return v;
@@ -218,7 +218,7 @@ public default Date getSavedDate(Map<String,Object> map,String key,Date v)
 }
 
 
-public default Object getSavedValue(Map<String,Object> map,String key,Object dflt)
+default Object getSavedValue(Map<String,Object> map,String key,Object dflt)
 {
    Object ov = map.get(key);
    if (ov == null) ov = dflt;
@@ -227,7 +227,7 @@ public default Object getSavedValue(Map<String,Object> map,String key,Object dfl
 
 
 @SuppressWarnings("unchecked")
-public default Map<String,Object> getSavedJson(Map<String,Object> map,String key,Map<String,Object> dflt)
+default Map<String,Object> getSavedJson(Map<String,Object> map,String key,Map<String,Object> dflt)
 {
    Object ov = getSavedValue(map,key,null);
    if (ov == null) return dflt;
@@ -242,7 +242,7 @@ public default Map<String,Object> getSavedJson(Map<String,Object> map,String key
 }
 
 @SuppressWarnings("unchecked")
-public default Map<String,Object> getSavedObject(Object ov,Map<String,Object> dflt)
+default Map<String,Object> getSavedObject(Object ov,Map<String,Object> dflt)
 {
    if (ov == null) return dflt;
    if (ov instanceof Map) {
@@ -257,7 +257,7 @@ public default Map<String,Object> getSavedObject(Object ov,Map<String,Object> df
 
 
 
-public default List<?> getSavedList(Map<String,Object> map,String key,List<?> dflt)
+default List<?> getSavedList(Map<String,Object> map,String key,List<?> dflt)
 {
    Object ov = map.get(key);
    if (ov == null) return dflt;
@@ -274,7 +274,7 @@ public default List<?> getSavedList(Map<String,Object> map,String key,List<?> df
 }
 
 
-public default Set<String> getSavedStringSet(CatreStore cs,Map<String,Object> map,String key,Set<String> dflt)
+default Set<String> getSavedStringSet(CatreStore cs,Map<String,Object> map,String key,Set<String> dflt)
 {
    List<?> data = getSavedList(map,key,null);
    if (data == null) return dflt;
@@ -286,7 +286,7 @@ public default Set<String> getSavedStringSet(CatreStore cs,Map<String,Object> ma
 
 
 
-public default List<String> getSavedStringList(Map<String,Object> map,String key,List<String> dflt)
+default List<String> getSavedStringList(Map<String,Object> map,String key,List<String> dflt)
 {
    List<?> data = getSavedList(map,key,null);
    if (data == null) return dflt;
@@ -304,7 +304,7 @@ public default List<String> getSavedStringList(Map<String,Object> map,String key
 /********************************************************************************/
 
 @SuppressWarnings("unchecked")
-public default	<T extends CatreSavable> T getSavedObject(CatreStore cs,Map<String,Object> map,String id,T dflt)
+default <T extends CatreSavable> T getSavedObject(CatreStore cs,Map<String,Object> map,String id,T dflt)
 {
    String okey = null;
    if (dflt != null) okey = dflt.getDataUID();
@@ -315,7 +315,7 @@ public default	<T extends CatreSavable> T getSavedObject(CatreStore cs,Map<Strin
 }
 
 @SuppressWarnings("unchecked")
-public default <T extends CatreSavable> List<T> getSavedObjectList(CatreStore cs,
+default <T extends CatreSavable> List<T> getSavedObjectList(CatreStore cs,
       Map<String,Object> map,String key,List<T> dflt)
       {
    List<String> data = getSavedStringList(map,key,null);
@@ -331,7 +331,7 @@ public default <T extends CatreSavable> List<T> getSavedObjectList(CatreStore cs
 }
 
 
-public default Map<String,Object> getSavedSubobject(CatreSubSavable e)
+default Map<String,Object> getSavedSubobject(CatreSubSavable e)
 {
    if (e == null) return null;
 
@@ -348,16 +348,16 @@ public default Map<String,Object> getSavedSubobject(CatreSubSavable e)
 /*										*/
 /********************************************************************************/
 
-public default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String,Object> map,
-								  String id,Creator<T> c,T dflt)
+default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String,Object> map,
+      String id,Creator<T> c,T dflt)
 {
    Object obj = map.get(id);
    return createSubObject(cs,obj,c,dflt);
 }
 
 
-public default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String,Object> map,
-								  String id,Finder<T> c,T dflt)
+default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String,Object> map,
+      String id,Finder<T> c,T dflt)
 {
    String uid = getSavedString(map,id,null);
    if (uid == null) return null;
@@ -365,7 +365,7 @@ public default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map
 }
 
 
-public default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
+default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
       Map<String,Object> map,String key,Creator<T> c,List<T> dflt)
 {
    List<T> rslt = new ArrayList<>();
@@ -382,7 +382,7 @@ public default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreSt
 
 
 
-public default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
+default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
       Map<String,Object> map,String key,Finder<T> c,List<T> dflt)
 {
    List<T> rslt = new ArrayList<>();
@@ -397,7 +397,7 @@ public default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreSt
 }
 
 
-public default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
+default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
       Map<String,Object> map,String key,Creator<T> c,Set<T> dflt)
 {
    Set<T> rslt = new LinkedHashSet<>();
@@ -414,7 +414,7 @@ public default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStor
 
 
 
-public default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
+default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
       Map<String,Object> map,String key,Finder<T> c,Set<T> dflt)
 {
    Set<T> rslt = new HashSet<>();
@@ -489,7 +489,7 @@ interface Finder<T extends CatreSubSavable> {
 /*										*/
 /********************************************************************************/
 
-public default JSONObject buildJson(Object ... val)
+default JSONObject buildJson(Object... val)
 {
    JSONObject rslt = new JSONObject();
 
@@ -504,7 +504,7 @@ public default JSONObject buildJson(Object ... val)
    return rslt;
 }
 
-public default JSONArray buildJsonArray(Object ... val)
+default JSONArray buildJsonArray(Object... val)
 {
    JSONArray rslt = new JSONArray();
    for (Object v : val) {

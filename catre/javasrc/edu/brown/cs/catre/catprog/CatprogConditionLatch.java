@@ -149,8 +149,8 @@ private CatprogConditionLatch(CatprogConditionLatch cc)
 
 
 
-private class CondChanged implements CatreConditionListener {
-   
+private final class CondChanged implements CatreConditionListener {
+    
    @Override public void conditionError(CatreCondition cc,Throwable t) {
       active_state.noteError(t);
     } 
@@ -292,7 +292,7 @@ private class StateRepr {
 
 
 
-private class TimeChanged extends TimerTask {
+private final class TimeChanged extends TimerTask {
 
    @Override public void run() {
       if (active_state != null) active_state.checkReset();

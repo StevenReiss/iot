@@ -59,8 +59,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
-public class DeviceComputerMonitor extends DeviceBase
-{
+public final class DeviceComputerMonitor extends DeviceBase
+{ 
 
 
 /********************************************************************************/
@@ -69,7 +69,7 @@ public class DeviceComputerMonitor extends DeviceBase
 /*                                                                              */
 /********************************************************************************/
 
-public static void main(String ... args)
+public static void main(String... args)
 {
    DeviceComputerMonitor mon = new DeviceComputerMonitor(args);
    mon.start();
@@ -315,7 +315,7 @@ private void setupPython()
 
 
 
-private boolean checkCommand(String rslt,String ... cmd)
+private boolean checkCommand(String rslt,String... cmd)
 {
    ProcessBuilder bp = new ProcessBuilder(cmd);
    bp.redirectError(ProcessBuilder.Redirect.DISCARD);
@@ -802,7 +802,7 @@ private PhoneOption getPhoneStatus()
          String ln = rdr.readLine();
          if (ln == null) break;
          ln = ln.toUpperCase();
-         if (ln.contains("Failed")) continue;
+         if (ln.contains("FAILED")) continue;
          if (s1 != null && ln.contains(s1)) return PhoneOption.PRESENT;
          if (s2 != null && ln.contains(s2)) return PhoneOption.PRESENT;
        }

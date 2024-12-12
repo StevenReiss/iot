@@ -63,6 +63,7 @@ const APP_HTTPS_PORT = 3340;
 
 const DATABASE = "postgres://spr:XXXXXX@db.cs.brown.edu/iqsign";
 const DEV_DATABASE = "postgres://cs2340sense:XXXXXX@db.cs.brown.edu:5432/iqsignv2";
+
 const DATABASE_PWD_FILE = "dbpassword";
 const DEV_DATABASE_FILE = "dbdev";
 const DB_POOL_SIZE = 4;
@@ -113,9 +114,9 @@ const SESSION_TIMEOUT = 1000*60*60*24*3;
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Utility functions                                                       */
-/*                                                                              */
+/*										*/
+/*	Utility functions							*/
+/*										*/
 /********************************************************************************/
 
 function dbConnect()
@@ -125,6 +126,7 @@ function dbConnect()
 
    let pwd = fs.readFileSync(PASSWORD_DIR + DATABASE_PWD_FILE,'utf8');
    pwd = pwd.toString().trim();
+   if (!pwd.includes(":")) pwd = "spr:" + pwd;
    let conn = dbstr.replace("XXXXXX",pwd);
 
    return conn;
@@ -135,7 +137,7 @@ function emailData()
    // this should be a Google APP password, not the account password
     let data = fs.readFileSync(PASSWORD_DIR + EMAIL_FILE,'utf8');
     data = data.toString().trim();
-    
+
     let dataarr = data.split(" ");
     // console.log("EMAIL",dataarr[0],dataarr[1]);
     return { host: "smtp.gmail.com",  user : dataarr[0], password: dataarr[1],
@@ -279,4 +281,7 @@ exports.sleepNow = sleepNow;
 
 
 /* end of module config */
+
+
+
 

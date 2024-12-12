@@ -72,7 +72,7 @@ abstract class CatmodelParameter extends CatreDescribableBase implements CatrePa
 {      
       
 
-
+ 
 /********************************************************************************/
 /*										*/
 /*	Private Storage 							*/
@@ -87,7 +87,7 @@ protected CatreParameterRef range_ref;
 private String parameter_data;
 private boolean is_volatile;
 
-private static final DateFormat [] formats = new DateFormat [] {
+private static final DateFormat [] DATE_FORMATS = new DateFormat [] {
    DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG),
    DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT),
    DateFormat.getDateInstance(DateFormat.LONG),
@@ -783,7 +783,7 @@ private static class RealParameter extends NumberParameter {
 /*										*/
 /********************************************************************************/
 
-private static abstract class CalendarParameter extends CatmodelParameter {
+private abstract static class CalendarParameter extends CatmodelParameter {
 
    CalendarParameter(CatreUniverse cu,String name) {
       super(cu,name);
@@ -819,7 +819,7 @@ private static abstract class CalendarParameter extends CatmodelParameter {
        }
       String svl = o.toString();
       if (svl.equals("*") || svl.equals("NOW")) return new Date();
-      for (DateFormat df : formats) {
+      for (DateFormat df : DATE_FORMATS) {
 	 try {
 	    Date d = df.parse(svl);
 	    return d;
@@ -1222,7 +1222,8 @@ private static class EventsParameter extends CatmodelParameter {
 
 /********************************************************************************/
 /*										*/
-/*	String List parameter							*//*										*/
+/*	String List parameter							*/
+/*										*/
 /********************************************************************************/
 
 private static class StringListParameter extends CatmodelParameter {

@@ -67,7 +67,7 @@ private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJ
 /*										*/
 /********************************************************************************/
 
-static public String randomString(int len)
+public static String randomString(int len)
 {
    StringBuffer buf = new StringBuffer();
    int cln = RANDOM_CHARS.length();
@@ -86,7 +86,7 @@ static public String randomString(int len)
 /*										*/
 /********************************************************************************/
 
-static public String secureHash(String s)
+public static String secureHash(String s)
 {
    try {
       MessageDigest md = MessageDigest.getInstance("SHA-512");
@@ -100,7 +100,7 @@ static public String secureHash(String s)
 }
 
 
-static public String shortHash(String s)
+public static String shortHash(String s)
 {
    try {
       MessageDigest md = MessageDigest.getInstance("MD5");
@@ -116,7 +116,7 @@ static public String shortHash(String s)
 
 
 
-static public String unescape(String s) {
+public static String unescape(String s) {
    if (s == null) return null;
    try {
       return URLDecoder.decode(s,"UTF-8");
@@ -145,7 +145,7 @@ public static String escape(String s) {
 /*                                                                              */
 /********************************************************************************/
 
-static public boolean sendEmail(String sendto,String subj,String body)
+public static boolean sendEmail(String sendto,String subj,String body)
 {
    if (sendto == null || subj == null && body == null) return false;
    
@@ -178,6 +178,7 @@ static public boolean sendEmail(String sendto,String subj,String body)
    
    return true;
 }
+
 
 }	// end of class CatreUtil
 

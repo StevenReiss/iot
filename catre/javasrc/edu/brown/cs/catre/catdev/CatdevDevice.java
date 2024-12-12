@@ -478,12 +478,6 @@ protected void checkCurrentState()		{ updateCurrentState(); }
 protected void updateCurrentState()		{ }
 
 
-
-
-
-
-
-
 @Override public void setEnabled(boolean fg)
 {
    if (is_enabled != null && fg == is_enabled) return;
