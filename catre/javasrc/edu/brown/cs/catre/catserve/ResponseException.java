@@ -36,6 +36,7 @@ package edu.brown.cs.catre.catserve;
 public class ResponseException extends Exception { 
 
 
+
 /********************************************************************************/
 /*                                                                              */
 /*      Private storage                                                         */
@@ -46,7 +47,6 @@ private int status_code;
 private String response_message;
 
 private static final long serialVersionUID = 1;
-
 
 
 /********************************************************************************/
