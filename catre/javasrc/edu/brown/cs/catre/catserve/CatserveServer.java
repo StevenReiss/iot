@@ -112,6 +112,8 @@ private ArrayList<Route> route_interceptors;
 private int preroute_index;
 
 
+
+
 /********************************************************************************/
 /*										*/
 /*	Constructors								*/
@@ -121,6 +123,8 @@ private int preroute_index;
 public CatserveServer(CatreController cc)
 {
    // Create an HTTPS server (secure)
+   // This allows others to talk securely
+   
    try {
       SSLContext sslContext = SSLContext.getInstance("TLS");
 
