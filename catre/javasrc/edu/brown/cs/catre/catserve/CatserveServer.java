@@ -181,29 +181,41 @@ public CatserveServer(CatreController cc)
    route_interceptors = new ArrayList<>();
    preroute_index = 0;
 
+   setupRoutes();
+
+   http_server.createContext("/", new CatreHandler());
+
+   http_server.setExecutor(new ServerExecutor());
+
+   cc.register(new SessionTable());
+}
+
+
+private void setupRoutes()
+{
    addRoute("ALL","/ping",this::handlePing);
    addRoute("ALL",this::handleParameters);
    addRoute("ALL",session_manager::setupSession);
    addRoute("ALL",this::handleLogging); 
    
    addRoute("ALL","/static",this::handleStatic);
-
+   
    addRoute("GET","/login",this::handlePrelogin);
    addRoute("POST","/login",auth_manager::handleLogin);
    addRoute("POST","/register",auth_manager::handleRegister);
    addRoute("GET","/logout",this::handleLogout);
    addRoute("POST","/forgotpassword",this::handleForgotPassword);
-
+   
    // might want to handle favicon
-
+   
    addRoute("ALL",this::handleAuthorize);
    addRoute("POST","/changepassword",auth_manager::handleChangePassword);
-
+   
    addRoute("ALL",this::handleUserAuthorize);
-
+   
    addRoute("ALL","/keypair",this::handleKeyPair);
    addRoute("POST","/removeuser",this::handleRemoveUser);
-
+   
    addRoute("POST","/bridge/add",this::handleAddBridge);
    addRoute("GET","/bridge/list",this::handleListBridges);
    addRoute("GET","/universe",this::handleGetUniverse);
@@ -221,18 +233,12 @@ public CatserveServer(CatreController cc)
    addRoute("POST","/rule/edit",this::handleEditRule);
    addRoute("POST","/rule/validate",this::handleValidateRule);
    addRoute("POST","/rule/remove",this::handleRemoveRule);
-
+   
    addRoute("POST","/rule/:ruleid/edit",this::handleEditRule);
    addRoute("POST","/rule/:ruleid/remove",this::handleRemoveRule);
    addRoute("POST","/rule/:ruleid/priority",this::handleSetRulePriority);
-   
-
-   http_server.createContext("/", new CatreHandler());
-
-   http_server.setExecutor(new ServerExecutor());
-
-   cc.register(new SessionTable());
 }
+
 
 
 private final class CatreHandler implements HttpHandler {
