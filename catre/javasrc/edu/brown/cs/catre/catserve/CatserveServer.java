@@ -112,6 +112,7 @@ private ArrayList<Route> route_interceptors;
 private int preroute_index;
 
 
+
 /********************************************************************************/
 /*										*/
 /*	Constructors								*/
@@ -120,7 +121,6 @@ private int preroute_index;
 
 public CatserveServer(CatreController cc)
 {
-   // Create an HTTPS server (secure)
    try {
       SSLContext sslContext = SSLContext.getInstance("TLS");
 
@@ -247,6 +247,7 @@ private final class CatreHandler implements HttpHandler {
             return;
           }
        }
+      
       String resp = jsonError(null,404,"ILLEGAL - not an endpoint");
       sendResponse(e, resp);
     }
@@ -267,7 +268,9 @@ private String handleStatic(HttpExchange ex)
    if (path.startsWith("/static/")) {
       path = path.substring(8);
     }
-   if (path.isEmpty()) path = "home.html";
+   if (path.isEmpty()) {
+      path = "home.html";
+    }
    
    File f1 = catre_control.findBaseDirectory();
    File f2 = new File(f1,"catre");
@@ -354,7 +357,9 @@ private String handleParameters(HttpExchange e)
 
 private String handlePrelogin(HttpExchange e,CatreSession cs)
 {
-   if (cs == null) return jsonError(cs,"Bad session");
+   if (cs == null) {
+      return jsonError(cs,"Bad session");
+    }
    String salt = CatreUtil.randomString(32);
    cs.setValue("SALT",salt);
    return jsonResponse(cs,"SALT",salt);
@@ -443,8 +448,12 @@ private String handleAddBridge(HttpExchange e,CatreSession cs)
    for (Map.Entry<String,List<String>> ent : params.entrySet()) {
       if (ent.getValue() == null || ent.getValue().size() != 1) continue;
       String val = ent.getValue().get(0);
-      if (ent.getKey().equalsIgnoreCase("BRIDGE")) bridge = val;
-      else if (ent.getKey().startsWith("AUTH")) keys.put(ent.getKey(),val);
+      if (ent.getKey().equalsIgnoreCase("BRIDGE")) {
+         bridge = val;
+       }
+      else if (ent.getKey().startsWith("AUTH")) {
+         keys.put(ent.getKey(),val);
+       }
     }
 
    boolean fg = cs.getUser(catre_control).addAuthorization(bridge,keys);
@@ -503,10 +512,8 @@ private String handleAddVirtualDevice(HttpExchange e,CatreSession cs)
 {
    CatreUniverse cu = cs.getUniverse(catre_control);
 
-   JSONObject dev = getJson(e,"DEVICE"); //TODO -- convert this!
-// String dev = getParameter(e, "DEVICE"); //.toJson;
-// Map<String,Object> map = dev.toMap();
-//
+   JSONObject dev = getJson(e,"DEVICE");
+
    CatreDevice cd = cu.createVirtualDevice(cu.getCatre().getDatabase(),dev.toMap());
 
    if (cd == null) {

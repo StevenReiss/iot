@@ -19,7 +19,8 @@ popd
 
 scp flutter/iqsign/assets/*.html sherpa.cs.brown.edu:/vol/web/html/iqsign
 scp flutter/iqsign/assets/images/*.png sherpa.cs.brown.edu:/vol/web/html/iqsign/images
-
+scp /pro/ivy/lib/ivy.jar sherpa.cs.brown.edu:/vol/iot/catre/lib
+scp /pro/ivy/lib/ivy.jar sherpa.cs.brown.edu:/vol/iot/signmaker/lib
 
 
 pushd secret
