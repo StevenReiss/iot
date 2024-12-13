@@ -34,24 +34,55 @@
 package edu.brown.cs.catre.catserve;
 
 public class ResponseException extends Exception { 
-    private int status_code;
-    private String response_message;
-    
-    private static final long serialVersionUID = 1;
 
-    public ResponseException(int statuscode, String responsemessage) {
-        status_code = statuscode;
-        response_message = responsemessage;
-    }
 
-    public int getStatus() {
-        return status_code;
-    }
 
-    public String getMessage() {
-        return response_message;
-    }
+/********************************************************************************/
+/*                                                                              */
+/*      Private storage                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+private int status_code;
+private String response_message;
+
+private static final long serialVersionUID = 1;
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Constructors                                                            */
+/*                                                                              */
+/********************************************************************************/
+
+public ResponseException(int statuscode, String responsemessage)
+{
+   status_code = statuscode;
+   response_message = responsemessage;
 }
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+public int getStatus() 
+{
+   return status_code;
+}
+
+public String getMessage() 
+{
+   return response_message;
+}
+
+
+
+}       // end of class ResponseException
+
 
 
 /* end of ResponseException.java */
