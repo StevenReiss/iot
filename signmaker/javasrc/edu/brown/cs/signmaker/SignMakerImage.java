@@ -606,6 +606,7 @@ void setImage(String name0) throws SignMakerException
       String lup = lookupImage(name);
       if (lup != null) name = lup;
     }
+
    if (name.startsWith("http:") || name.startsWith("https:")) {
       image_type = SignImageType.URL;
       image_contents = name;
@@ -677,6 +678,7 @@ private String lookupImage(String name)
    catch (SQLException e) {
       System.err.println("signmaker: Database problem: " + e);
       e.printStackTrace();
+      // need to reconnect to sql database here
     }
 
    return rslt;

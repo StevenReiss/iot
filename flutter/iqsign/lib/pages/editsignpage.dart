@@ -92,7 +92,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   @override
   Widget build(BuildContext context) {
     _signNames = ['Current Sign', ...widget._signNames];
-    _refNames = ['< NONE', ...widget._signNames];
+    _refNames = ['< NONE >', ...widget._signNames];
     bool repl = _knownNames.contains(_nameController.text);
     String accept = repl ? "Update" : "Create";
     if (repl && _controller.text.isEmpty) accept = "Delete";
@@ -129,8 +129,9 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
           ]),
         ],
       ),
-      body: Center(
-        child: Column(
+      body: widgets.iqsignPage(
+        context,
+        Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Image.network(
@@ -167,10 +168,12 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
             widgets.fieldSeparator(),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                const Text("Saved Name:    "),
-                Expanded(child: namefield),
-              ]),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text("Saved Name:    "),
+                    Expanded(child: namefield),
+                  ]),
             ),
             Container(
               constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
@@ -190,22 +193,26 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   void _handleCommand(String cmd) async {
     switch (cmd) {
       case "Help":
-        var uri1 = Uri.https(util.getServerURL(), "/rest/instructions", {'session': globals.iqsignSession});
+        var uri1 = Uri.https(util.getServerURL(), "/rest/instructions",
+            {'session': globals.iqsignSession});
         await _launchURI(uri1);
         break;
       case "About":
-        var uri1 = Uri.https(util.getServerURL(), "/rest/about", {'session': globals.iqsignSession});
+        var uri1 = Uri.https(util.getServerURL(), "/rest/about",
+            {'session': globals.iqsignSession});
         await _launchURI(uri1);
         break;
       case "MyImages":
-        var uri = Uri.https(util.getServerURL(), "/rest/savedimages", {'session': globals.iqsignSession});
+        var uri = Uri.https(util.getServerURL(), "/rest/savedimages",
+            {'session': globals.iqsignSession});
         await _launchURI(uri);
         break;
       case "FAImages":
         await _launchURL("https://fontawesome.com/search?m=free&s=solid");
         break;
       case "SVGImages":
-        var uri1 = Uri.https(util.getServerURL(), "/rest/svgimages", {'session': globals.iqsignSession});
+        var uri1 = Uri.https(util.getServerURL(), "/rest/svgimages",
+            {'session': globals.iqsignSession});
         await _launchURI(uri1);
         break;
       case "AddImage":
@@ -396,3 +403,4 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     }
   }
 }
+

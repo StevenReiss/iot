@@ -144,7 +144,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
 
   Widget _conditionType() {
     bool trig = _forCondition.isTrigger();
-    List<CatreConditionType> ctyps = (trig ? triggerConditionTypes : ruleConditionTypes);
+    List<CatreConditionType> ctyps =
+        (trig ? triggerConditionTypes : ruleConditionTypes);
     return widgets.dropDownWidget(ctyps,
         labeler: (CatreConditionType ct) => ct.label,
         value: _condType,
@@ -325,6 +326,18 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     DateTime endtime = _forCondition.getTimeSlot().getToDateTime();
 
     rslt.add(widgets.fieldSeparator());
+
+    Widget r = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const Text("Repeat:   "),
+        Expanded(
+          child: _createRepeatSelector(),
+        ),
+      ],
+    );
+    rslt.add(r);
+
     widgets.DateFormField dffs = widgets.DateFormField(
       context,
       hint: "Choose Start Date",
@@ -365,17 +378,6 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       days: util.getDays(given: _forCondition.getTimeSlot().getDays()),
     );
     rslt.add(w);
-
-    Widget r = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        const Text("Repeat:   "),
-        Expanded(
-          child: _createRepeatSelector(),
-        ),
-      ],
-    );
-    rslt.add(r);
 
     return rslt;
   }
@@ -579,9 +581,12 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
         },
         showCursor: true,
       );
-      Widget w1a = Row(children: <Widget>[const Spacer(), Flexible(flex: 15, child: w1)]);
-      Widget w2a = Row(children: <Widget>[const Spacer(), Flexible(flex: 5, child: w2)]);
-      Widget w3a = Row(children: <Widget>[const Spacer(), Flexible(flex: 10, child: w3)]);
+      Widget w1a = Row(
+          children: <Widget>[const Spacer(), Flexible(flex: 15, child: w1)]);
+      Widget w2a =
+          Row(children: <Widget>[const Spacer(), Flexible(flex: 5, child: w2)]);
+      Widget w3a = Row(
+          children: <Widget>[const Spacer(), Flexible(flex: 10, child: w3)]);
       if (i != 0) rslt.add(widgets.fieldSeparator());
       rslt.add(w1a);
       rslt.add(w2a);
@@ -680,7 +685,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
 
     CatreProgram pgm = _forCondition.getUniverse().getProgram();
     Map<String, CatreCondition> conds = pgm.getSharedConditions();
-    conds.removeWhere((String nm, CatreCondition cc) => cc.isTrigger() != trigger);
+    conds.removeWhere(
+        (String nm, CatreCondition cc) => cc.isTrigger() != trigger);
     List<String> names = [];
     for (String n in conds.keys) {
       names.add(n);
@@ -1138,6 +1144,8 @@ class _SensorParameter {
 
   void _dummySet(dynamic) {}
 }       // end of class _SensorParameter
+
+
 
 
 

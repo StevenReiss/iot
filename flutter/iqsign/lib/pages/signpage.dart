@@ -82,7 +82,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future<List<String>> _getNames() async {
-    var url = Uri.https(util.getServerURL(), "/rest/namedsigns", {'session': globals.iqsignSession});
+    var url = Uri.https(util.getServerURL(), "/rest/namedsigns",
+        {'session': globals.iqsignSession});
     var resp = await http.get(url);
     var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     var jsd = js['data'];
@@ -104,19 +105,22 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_signData.getName(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+        title: Text(_signData.getName(),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.black)),
         actions: [
           widgets.topMenu(_handleCommand, [
             {'EditSign': "Create or Edit Saved Sign"},
-            {'GenerateKey': "Generate Login Key"},
             {'EditSize': "Change Sign Size"},
             {'ChangeName': "Change Sign Name"},
+            {'GenerateKey': "Generate Login Key For Sherpa"},
             {'Logout': "Log Out"},
           ]),
         ],
       ),
-      body: Center(
-        child: FutureBuilder<List<String>>(
+      body: widgets.iqsignPage(
+        context,
+        FutureBuilder<List<String>>(
           future: _signNamesFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -130,18 +134,13 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   widgets.fieldSeparator(),
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    child: Image.network(
-                      url,
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      height: MediaQuery.of(context).size.height * 0.4,
-                    ),
-                  ),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                    const Text("Set Sign to "),
-                    _createNameSelector(),
-                  ]),
+                  getSignWidget(context, url),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text("Set Sign to "),
+                        _createNameSelector(),
+                      ]),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
                     hint: "Additional text for the sign",
@@ -152,18 +151,15 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                     enabled: _canHaveOtherText(),
                   ),
                   widgets.fieldSeparator(),
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                    // widgets.submitButton(
-                    //   "Preview",
-                    //   _previewAction,
-                    //   enabled: _isSignValid(),
-                    // ),
-                    widgets.submitButton(
-                      "Update",
-                      _updateAction,
-                      enabled: _isSignValid(),
-                    )
-                  ])
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        widgets.submitButton(
+                          "Update",
+                          _updateAction,
+                          enabled: _isSignValid(),
+                        )
+                      ])
                 ],
               );
             }
@@ -173,8 +169,28 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     );
   }
 
+  Widget getSignWidget(context, url) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 3,
+            color: Colors.black,
+          ),
+        ),
+        child: Image.network(
+          url,
+          width: MediaQuery.of(context).size.width * 0.4,
+          //                    height: MediaQuery.of(context).size.height * 0.4,
+        ),
+      ),
+    );
+  }
+
   dynamic _gotoLogin(dynamic) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   Future _handleLogout() async {
@@ -183,7 +199,10 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   dynamic _gotoEdit() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => IQSignSignEditWidget(_signData, _signNames)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => IQSignSignEditWidget(_signData, _signNames)));
   }
 
   void _handleCommand(String cmd) async {
@@ -248,6 +267,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     if (name == null) return;
     setState(() {
       _signData.setDisplayName(name);
+      _extraControl.clear();
     });
     String cnts = "=$name\n${_extraControl.text}";
     _signData.setContents(cnts);
@@ -321,3 +341,4 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     return true;
   }
 }
+

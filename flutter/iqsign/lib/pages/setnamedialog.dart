@@ -33,10 +33,6 @@
 import '../widgets.dart' as widgets;
 import 'package:flutter/material.dart';
 import '../signdata.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import '../globals.dart' as globals;
-import '../util.dart' as util;
 
 Future setNameDialog(BuildContext context, SignData sd) async {
   String name = sd.getName();
@@ -48,27 +44,7 @@ Future setNameDialog(BuildContext context, SignData sd) async {
   }
 
   Future updateSign() async {
-    var url = Uri.https(
-      util.getServerURL(),
-      "/rest/sign/${sd.getSignId()}/update",
-    );
-    var body = {
-      'session': globals.iqsignSession,
-      'signdata': sd.getSignBody(),
-      'signuser': sd.getSignUserId().toString(),
-      'signname': controller.text,
-      'signdim': sd.getDimension(),
-      'signwidth': sd.getWidth().toString(),
-      'signheight': sd.getHeight().toString(),
-      'signkey': sd.getNameKey(),
-      'signid': sd.getSignId().toString(),
-    };
-
-    var resp = await http.post(url, body: body);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
-    if (js['status'] != "OK") {
-      sd.setName(controller.text);
-    }
+    await sd.updateSign(name: controller.text);
     if (dcontext.mounted) {
       Navigator.of(dcontext).pop("OK");
     }
@@ -86,7 +62,8 @@ Future setNameDialog(BuildContext context, SignData sd) async {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text("Set Sign Name", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text("Set Sign Name",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 15),
             widgets.textField(label: "Sign Name", controller: controller),
             const SizedBox(height: 15),
@@ -107,3 +84,4 @@ Future setNameDialog(BuildContext context, SignData sd) async {
         return dlg;
       });
 }
+

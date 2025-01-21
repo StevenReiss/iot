@@ -55,49 +55,46 @@ class _IQSignPasswordWidgetState extends State<IQSignPasswordWidget> {
     return Scaffold(
       appBar: widgets.appBar("Forgot Password"),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: Center(
-                      child: Image.asset(
-                        "assets/images/iqsignstlogo.png",
-                        fit: BoxFit.contain,
+        child: widgets.iqsignPage(
+          context,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: Center(
+                        child: Image.asset(
+                          "assets/images/iqsignstlogo.png",
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                  ),
-                  Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 100, maxWidth: 600),
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: widgets.textFormField(
-                        hint: "Email",
-                        label: "Email",
-                        validator: _validateEmail),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                  ),
-                  Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 200, maxWidth: 350),
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: widgets.submitButton(
-                        "Request Password Email", _handleForgotPassword),
-                  ),
-                ],
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: widgets.textFormField(hint: "Email", label: "Email", validator: _validateEmail),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                    ),
+                    Container(
+                      constraints: const BoxConstraints(minWidth: 200, maxWidth: 350),
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: widgets.submitButton("Request Password Email", _handleForgotPassword),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -123,8 +120,7 @@ class _IQSignPasswordWidgetState extends State<IQSignPasswordWidget> {
   }
 
   void _gotoLogin() {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   Future _forgotPassword() async {

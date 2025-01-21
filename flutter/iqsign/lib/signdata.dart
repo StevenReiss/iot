@@ -31,6 +31,10 @@
 ///******************************************************************************
 
 import 'dart:math';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
+import '../globals.dart' as globals;
+import '../util.dart' as util;
 
 class SignData {
   late String _name;
@@ -148,6 +152,39 @@ class SignData {
     _width = wd;
     _height = ht;
     _signDim = dim;
+  }
+
+  Future<bool> updateSign({String? name, String? dim, int? width, int? height}) async {
+    String name0 = name ?? getName();
+    String dim0 = dim ?? getDimension();
+    int width0 = width ?? getWidth();
+    int height0 = height ?? getHeight();
+    var url = Uri.https(
+      util.getServerURL(),
+      "/rest/sign/${getSignId()}/update",
+    );
+    var body = {
+      'session': globals.iqsignSession,
+      'signdata': getSignBody(),
+      'signuser': getSignUserId().toString(),
+      'signname': name0,
+      'signdim': dim0,
+      'signwidth': width0.toString(),
+      'signheight': height0.toString(),
+      'signkey': getNameKey(),
+      'signid': getSignId().toString(),
+    };
+
+    var resp = await http.post(url, body: body);
+    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    if (js['status'] != "OK") {
+      if (name != null) setName(name);
+      if (dim != null || width != null || height != null) {
+        setSize(width0, height0, dim0);
+      }
+      return true;
+    }
+    return false;
   }
 }     // end of signdata.dart
 

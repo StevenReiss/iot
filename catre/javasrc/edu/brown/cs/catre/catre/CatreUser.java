@@ -1,9 +1,9 @@
 /********************************************************************************/
-/*                                                                              */
-/*              CatreUser.java                                                  */
-/*                                                                              */
-/*      Information about a user for CATRE                                      */
-/*                                                                              */
+/*										*/
+/*		CatreUser.java							*/
+/*										*/
+/*	Information about a user for CATRE					*/
+/*										*/
 /********************************************************************************/
 /*	Copyright 2023 Brown University -- Steven P. Reiss			*/
 /*********************************************************************************
@@ -36,23 +36,23 @@
 
 package edu.brown.cs.catre.catre;
 
-import java.util.Map;
+import java.util.Map;										
 
 public interface CatreUser extends CatreSavable
 {
 
 
 /**
- *      Return the user name
+ *	Return the user name
  **/
 
 String getUserName();
 
 
 /**
- *      Return the homes associated with this user.  Note that thre 
- *      returned universes are associated with the given user and
- *      thus have the appropriate permissions.
+ *	Return the homes associated with this user.  Note that thre
+ *	returned universes are associated with the given user and
+ *	thus have the appropriate permissions.
  **/
 
 CatreUniverse getUniverse();
@@ -60,14 +60,14 @@ CatreUniverse getUniverse();
 
 
 /**
- *      Get authorization information for a bridge
+ *	Get authorization information for a bridge
  **/
 
 CatreBridgeAuthorization getAuthorization(String name);
 
 
 boolean addAuthorization(String name,Map<String,String> map);
-     
+
 
 void setUniverse(CatreUniverse cu);
 
@@ -79,7 +79,7 @@ void setTemporaryPassword(String  pwd);
 
 
 
-}       // end of interface CatreUser
+}	// end of interface CatreUser
 
 
 

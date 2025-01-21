@@ -137,81 +137,84 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widgets.appBar("Login"),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: Center(
-                      child: Image.asset(
-                        "assets/images/iqsignstlogo.png",
-                        fit: BoxFit.contain,
+      body: widgets.iqsignPage(
+        context,
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: Center(
+                        child: Image.asset(
+                          "assets/images/iqsignstlogo.png",
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                  ),
-                  Container(
-                    constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: widgets.textFormField(
-                      hint: "Username or email",
-                      label: "Username or email",
-                      validator: _validateUserName,
-                      controller: _userController,
-                      context: context,
-                      fraction: 0.8,
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
                     ),
-                  ),
-                  widgets.fieldSeparator(),
-                  Container(
-                    constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: widgets.textFormField(
-                      hint: "Password",
-                      label: "Password",
-                      validator: _validatePassword,
-                      controller: _pwdController,
-                      context: context,
-                      fraction: 0.8,
-                      obscureText: true,
-                    ),
-                  ),
-                  widgets.errorField(_loginError),
-                  Container(
-                    constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
-                    width: MediaQuery.of(context).size.width * 0.4,
-                    child: widgets.submitButton("Login", _handleLogin),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Checkbox(
-                        value: _rememberMe,
-                        onChanged: _handleRememberMe,
+                    Container(
+                      constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: widgets.textFormField(
+                        hint: "Username or email",
+                        label: "Username or email",
+                        validator: _validateUserName,
+                        controller: _userController,
+                        context: context,
+                        fraction: 0.8,
                       ),
-                      const Text("Remember Me"),
-                    ],
-                  ),
-                ],
+                    ),
+                    widgets.fieldSeparator(),
+                    Container(
+                      constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: widgets.textFormField(
+                        hint: "Password",
+                        label: "Password",
+                        validator: _validatePassword,
+                        controller: _pwdController,
+                        context: context,
+                        fraction: 0.8,
+                        obscureText: true,
+                      ),
+                    ),
+                    widgets.errorField(_loginError),
+                    Container(
+                      constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
+                      width: MediaQuery.of(context).size.width * 0.4,
+                      child: widgets.submitButton("Login", _handleLogin),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Checkbox(
+                          value: _rememberMe,
+                          onChanged: _handleRememberMe,
+                        ),
+                        const Text("Remember Me"),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-            ),
-            widgets.textButton("Not a user? Register Here.", _gotoRegister),
-            widgets.textButton("Forgot Password?", _gotoForgotPassword),
-          ],
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+              ),
+              widgets.textButton("Not a user? Register Here.", _gotoRegister),
+              widgets.textButton("Forgot Password?", _gotoForgotPassword),
+            ],
+          ),
         ),
       ),
     );

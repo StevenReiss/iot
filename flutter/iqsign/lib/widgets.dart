@@ -491,9 +491,10 @@ Widget _iqsignPageBuilder(
     ),
     child: SingleChildScrollView(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-            // minHeight: constraints.maxHeight,
-            ),
+        constraints: BoxConstraints(
+          minWidth: constraints.maxWidth,
+          // minHeight: constraints.maxHeight,
+        ),
         child: child,
       ),
     ),

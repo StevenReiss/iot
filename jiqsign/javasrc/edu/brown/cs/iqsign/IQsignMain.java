@@ -1,0 +1,391 @@
+/********************************************************************************/
+/*                                                                              */
+/*              IQsignMain.java                                                 */
+/*                                                                              */
+/*      Main program for iQsign server                                          */
+/*                                                                              */
+/********************************************************************************/
+/*      Copyright 2025 Steven P. Reiss                                          */
+/*********************************************************************************
+ *  Copyright 2025, Steven P. Reiss, Rehoboth MA.                                *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of the holder or affiliations not be used   *
+ *  in advertising or publicity pertaining to distribution of the software       *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  THE COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS            *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL THE HOLDER            *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
+ ********************************************************************************/
+
+
+package edu.brown.cs.iqsign;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Random;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import edu.brown.cs.ivy.file.IvyFile;
+import edu.brown.cs.ivy.file.IvyLog;
+
+public final class IQsignMain implements IQsignConstants
+{
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Main program                                                            */
+/*                                                                              */
+/********************************************************************************/
+
+public static void main(String [] args)
+{
+   IQsignMain main = new IQsignMain(args);
+   
+   main.process();
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Private Storage                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+private IQsignDatabase  database_manager;
+private IQsignImages    image_manager;
+private IQsignDefaults  default_manager;
+private IQsignServer    web_server;
+private File            base_directory;
+private File            web_directory;
+private File            default_signs;
+private File            default_images;
+
+private static Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
+private static Pattern HTML_PATTERN = Pattern.compile("sign(.*)\\.html");
+private static Pattern PREVIEW_PATTERN = Pattern.compile("imagePreview(.*)\\.png");
+
+private static Random rand_gen = new Random();
+private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Constructors                                                            */
+/*                                                                              */
+/********************************************************************************/
+
+private IQsignMain(String [] args)
+{
+   base_directory = null;
+   web_directory = null;
+   default_signs = null;
+   
+   scanArgs(args);
+   
+   if (base_directory == null) {
+      base_directory = findBaseDirectory();
+    }
+   if (base_directory == null) {
+      reportError("Can't find base directory for iot/iqsign");
+    }
+   if (web_directory == null) {
+      findWebDirectory();
+    }
+   if (web_directory == null) {
+      reportError("Can't find web directory for iqsign");
+    }  
+   if (!web_directory.exists() || !web_directory.isDirectory()) {
+      reportError("Bad web directory for iqsign");
+    }
+   File f0 = new File(getWebDirectory(),"signs");
+   if (!f0.exists()) f0.mkdir();
+   
+   if (default_signs == null) {
+      findDefaultSigns();
+    }
+   if (default_signs == null) {
+      reportError("Can't find default signs file");
+    }  
+   
+   if (default_images == null) {
+      findDefaultImages();
+    }
+   if (default_images == null) {
+      reportError("Can't find default images file");
+    }  
+   
+   database_manager = new IQsignDatabase(this);
+   image_manager = new IQsignImages(this);
+   default_manager = new IQsignDefaults(this); 
+   web_server = new IQsignServer(this);
+   
+   Timer t = new Timer("IQSIGN TIMER");
+   t.schedule(new CleanupTask(),CLEANUP_DELAY,CLEANUP_DELAY);  
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Argument processing                                                     */
+/*                                                                              */
+/********************************************************************************/
+
+private void scanArgs(String [] args)
+{
+   for (int i = 0; i < args.length; ++i) {
+      if (args[i].startsWith("-")) {
+         if (args[i].startsWith("-b") && i+1 < args.length) {           // -b <base directory>
+            base_directory = new File(args[++i]);
+          }
+         else if (args[i].startsWith("-w") && i+1 < args.length) {      // -w <web directory>
+            web_directory = new File(args[++i]);
+          }
+         else if (args[i].startsWith("-ds") && i+1 < args.length) {      // -ds <default signs>
+            default_signs = new File(args[++i]);
+          }
+         else if (args[i].startsWith("-di") && i+1 < args.length) {      // -di <default images>
+            default_images = new File(args[++i]);
+          }
+         else {
+            badArgs();
+          }
+       }
+      else {
+         badArgs();
+       }
+    }
+}
+
+
+
+private void badArgs()
+{
+   reportError("iQsign [-d <base_directory>] [-w <web_directory>]");
+}
+
+
+static void reportError(String msg) 
+{
+   System.err.println("IQSIGN: " + msg);
+   System.exit(1);
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+IQsignDatabase getDatabaseManager()             { return database_manager; }
+
+File getBaseDirectory()                         { return base_directory; }
+
+File getWebDirectory()                          { return web_directory; }
+
+File getDefaultSignsFile()                      { return default_signs; }
+
+File getDefaultImagesFile()                     { return default_images; }
+
+File getSvgLibrary()                  
+{
+   File f1 = new File(base_directory,"svgimagelib");
+   File f2 = new File(f1,"svg");
+   
+   return f2;
+}
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Utility methods                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+public static String randomString(int len)
+{
+   StringBuffer buf = new StringBuffer();
+   int cln = RANDOM_CHARS.length();
+   for (int i = 0; i < len; ++i) {
+      int idx = rand_gen.nextInt(cln);
+      buf.append(RANDOM_CHARS.charAt(idx));
+    }
+   
+   return buf.toString();
+}
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Processing method                                                       */
+/*                                                                              */
+/********************************************************************************/
+
+private void process()
+{
+   
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Cleanup task                                                            */
+/*                                                                              */
+/********************************************************************************/
+
+private final class CleanupTask extends TimerTask {
+   
+   @Override public void run() {
+      IvyLog.logD("Begin cleanup " + new Date());
+      
+      default_manager.updateDefaults();
+      
+      database_manager.deleteOldRestSessions();
+      Set<String> currentsigns = database_manager.getAllSignNameKeys();
+      File f = new File(getWebDirectory(),"signs");
+      
+      for (File file : f.listFiles()) {
+         Matcher m1 = IMAGE_PATTERN.matcher(file.getName());
+         Matcher m2 = HTML_PATTERN.matcher(file.getName());
+         Matcher m3 = PREVIEW_PATTERN.matcher(file.getName());
+         Matcher m = null;
+         if (m1.matches()) m = m1;
+         else if (m2.matches()) m = m2;
+         else if (m3.matches()) m = m3;
+         if (m == null) continue;
+         String key = m.group(1);
+         if (currentsigns.contains(key)) {
+            IvyLog.logD("Cleanup: Keep sign file " + file);
+          }
+         else {
+            IvyLog.logD("Cleanup: Remvoe sign file " + file);
+            file.delete();
+          }
+       }
+      
+      IvyLog.logD("Cleanup complete");
+    }
+   
+}       // end of inner task CleanupTask
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Find base directory                                                     */
+/*                                                                              */
+/********************************************************************************/
+
+private File findBaseDirectory()
+{
+   File f1 = new File(System.getProperty("user.dir"));
+   for (File f2 = f1; f2 != null; f2 = f2.getParentFile()) {
+      if (isBaseDirectory(f2)) return f2;
+    }
+   File f3 = new File(System.getProperty("user.home"));
+   if (isBaseDirectory(f3)) return f3;
+   
+   File fc = new File("/vol");
+   File fd = new File(fc,"iot");
+   if (isBaseDirectory(fd)) return fd;
+   
+   File fa = new File("/pro");
+   File fb = new File(fa,"iot");
+   if (isBaseDirectory(fb)) return fb;
+   
+   return null;
+}
+
+
+private static boolean isBaseDirectory(File dir)
+{
+   File f2 = new File(dir,"secret");
+   if (!f2.exists()) return false;
+   
+   File f3 = new File(f2,"Database.props");
+   File f5 = new File(dir,"svgimagelib"); 
+   if (f3.exists() && f5.exists()) return true;
+   
+   return false;
+}
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Find web directory                                                      */
+/*                                                                              */
+/********************************************************************************/
+
+private File findWebDirectory()
+{
+   File f0 = new File(base_directory,"secret");
+   File f1 = new File(f0,WEB_DIRECTORY_FILE);
+   try {
+      String cnts = IvyFile.loadFile(f1);
+      cnts = cnts.trim();
+      return new File(cnts);
+    }
+   catch (IOException e) { }
+   
+   return null;
+   
+}
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Find default signs and images files                                     */
+/*                                                                              */
+/********************************************************************************/
+
+private File findDefaultSigns()
+{
+   File f0 = new File(base_directory,"resources");
+   File f1 = new File(f0,"defaultsigns");
+   if (f1.exists() && f1.canRead() && !f1.isDirectory()) return f1;
+   
+   return null;
+}
+
+private File findDefaultImages()
+{
+   File f0 = new File(base_directory,"resources");
+   File f1 = new File(f0,"defaultimages");
+   if (f1.exists() && f1.canRead() && !f1.isDirectory()) return f1;
+   
+   return null;
+}
+
+
+}       // end of class IQsignMain
+
+
+
+
+/* end of IQsignMain.java */
+

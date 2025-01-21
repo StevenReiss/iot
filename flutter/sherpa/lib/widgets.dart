@@ -114,7 +114,8 @@ TextField textField({
   label ??= hint;
   hint ??= label;
   maxLines ??= 1;
-  keyboardType ??= (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
+  keyboardType ??=
+      (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
 
   return TextField(
     controller: controller,
@@ -148,7 +149,8 @@ Widget itemWithMenu<T>(
 }) {
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
-    itemBuilder: (context) => acts.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
+    itemBuilder: (context) =>
+        acts.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
     onSelected: (MenuAction act) => act.action(),
   );
   Widget w = Row(
@@ -226,7 +228,8 @@ Widget textButton(String label, void Function()? action) {
 Widget topMenu(void Function(String)? handler, List labels) {
   return PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
-    itemBuilder: (context) => labels.map<PopupMenuItem<String>>(menuItem).toList(),
+    itemBuilder: (context) =>
+        labels.map<PopupMenuItem<String>>(menuItem).toList(),
     onSelected: handler,
   );
 }
@@ -234,7 +237,8 @@ Widget topMenu(void Function(String)? handler, List labels) {
 Widget topMenuAction(List labels) {
   return PopupMenuButton(
       icon: const Icon(Icons.menu_sharp),
-      itemBuilder: (context) => labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
+      itemBuilder: (context) =>
+          labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
       onSelected: (dynamic act) => act.action());
 }
 
@@ -285,7 +289,8 @@ Widget fieldSeparator() {
 ///                                                                             */
 ///******************************************************************************/
 
-Widget dropDown(List<String> items, {String? value, Function(String?)? onChanged, textAlign = TextAlign.left}) {
+Widget dropDown(List<String> items,
+    {String? value, Function(String?)? onChanged, textAlign = TextAlign.left}) {
   value ??= items[0];
   return DropdownButton<String>(
     value: value,
@@ -387,22 +392,25 @@ Widget listBox<T>(
   //       return itemBuilder(data[idx]);
   //     });
   String label = "${what}s";
-  return Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
-    Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-      Text(label, style: getLabelStyle()),
-    ]),
-    view,
-    Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+  return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.add_box_outlined),
-          tooltip: 'Add New $what',
-          onPressed: add,
+        Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+          Text(label, style: getLabelStyle()),
+        ]),
+        view,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.add_box_outlined),
+              tooltip: 'Add New $what',
+              onPressed: add,
+            ),
+          ],
         ),
-      ],
-    ),
-  ]);
+      ]);
 }
 
 ///******************************************************************************/
@@ -569,7 +577,11 @@ class DurationFormField {
   late TextFormField _textField;
   final void Function(Duration)? onChanged;
 
-  DurationFormField(this.context, {String? hint, String? label, Duration? initialDuration, this.onChanged}) {
+  DurationFormField(this.context,
+      {String? hint,
+      String? label,
+      Duration? initialDuration,
+      this.onChanged}) {
     _editControl = TextEditingController();
     label ??= hint;
     hint ??= label;
@@ -743,7 +755,8 @@ Widget numberField({
 ///                                                                             */
 ///******************************************************************************/
 
-Future<void> displayDialog(BuildContext context, String title, String description) async {
+Future<void> displayDialog(
+    BuildContext context, String title, String description) async {
   return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -823,11 +836,13 @@ Widget sherpaPage(BuildContext context, Widget child) {
 
 Widget sherpaPage1(BuildContext context, Widget child) {
   return LayoutBuilder(
-    builder: (BuildContext context, BoxConstraints cnst) => _sherpaPageBuilder(context, cnst, child),
+    builder: (BuildContext context, BoxConstraints cnst) =>
+        _sherpaPageBuilder(context, cnst, child),
   );
 }
 
-Widget _sherpaPageBuilder(BuildContext context, BoxConstraints constraints, Widget child) {
+Widget _sherpaPageBuilder(
+    BuildContext context, BoxConstraints constraints, Widget child) {
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
@@ -932,5 +947,7 @@ InputDecoration getDecoration({
 }
 
 TextStyle getLabelStyle() {
-  return const TextStyle(color: globals.labelColor, fontWeight: FontWeight.bold);
+  return const TextStyle(
+      color: globals.labelColor, fontWeight: FontWeight.bold);
 }
+

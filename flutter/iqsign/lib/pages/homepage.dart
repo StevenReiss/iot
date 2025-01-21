@@ -111,13 +111,16 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         ],
       ),
       body: Center(
-        child: _signData.isNotEmpty
-            ? ListView.builder(
-                padding: const EdgeInsets.all(10.0),
-                itemCount: _signData.length,
-                itemBuilder: _getTile,
-              )
-            : widgets.circularProgressIndicator(),
+        child: widgets.iqsignPage(
+          context,
+          _signData.isNotEmpty
+              ? ListView.builder(
+                  padding: const EdgeInsets.all(10.0),
+                  itemCount: _signData.length,
+                  itemBuilder: _getTile,
+                )
+              : widgets.circularProgressIndicator(),
+        ),
       ),
     );
   }
@@ -146,10 +149,7 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         ),
         child: Image.network(sd.getLocalImageUrl()),
       ),
-      onTap: () => {
-        Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))
-      },
+      onTap: () => {Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))},
     );
   }
 
@@ -165,8 +165,7 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   }
 
   dynamic _gotoLogin(dynamic) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   Future _handleLogout() async {
@@ -175,7 +174,6 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   }
 
   dynamic _goToCreateSign() {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()));
   }
 }

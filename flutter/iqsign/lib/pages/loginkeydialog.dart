@@ -39,6 +39,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import '../util.dart' as util;
 import 'package:flutter/services.dart';
+import '../globals.dart' as globals;
 
 Future loginKeyDialog(BuildContext context, SignData sd) async {
   Uri url = Uri.https(
@@ -46,6 +47,7 @@ Future loginKeyDialog(BuildContext context, SignData sd) async {
     "/rest/createcode",
   );
   var body = {
+    'session': globals.iqsignSession,
     'signuser': sd.getSignUserId().toString(),
     'signid': sd.getSignId().toString(),
     'signkey': sd.getNameKey(),
@@ -55,6 +57,7 @@ Future loginKeyDialog(BuildContext context, SignData sd) async {
   if (js['status'] != 'OK') {
     if (!context.mounted) return;
     Navigator.of(context).pop("CANCEL");
+    return;
   }
   String code = js['code'];
   if (!context.mounted) return;

@@ -147,35 +147,38 @@ class _IQSignSignCreatePageState extends State<IQSignSignCreatePage> {
       appBar: AppBar(
         title: const Text("Create New Sign", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(20.0),
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                Expanded(
-                  child: widgets.textField(
-                    label: "Sign Name",
-                    controller: _nameController,
+      body: widgets.iqsignPage(
+        context,
+        Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.all(20.0),
+                width: MediaQuery.of(context).size.width * 0.8,
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                  Expanded(
+                    child: widgets.textField(
+                      label: "Sign Name",
+                      controller: _nameController,
+                    ),
                   ),
-                ),
+                ]),
+              ),
+              widgets.fieldSeparator(),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                const Text("Set Sign to "),
+                _createNameSelector(),
               ]),
-            ),
-            widgets.fieldSeparator(),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              const Text("Set Sign to "),
-              _createNameSelector(),
-            ]),
-            widgets.fieldSeparator(),
-            Container(
-              constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
-              width: MediaQuery.of(context).size.width * 0.4,
-              child: widgets.submitButton("Create", handleCreate),
-            ),
-          ],
+              widgets.fieldSeparator(),
+              Container(
+                constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: widgets.submitButton("Create", handleCreate),
+              ),
+            ],
+          ),
         ),
       ),
     );

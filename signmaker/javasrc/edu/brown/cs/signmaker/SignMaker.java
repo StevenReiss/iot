@@ -69,6 +69,7 @@ static {
    sql_database = null;
    try {
       File dbf = SignMaker.getDatabasePropertyFile();
+      System.err.println("signmaker: Using database file " + dbf);
       IvyDatabase.setProperties(dbf);
       sql_database = IvyDatabase.openDatabase("iqsign");
     }

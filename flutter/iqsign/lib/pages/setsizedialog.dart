@@ -39,8 +39,8 @@ const List<String> _dims = <String>['16by9', '4by3', '16by10', 'other'];
 class _IQSignSetSizeDialog extends AlertDialog {
   final BuildContext context;
 
-  _IQSignSetSizeDialog(
-      this.context, signData, widthController, heightController, void Function(int, String?) changeCallback)
+  _IQSignSetSizeDialog(this.context, signData, widthController,
+      heightController, void Function(int, String?) changeCallback)
       : super(
             title: const Text("Set Sign Size"),
             content: Padding(
@@ -68,7 +68,8 @@ class _IQSignSetSizeDialog extends AlertDialog {
                       },
                     ),
                     widgets.fieldSeparator(),
-                    widgets.dropDownMenu(_dims, value: signData.getDimension(), onChanged: (String? v) {
+                    widgets.dropDownMenu(_dims, value: signData.getDimension(),
+                        onChanged: (String? v) {
                       changeCallback(2, v);
                     }),
                   ],
@@ -86,8 +87,10 @@ class _IQSignSetSizeDialog extends AlertDialog {
 }
 
 Future<String?> showSizeDialog(BuildContext context, SignData sd) async {
-  TextEditingController widthController = TextEditingController(text: sd.getWidth().toString());
-  TextEditingController heightController = TextEditingController(text: sd.getHeight().toString());
+  TextEditingController widthController =
+      TextEditingController(text: sd.getWidth().toString());
+  TextEditingController heightController =
+      TextEditingController(text: sd.getHeight().toString());
   String dim = sd.getDimension();
   int wd = sd.getWidth();
   int ht = sd.getHeight();
@@ -128,11 +131,12 @@ Future<String?> showSizeDialog(BuildContext context, SignData sd) async {
   String? rslt = await showDialog(
     context: context,
     builder: (context) {
-      return _IQSignSetSizeDialog(context, sd, widthController, heightController, changeCallback);
+      return _IQSignSetSizeDialog(
+          context, sd, widthController, heightController, changeCallback);
     },
   );
   if (rslt == "OK") {
-    sd.setSize(wd, ht, dim);
+    sd.updateSign(dim: dim, width: wd, height: ht);
   }
   return rslt;
 }
@@ -149,3 +153,4 @@ double fract(String dim) {
       return 0;
   }
 }
+

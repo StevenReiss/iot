@@ -183,6 +183,9 @@ async function handleUpdate(req,res)
 async function doHandleUpdate(req,res)
 {
    console.log("Sign UPDATE",req.body);
+   
+   if (req.bosy.signdata == null) throw "Illegal argument";
+   
    let s = req.body.signdata.trim();
    let ss = s;
    ss = ss.replace(/\r/g,"");
