@@ -45,10 +45,16 @@ long SESSION_TIMEOUT = 1000*60*60*24*3;
 
 String WEB_DIRECTORY_FILE = "webdirectory";
 
-int HTTP_PORT = 3335;
 int HTTPS_PORT = 3336;
+int MAKER_PORT = 3399;
+
+String SESSION_COOKIE = "iot-iQsign-5567";
+String SESSION_PARAMETER = "session";
 
 String SVG_URL_PREFIX = "/rest/svg/";
+
+String INITIAL_SIGN = "=InitialSign";
+
 
 
 /********************************************************************************/
@@ -57,7 +63,7 @@ String SVG_URL_PREFIX = "/rest/svg/";
 /*                                                                              */
 /********************************************************************************/
 
-default Object buildJson(Object... val)
+default JSONObject buildJson(Object... val)
 {
    JSONObject rslt = new JSONObject();
    

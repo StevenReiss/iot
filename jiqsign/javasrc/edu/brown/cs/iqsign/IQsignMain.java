@@ -35,8 +35,14 @@
 package edu.brown.cs.iqsign;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
@@ -44,6 +50,9 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
+
+import edu.brown.cs.ivy.exec.IvyExecQuery;
 import edu.brown.cs.ivy.file.IvyFile;
 import edu.brown.cs.ivy.file.IvyLog;
 
@@ -77,10 +86,13 @@ private IQsignDatabase  database_manager;
 private IQsignImages    image_manager;
 private IQsignDefaults  default_manager;
 private IQsignServer    web_server;
+private IQsignAuth      iqsign_auth;
+private IQsignMaker     sign_maker;
 private File            base_directory;
 private File            web_directory;
 private File            default_signs;
 private File            default_images;
+private boolean         is_testing;
 
 private static Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
 private static Pattern HTML_PATTERN = Pattern.compile("sign(.*)\\.html");
@@ -107,11 +119,20 @@ private IQsignMain(String [] args)
    if (base_directory == null) {
       base_directory = findBaseDirectory();
     }
-   if (base_directory == null) {
+   if (base_directory == null || !base_directory.isDirectory()) {
       reportError("Can't find base directory for iot/iqsign");
     }
+   
+   File f2 = new File(base_directory,"secret");
+   File f4 = new File(f2,"iqsign.props");
+   Properties props = new Properties();
+   try (FileInputStream fis = new FileInputStream(f4)) {
+      props.loadFromXML(fis);
+    }
+   catch (IOException e) { }
+   
    if (web_directory == null) {
-      findWebDirectory();
+      web_directory = findWebDirectory(props.getProperty("webdirectory"));
     }
    if (web_directory == null) {
       reportError("Can't find web directory for iqsign");
@@ -123,26 +144,29 @@ private IQsignMain(String [] args)
    if (!f0.exists()) f0.mkdir();
    
    if (default_signs == null) {
-      findDefaultSigns();
+      default_signs = findDefaultSigns();
     }
    if (default_signs == null) {
       reportError("Can't find default signs file");
     }  
    
    if (default_images == null) {
-      findDefaultImages();
+      default_images = findDefaultImages();
     }
    if (default_images == null) {
       reportError("Can't find default images file");
     }  
    
-   database_manager = new IQsignDatabase(this);
+   String db = props.getProperty("database");
+   if (db == null) db = "iqsign";
+   database_manager = new IQsignDatabase(this,db); 
    image_manager = new IQsignImages(this);
    default_manager = new IQsignDefaults(this); 
-   web_server = new IQsignServer(this);
-   
-   Timer t = new Timer("IQSIGN TIMER");
-   t.schedule(new CleanupTask(),CLEANUP_DELAY,CLEANUP_DELAY);  
+   String jkspwd = props.getProperty("jkspwd");
+   iqsign_auth = new IQsignAuth(this); 
+   sign_maker = new IQsignMaker(this);
+   web_server = new IQsignServer(this,jkspwd); 
+   is_testing = (jkspwd == null);
 }
 
 
@@ -163,11 +187,26 @@ private void scanArgs(String [] args)
          else if (args[i].startsWith("-w") && i+1 < args.length) {      // -w <web directory>
             web_directory = new File(args[++i]);
           }
-         else if (args[i].startsWith("-ds") && i+1 < args.length) {      // -ds <default signs>
+         else if (args[i].startsWith("-ds") && i+1 < args.length) {     // -ds <default signs>
             default_signs = new File(args[++i]);
           }
-         else if (args[i].startsWith("-di") && i+1 < args.length) {      // -di <default images>
+         else if (args[i].startsWith("-di") && i+1 < args.length) {     // -di <default images>
             default_images = new File(args[++i]);
+          }
+         else if (args[i].startsWith("-LD")) {                          // -LDebug
+            IvyLog.setLogLevel(IvyLog.LogLevel.DEBUG);
+          }
+         else if (args[i].startsWith("-LI")) {                          // -LInfo 
+            IvyLog.setLogLevel(IvyLog.LogLevel.INFO);
+          }
+         else if (args[i].startsWith("-LW")) {                          // -LWarning
+            IvyLog.setLogLevel(IvyLog.LogLevel.WARNING);
+          }
+         else if (args[i].startsWith("-L") && i+1 < args.length) {      // -Log <file>
+            IvyLog.setLogFile(args[++i]);
+          }
+         else if (args[i].startsWith("-S")) {                           // -Stderr
+            IvyLog.useStdErr(true);
           }
          else {
             badArgs();
@@ -203,6 +242,14 @@ static void reportError(String msg)
 
 IQsignDatabase getDatabaseManager()             { return database_manager; }
 
+IQsignAuth getAuthenticator()                   { return iqsign_auth; }
+
+IQsignMaker getSignMaker()                      { return sign_maker; }
+
+IQsignServer getWebServer()                     { return web_server; }
+
+IQsignImages getImageManager()                  { return image_manager; }
+
 File getBaseDirectory()                         { return base_directory; }
 
 File getWebDirectory()                          { return web_directory; }
@@ -219,6 +266,27 @@ File getSvgLibrary()
    return f2;
 }
 
+String getURLHostPrefix()            
+{
+   String hn = IvyExecQuery.getHostName();
+   if (is_testing) hn = "localhost";
+   
+   return "http://" + hn;
+}
+
+
+String getURLLocalPreix()
+{
+   String hn = IvyExecQuery.getHostName();
+   String pfx = "https";
+   if (is_testing) {
+      pfx = "http";
+      hn = "localhost";
+    }
+  
+   return pfx + "://" + hn + ":" + HTTPS_PORT;
+}
+
 
 /********************************************************************************/
 /*                                                                              */
@@ -226,7 +294,7 @@ File getSvgLibrary()
 /*                                                                              */
 /********************************************************************************/
 
-public static String randomString(int len)
+static String randomString(int len)
 {
    StringBuffer buf = new StringBuffer();
    int cln = RANDOM_CHARS.length();
@@ -239,6 +307,56 @@ public static String randomString(int len)
 }
 
 
+static String encodeURIComponent(String v)
+{
+   try {
+      return URLEncoder.encode(v,"UTF_8");
+    }
+   catch (UnsupportedEncodingException e) {
+      IvyLog.logE("Problem with URI encoding",e);
+    }
+   
+   return v;
+}
+
+
+static String secureHash(String s)
+{
+   try {
+      MessageDigest md = MessageDigest.getInstance("SHA-512");
+      byte [] dvl = md.digest(s.getBytes());
+      String rslt = Base64.getEncoder().encodeToString(dvl);
+      return rslt;
+    }
+   catch (Exception e) {
+      throw new Error("Problem with sha-512 encoding of " + s);
+    }
+}
+
+
+static String getId(JSONObject jo,String fld)
+{
+   Object o = jo.get(fld);
+   return o.toString();
+}
+
+
+static Object toDatabaseId(Object o)
+{
+   if (o == null) return null;
+   else if (o instanceof Integer) return o;
+   else return Integer.parseInt(o.toString());
+}
+
+
+static String getString(JSONObject jo,String fld)
+{
+   Object o = jo.get(fld);
+   return o.toString();
+}
+
+
+
 /********************************************************************************/
 /*                                                                              */
 /*      Processing method                                                       */
@@ -247,7 +365,10 @@ public static String randomString(int len)
 
 private void process()
 {
+   web_server.start();
    
+   Timer t = new Timer("IQSIGN TIMER");
+   t.schedule(new CleanupTask(),CLEANUP_DELAY,CLEANUP_DELAY);  
 }
 
 
@@ -328,8 +449,9 @@ private static boolean isBaseDirectory(File dir)
    if (!f2.exists()) return false;
    
    File f3 = new File(f2,"Database.props");
+   File f4 = new File(f2,"iqsign.props");
    File f5 = new File(dir,"svgimagelib"); 
-   if (f3.exists() && f5.exists()) return true;
+   if (f3.exists() && f4.exists() && f5.exists()) return true;
    
    return false;
 }
@@ -341,8 +463,10 @@ private static boolean isBaseDirectory(File dir)
 /*                                                                              */
 /********************************************************************************/
 
-private File findWebDirectory()
+private File findWebDirectory(String wd)
 {
+   if (wd != null && !wd.isEmpty()) return new File(wd);
+   
    File f0 = new File(base_directory,"secret");
    File f1 = new File(f0,WEB_DIRECTORY_FILE);
    try {
@@ -380,6 +504,7 @@ private File findDefaultImages()
    
    return null;
 }
+
 
 
 }       // end of class IQsignMain

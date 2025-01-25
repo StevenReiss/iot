@@ -82,8 +82,10 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future<List<String>> _getNames() async {
-    var url = Uri.https(util.getServerURL(), "/rest/namedsigns",
-        {'session': globals.iqsignSession});
+    Uri url = util.getServerUri(
+      "/rest/namedsigns",
+      {'session': globals.iqsignSession},
+    );
     var resp = await http.get(url);
     var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     var jsd = js['data'];
@@ -105,9 +107,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_signData.getName(),
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, color: Colors.black)),
+        title: Text(_signData.getName(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
         actions: [
           widgets.topMenu(_handleCommand, [
             {'EditSign': "Create or Edit Saved Sign"},
@@ -135,12 +135,10 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                 children: <Widget>[
                   widgets.fieldSeparator(),
                   getSignWidget(context, url),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        const Text("Set Sign to "),
-                        _createNameSelector(),
-                      ]),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                    const Text("Set Sign to "),
+                    _createNameSelector(),
+                  ]),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
                     hint: "Additional text for the sign",
@@ -151,15 +149,13 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                     enabled: _canHaveOtherText(),
                   ),
                   widgets.fieldSeparator(),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        widgets.submitButton(
-                          "Update",
-                          _updateAction,
-                          enabled: _isSignValid(),
-                        )
-                      ])
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+                    widgets.submitButton(
+                      "Update",
+                      _updateAction,
+                      enabled: _isSignValid(),
+                    )
+                  ])
                 ],
               );
             }
@@ -189,20 +185,16 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   dynamic _gotoLogin(dynamic) {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   Future _handleLogout() async {
-    var url = Uri.https(util.getServerURL(), "/rest/logout");
+    Uri url = util.getServerUri("/rest/logout");
     await http.post(url);
   }
 
   dynamic _gotoEdit() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => IQSignSignEditWidget(_signData, _signNames)));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => IQSignSignEditWidget(_signData, _signNames)));
   }
 
   void _handleCommand(String cmd) async {
@@ -288,10 +280,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future _previewAction() async {
-    Uri url = Uri.https(
-      util.getServerURL(),
-      "/rest/sign/preview",
-    );
+    Uri url = util.getServerUri("/rest/sign/preview");
     var body = {
       'session': globals.iqsignSession,
       'signdata': _signData.getSignBody(),
@@ -309,10 +298,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future _updateAction() async {
-    var url = Uri.https(
-      util.getServerURL(),
-      "/rest/sign/update",
-    );
+    Uri url = util.getServerUri("/rest/sign/update");
     var body = {
       'session': globals.iqsignSession,
       'signdata': _signData.getSignBody(),
@@ -341,4 +327,3 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     return true;
   }
 }
-

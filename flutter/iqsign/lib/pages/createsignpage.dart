@@ -69,7 +69,10 @@ class _IQSignSignCreatePageState extends State<IQSignSignCreatePage> {
   }
 
   Future<List<String>> _getNames() async {
-    var url = Uri.https(util.getServerURL(), "/rest/namedsigns", {'session': globals.iqsignSession});
+    var url = util.getServerUri(
+      "/rest/namedsigns",
+      {'session': globals.iqsignSession},
+    );
     var resp = await http.get(url);
     var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     var jsd = js['data'];
@@ -92,10 +95,7 @@ class _IQSignSignCreatePageState extends State<IQSignSignCreatePage> {
   }
 
   Future handleCreate() async {
-    Uri url = Uri.https(
-      util.getServerURL(),
-      "/rest/addsign",
-    );
+    Uri url = util.getServerUri("/rest/addsign");
     var body = {
       'session': globals.iqsignSession,
       'name': _nameController.text,

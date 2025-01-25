@@ -159,8 +159,7 @@ class SignData {
     String dim0 = dim ?? getDimension();
     int width0 = width ?? getWidth();
     int height0 = height ?? getHeight();
-    var url = Uri.https(
-      util.getServerURL(),
+    var url = util.getServerUri(
       "/rest/sign/${getSignId()}/update",
     );
     var body = {

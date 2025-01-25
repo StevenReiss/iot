@@ -215,7 +215,7 @@ async function handleRegister(req,res,restful = false)
    req.body.username = uid;
    let pwd = req.body.password;
    let altpwd = req.body.altpassword;
-   let valid = config.randomString(48);
+   let validstr = config.randomString(48);
    let namekey = config.randomString(8);
 
    try {
@@ -256,10 +256,6 @@ async function handleRegister(req,res,restful = false)
 	  }
 	 return handleError(req,res,msg);
        }
-      let s = config.INITIAL_SIGN;
-      let ss = s.replace(/\n/g,"\\n");
-      ss = ss.replace(/\r/g,"");
-      ss = ss.replace(/\t/g," ");
 
       undo = true;
       let valid = false;
@@ -273,7 +269,7 @@ async function handleRegister(req,res,restful = false)
 	    "( userid, validator, timeout ) " +
 	    "VALUES ( ( SELECT id FROM iQsignUsers WHERE email = $1 ), $2, " +
 	    " ( CURRENT_TIMESTAMP + INTERVAL '1' DAY ) )",
-	    [ req.body.email,valid ]);
+	    [ req.body.email,validstr ]);
       await sign.setupSign(req.body.signname,email);
 
       let host = req.headers.host;

@@ -42,10 +42,7 @@ import 'package:flutter/services.dart';
 import '../globals.dart' as globals;
 
 Future loginKeyDialog(BuildContext context, SignData sd) async {
-  Uri url = Uri.https(
-    util.getServerURL(),
-    "/rest/createcode",
-  );
+  Uri url = util.getServerUri("/rest/createcode");
   var body = {
     'session': globals.iqsignSession,
     'signuser': sd.getSignUserId().toString(),

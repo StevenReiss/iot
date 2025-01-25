@@ -129,7 +129,7 @@ class _IQSignPasswordWidgetState extends State<IQSignPasswordWidget> {
       'session': globals.iqsignSession,
       'email': em,
     };
-    var url = Uri.https(util.getServerURL(), "/rest/forgotpassword");
+    Uri url = util.getServerUri("/rest/forgotpassword");
     await http.post(url, body: body);
   }
 }

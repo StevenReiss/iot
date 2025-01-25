@@ -168,12 +168,10 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
             widgets.fieldSeparator(),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("Saved Name:    "),
-                    Expanded(child: namefield),
-                  ]),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                const Text("Saved Name:    "),
+                Expanded(child: namefield),
+              ]),
             ),
             Container(
               constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
@@ -193,26 +191,34 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   void _handleCommand(String cmd) async {
     switch (cmd) {
       case "Help":
-        var uri1 = Uri.https(util.getServerURL(), "/rest/instructions",
-            {'session': globals.iqsignSession});
+        var uri1 = util.getServerUri(
+          "/rest/instructions",
+          {'session': globals.iqsignSession},
+        );
         await _launchURI(uri1);
         break;
       case "About":
-        var uri1 = Uri.https(util.getServerURL(), "/rest/about",
-            {'session': globals.iqsignSession});
+        var uri1 = util.getServerUri(
+          "/rest/about",
+          {'session': globals.iqsignSession},
+        );
         await _launchURI(uri1);
         break;
       case "MyImages":
-        var uri = Uri.https(util.getServerURL(), "/rest/savedimages",
-            {'session': globals.iqsignSession});
+        var uri = util.getServerUri(
+          "/rest/savedimages",
+          {'session': globals.iqsignSession},
+        );
         await _launchURI(uri);
         break;
       case "FAImages":
         await _launchURL("https://fontawesome.com/search?m=free&s=solid");
         break;
       case "SVGImages":
-        var uri1 = Uri.https(util.getServerURL(), "/rest/svgimages",
-            {'session': globals.iqsignSession});
+        var uri1 = util.getServerUri(
+          "/rest/svgimages",
+          {'session': globals.iqsignSession},
+        );
         await _launchURI(uri1);
         break;
       case "AddImage":
@@ -235,10 +241,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   Future _setSignToSaved(String? name) async {
     if (name == null) return;
     if (name == "Current Sign") name = "*Current*";
-    var url = Uri.https(
-      util.getServerURL(),
-      "/rest/loadsignimage",
-    );
+    Uri url = util.getServerUri("/rest/loadsignimage");
     var resp = await http.post(url, body: {
       'session': globals.iqsignSession,
       'signname': name,
@@ -292,10 +295,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   }
 
   Future _saveSignImage(String name, String cnts) async {
-    var url = Uri.https(
-      util.getServerURL(),
-      "/rest/savesignimage",
-    );
+    Uri url = util.getServerUri("/rest/savesignimage");
     var resp = await http.post(url, body: {
       'session': globals.iqsignSession,
       'name': name,
@@ -311,10 +311,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   }
 
   Future _removeSignImage(String name) async {
-    var url = Uri.https(
-      util.getServerURL(),
-      "/rest/removesignimage",
-    );
+    Uri url = util.getServerUri("/rest/removesignimage");
     var resp = await http.post(url, body: {
       'session': globals.iqsignSession,
       'name': name,
@@ -383,10 +380,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
 
   Future _previewAction() async {
     if (_controller.text.isEmpty) return;
-    Uri url = Uri.https(
-      util.getServerURL(),
-      "/rest/sign/preview",
-    );
+    Uri url = util.getServerUri("/rest/sign/preview");
     var body = {
       'session': globals.iqsignSession,
       'signdata': _controller.text,
@@ -403,4 +397,3 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     }
   }
 }
-

@@ -90,7 +90,7 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
       'altpassword': p2,
       'signname': sign,
     };
-    var url = Uri.https("sherpa.cs.brown.edu:3336", "/rest/register");
+    Uri url = util.getServerUri("/rest/register");
     var resp = await http.post(url, body: body);
     var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     if (jresp['status'] == "OK") return null;

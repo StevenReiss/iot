@@ -43,9 +43,10 @@ import '../globals.dart' as globals;
 import 'loginpage.dart';
 
 Future<List<SignData>> getSigns() async {
-  var url = Uri.https(util.getServerURL(), '/rest/signs', {
-    'session': globals.iqsignSession,
-  });
+  Uri url = util.getServerUri(
+    '/rest/signs',
+    {'session': globals.iqsignSession},
+  );
   var resp = await http.get(url);
   var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
   var rslt = <SignData>[];
@@ -169,7 +170,7 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   }
 
   Future _handleLogout() async {
-    var url = Uri.https(util.getServerURL(), "/rest/logout");
+    Uri url = util.getServerUri("/rest/logout");
     await http.post(url);
   }
 

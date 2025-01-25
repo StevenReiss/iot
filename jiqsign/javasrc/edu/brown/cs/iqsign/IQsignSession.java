@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              IQsignDefaults.java                                             */
+/*              IQsignSession.java                                              */
 /*                                                                              */
-/*      Manage the set of default signs                                         */
+/*      description of class                                                    */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2025 Steven P. Reiss                                          */
@@ -34,13 +34,12 @@
 
 package edu.brown.cs.iqsign;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
+import org.json.JSONObject;
 
-class IQsignDefaults implements IQsignConstants
+import edu.brown.cs.ivy.bower.BowerSession;
+
+class IQsignSession extends BowerSession implements IQsignConstants
 {
 
 
@@ -50,8 +49,12 @@ class IQsignDefaults implements IQsignConstants
 /*                                                                              */
 /********************************************************************************/
 
-private IQsignMain      iqsign_main;
-private long            last_update;
+private BowerSessionStore<IQsignSession> session_store;
+private IQsignUser session_user;
+private String     session_userid;
+private String     session_code;
+private long       last_time;
+private long       create_time;
 
 
 
@@ -61,76 +64,80 @@ private long            last_update;
 /*                                                                              */
 /********************************************************************************/
 
-IQsignDefaults(IQsignMain main)
+IQsignSession(BowerSessionStore<IQsignSession> bss)
 {
-   iqsign_main = main;
-   last_update = 0;
+   session_store = bss;
+   session_user = null;
+   session_userid = null;
+   session_code = IQsignMain.randomString(32);
+   last_time = System.currentTimeMillis();
+   create_time = last_time;
    
-   updateDefaults();
 }
+
+
+IQsignSession(BowerSessionStore<IQsignSession> bss,JSONObject data)
+{
+   session_store = bss;
+   session_user = null;
+   session_userid = data.optString("userid",null);
+   last_time = data.optLong("last_time");
+   session_code = data.optString("code",null);
+   create_time = data.optLong("creation_time");
+}
+
 
 
 /********************************************************************************/
 /*                                                                              */
-/*      Update default signs                                                    */
+/*      Access Methodsm                                                         */
 /*                                                                              */
 /********************************************************************************/
 
-void updateDefaults() 
+@Override public BowerSessionStore<IQsignSession> getSessionStore()
 {
-   File f = iqsign_main.getDefaultSignsFile();
-   long dlm = f.lastModified();
-   if (dlm < last_update) return;
-   
-   try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-      String name = null;
-      StringBuffer body = null;
-      boolean eqok = true;
-      for ( ; ; ) {
-         String line = br.readLine();
-         if (line == null) break;
-         line = line.trim();
-         if (line.isEmpty()) {
-            eqok = true;
-          }
-         else if (line.startsWith("=") && eqok) {
-            if (body != null) {
-               saveSign(name,body,dlm);
-               body = null;
-             }
-            name = line.substring(1).trim();
-            eqok = false;
-          }
-         else {
-            if (body == null) body = new StringBuffer();
-            body.append(line);
-            body.append("\n");
-            eqok = false;
-          }
-       }
-      if (body != null) {
-         saveSign(name,body,dlm);
-         body = null;
-       }
-    }
-   catch (IOException e) { }
-   last_update = dlm;
+   return session_store;
 }
 
 
-private void saveSign(String name,StringBuffer body,long dlm)
+IQsignUser getUser()                    { return session_user; }
+String getUserId()                      { return session_userid; }
+void setUser(IQsignUser u) 
 {
-   if (name == null || body == null || body.isEmpty()) return;
-   
-   iqsign_main.getDatabaseManager().saveOrUpdateSign(name,
-         body.toString(),dlm);
+   session_user = u;
+   session_userid = (u == null ? null : u.getUserId()); 
+}
+void setUserId(String uid)              { session_userid = uid; }
+
+String getCode()                        { return session_code; }
+void setCode(String code)               { session_code = code; }
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Output methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+JSONObject toJson()
+{
+   JSONObject rslt = buildJson("session",getSessionId(),
+         "userid",session_userid,
+         "code",session_code,
+         "creation_time",create_time,
+         "last_user",last_time);
+    
+   return rslt;
 }
 
 
-}       // end of class IQsignDefaults
+
+
+}       // end of class IQsignSession
 
 
 
 
-/* end of IQsignDefaults.java */
+/* end of IQsignSession.java */
 

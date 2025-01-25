@@ -37,7 +37,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
-bool debugServer = false;
+bool debugServer = true;
 
 String hasher(String msg) {
   final bytes = convert.utf8.encode(msg);
@@ -66,10 +66,9 @@ ThemeData getTheme() {
   );
 }
 
-String getServerURL() {
+Uri getServerUri(String path, [Map<String, dynamic>? query]) {
   if (kDebugMode && debugServer) {
-    return "localhost:3336";
+    return Uri.http("localhost:3336", path, query);
   }
-  return "sherpa.cs.brown.edu:3336";
+  return Uri.https("sherpa.cs.brown.edu:3336", path, query);
 }
-

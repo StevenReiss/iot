@@ -311,7 +311,7 @@ class _HandleLogin {
   _HandleLogin(this._curUser, this._curPassword);
 
   Future _prelogin() async {
-    var url = Uri.https(util.getServerURL(), '/rest/login');
+    Uri url = util.getServerUri('/rest/login');
     var resp = await http.get(url);
     var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     _curPadding = js['code'];
@@ -336,7 +336,7 @@ class _HandleLogin {
       'padding': pad,
       'password': p3,
     };
-    var url = Uri.https(util.getServerURL(), "/rest/login");
+    Uri url = util.getServerUri("/rest/login");
     var resp = await http.post(url, body: body);
     var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     if (jresp['status'] == "OK") {
@@ -346,6 +346,6 @@ class _HandleLogin {
       if (temp != null) return "TEMPORARY";
       return null;
     }
-    return jresp['MESSAGE'];
+    return jresp['message'];
   }
 }

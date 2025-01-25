@@ -184,7 +184,7 @@ async function doHandleUpdate(req,res)
 {
    console.log("Sign UPDATE",req.body);
    
-   if (req.bosy.signdata == null) throw "Illegal argument";
+   if (req.body.signdata == null) throw "Illegal argument";
    
    let s = req.body.signdata.trim();
    let ss = s;
@@ -427,8 +427,6 @@ async function handleLoadSignImage(req,res)
       cnts = defdata.contents;
       name = defdata.name;
     }
-
-   console.log
 
    let data = {
 	 name : name,

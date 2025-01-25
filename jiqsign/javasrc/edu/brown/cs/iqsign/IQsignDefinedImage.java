@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              IQsignDefaults.java                                             */
+/*              IQsignDefinedImage.java                                         */
 /*                                                                              */
-/*      Manage the set of default signs                                         */
+/*      Information about a defined image                                       */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2025 Steven P. Reiss                                          */
@@ -34,13 +34,9 @@
 
 package edu.brown.cs.iqsign;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import org.json.JSONObject;
 
-
-class IQsignDefaults implements IQsignConstants
+class IQsignDefinedImage implements IQsignConstants
 {
 
 
@@ -50,10 +46,7 @@ class IQsignDefaults implements IQsignConstants
 /*                                                                              */
 /********************************************************************************/
 
-private IQsignMain      iqsign_main;
-private long            last_update;
-
-
+private JSONObject      image_data;
 
 /********************************************************************************/
 /*                                                                              */
@@ -61,76 +54,41 @@ private long            last_update;
 /*                                                                              */
 /********************************************************************************/
 
-IQsignDefaults(IQsignMain main)
+IQsignDefinedImage(JSONObject data)
 {
-   iqsign_main = main;
-   last_update = 0;
-   
-   updateDefaults();
+   image_data = data;
 }
 
 
 /********************************************************************************/
 /*                                                                              */
-/*      Update default signs                                                    */
+/*      Access methods                                                          */
 /*                                                                              */
 /********************************************************************************/
 
-void updateDefaults() 
+String getId()                  { return IQsignMain.getId(image_data,"id"); }
+String getUserId()              { return IQsignMain.getId(image_data,"userid"); }
+String getName()                        { return image_data.getString("name"); }
+String getContents()                    { return image_data.getString("contents"); }
+long getLastUpdate()                    { return image_data.getLong("lastupdate"); }
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Output methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+JSONObject toJson()
 {
-   File f = iqsign_main.getDefaultSignsFile();
-   long dlm = f.lastModified();
-   if (dlm < last_update) return;
-   
-   try (BufferedReader br = new BufferedReader(new FileReader(f))) {
-      String name = null;
-      StringBuffer body = null;
-      boolean eqok = true;
-      for ( ; ; ) {
-         String line = br.readLine();
-         if (line == null) break;
-         line = line.trim();
-         if (line.isEmpty()) {
-            eqok = true;
-          }
-         else if (line.startsWith("=") && eqok) {
-            if (body != null) {
-               saveSign(name,body,dlm);
-               body = null;
-             }
-            name = line.substring(1).trim();
-            eqok = false;
-          }
-         else {
-            if (body == null) body = new StringBuffer();
-            body.append(line);
-            body.append("\n");
-            eqok = false;
-          }
-       }
-      if (body != null) {
-         saveSign(name,body,dlm);
-         body = null;
-       }
-    }
-   catch (IOException e) { }
-   last_update = dlm;
+   return image_data;
 }
 
 
-private void saveSign(String name,StringBuffer body,long dlm)
-{
-   if (name == null || body == null || body.isEmpty()) return;
-   
-   iqsign_main.getDatabaseManager().saveOrUpdateSign(name,
-         body.toString(),dlm);
-}
-
-
-}       // end of class IQsignDefaults
+}       // end of class IQsignDefinedImage
 
 
 
 
-/* end of IQsignDefaults.java */
+/* end of IQsignDefinedImage.java */
 
