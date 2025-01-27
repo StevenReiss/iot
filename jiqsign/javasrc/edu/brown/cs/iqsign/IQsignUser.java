@@ -71,7 +71,7 @@ IQsignUser(JSONObject json)
 /*                                                                              */
 /********************************************************************************/
 
-String getUserId()              { return IQsignMain.getId(user_data,"id"); }
+Number getUserId()                      { return user_data.getNumber("id"); }
 String getEmail()                       { return user_data.getString("email"); }
 String getUserName()                    { return user_data.getString("username"); }
 String getPassword()                    { return user_data.getString("password"); }

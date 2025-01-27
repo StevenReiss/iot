@@ -27,6 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import edu.brown.cs.ivy.file.IvyFile;
+import edu.brown.cs.ivy.file.IvyLog;
 
 class SignMakerSign implements SignMakerConstants
 {
@@ -293,7 +294,7 @@ String useSavedImage(String name)
          String q1 = "SELECT * FROM iQsignDefines WHERE name = ? AND userid IS NULL";
          PreparedStatement st1 = sql.prepareStatement(q1);
          st1.setString(1,name);
-         ResultSet rs1 = st1.executeQuery();;
+         ResultSet rs1 = st1.executeQuery();
          if (rs1.next()) {
             cnts = rs1.getString("contents");
             defid = rs1.getInt("id");
@@ -301,7 +302,7 @@ String useSavedImage(String name)
          st1.close();
        }
       if (cnts == null) {
-         System.err.println("PROBLEM LOADING DEFINITION: " + name);
+         IvyLog.logE("PROBLEM LOADING DEFINITION: " + name);
          cnts = "# Bad Sign Image";
        }
       
@@ -335,8 +336,7 @@ String useSavedImage(String name)
        }
     }
    catch (SQLException e) {
-      System.err.println("signmaker: Database problem: " + e);
-      e.printStackTrace();
+      IvyLog.logE("SIGNMAKER","Database problem: ",e);
     }
    
    return cnts;

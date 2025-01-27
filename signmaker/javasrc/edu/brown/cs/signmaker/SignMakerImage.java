@@ -69,6 +69,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import edu.brown.cs.ivy.file.IvyLog;
 import edu.brown.cs.ivy.swing.SwingColors;
 
 class SignMakerImage extends SignMakerComponent implements SignMakerConstants
@@ -106,8 +107,8 @@ static {
       ge.registerFont(fa_solid);
     }
    catch (Throwable t) {
-      System.err.println("signmaker: Problem creating font " + f1);
-      t.printStackTrace();
+      IvyLog.logE("SIGNMAKER","Problem creating font " + f1,t);
+      System.out.println("signmaker: Problem creating font " + f1);
       System.exit(1);
     }
    try {
@@ -115,8 +116,8 @@ static {
       ge.registerFont(fa_regular);
     }
    catch (Throwable t) {
-      System.err.println("signmaker: Problem creating font " + f2);
-      t.printStackTrace();
+      IvyLog.logE("SIGNMAKER","Problem creating font " + f1,t);
+      System.out.println("signmaker: Problem creating font " + f2);
       System.exit(1);
     }
    fa_map = new HashMap<>();
@@ -289,7 +290,7 @@ class SvgComponent extends JSVGComponent {
     }
 
    @Override protected void handleException(Exception e) {
-      System.err.println(e);
+      IvyLog.logE("SIGNMAKER","Error on SVG component",e);
    }
    
    @Override public void setBounds(Rectangle r) {
@@ -303,7 +304,7 @@ class SvgComponent extends JSVGComponent {
 
    @Override public void paintComponent(Graphics g) {
       if (image == null) {
-         System.err.println("READY " + is_ready + " " + image);
+         IvyLog.logD("SIGNMAKER","READY " + is_ready + " " + image);
          waitForLoaded();
 //       super.paintComponent(g);
          if (image == null) return;
@@ -484,7 +485,7 @@ private void loadUrlImage(JLabel lbl,Rectangle2D r,String cnts)
       setupIcon(lbl,r,ii);
     }
    catch (MalformedURLException | URISyntaxException e) {
-      System.err.println("signmaker: Bad url " + cnts);
+      IvyLog.logE("SIGNMAKER","Bad url " + cnts,e);
     }
 }
 
@@ -562,11 +563,8 @@ private void loadQRImage(JLabel lbl,Rectangle2D r,String cnts)
       ImageIcon ii = new ImageIcon(f1.getAbsolutePath());
       setupIcon(lbl,r,ii);
     }
-   catch (WriterException e) {
-       System.err.println("signmaker: Problem generating QR image: " + e);
-    }
-   catch (IOException e) {
-      System.err.println("signmaker: Problem generating QR image: " + e);
+   catch (WriterException | IOException e) {
+      IvyLog.logE("SIGNMAKER","Problem generating QR image: ",e);
     }
 }
 
@@ -676,8 +674,7 @@ private String lookupImage(String name)
       if (rslt != null) return rslt;
     }
    catch (SQLException e) {
-      System.err.println("signmaker: Database problem: " + e);
-      e.printStackTrace();
+      IvyLog.logE("SIGNMAKER","Database problem: ",e);
       // need to reconnect to sql database here
     }
 
@@ -740,7 +737,7 @@ private static void loadFontAwesome()
       parseFontAwesomeCss(uri);
     }
    catch (IOException e) {
-      System.err.println("signmaker: Problem reading font-awesome css");
+      IvyLog.logE("SIGNMAKER","Problem reading font-awesome css",e);
     }
 }
 

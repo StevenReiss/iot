@@ -66,8 +66,8 @@ IQsignDefinedImage(JSONObject data)
 /*                                                                              */
 /********************************************************************************/
 
-String getId()                  { return IQsignMain.getId(image_data,"id"); }
-String getUserId()              { return IQsignMain.getId(image_data,"userid"); }
+Number getId()                          { return image_data.getNumber("id"); }
+Number getUserId()                      { return image_data.optNumber("userid"); }
 String getName()                        { return image_data.getString("name"); }
 String getContents()                    { return image_data.getString("contents"); }
 long getLastUpdate()                    { return image_data.getLong("lastupdate"); }

@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.brown.cs.ivy.file.IvyLog;
 import edu.brown.cs.ivy.swing.SwingColorSet;
 import edu.brown.cs.signmaker.SignMakerConstants.SignMakerParser;
 
@@ -111,7 +112,8 @@ SignMakerLineParser(int uid,boolean counts)
        }
     }
    catch (IOException e) {
-      System.err.println("signmaker: Problem reading input: " + e);
+      IvyLog.logE("SIGNMAKER","Problem reading input",e);
+      System.out.println("signmaker: Problem reeading input:" + e);
       System.exit(1);
     }
 

@@ -5,5 +5,5 @@ pushd $SRD > /dev/null
 SRD1=`pwd`
 popd > /dev/null
 
-java -jar $SRD1/signmaker.jar -server
+java -jar $SRD1/signmaker.jar -server -L maker_log.log -S -LD
 

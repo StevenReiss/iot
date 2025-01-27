@@ -85,7 +85,7 @@ IQsignSign(IQsignMain main,JSONObject data)
 static IQsignSign setupSign(IQsignMain main,String name,String email,String contents,
       Consumer<Boolean> next)
 {
-   IvyLog.logD("SETUP SIGN " + name + " " + email + " " + contents);
+   IvyLog.logD("IQSIGN","SETUP SIGN " + name + " " + email + " " + contents);
 
    if (contents == null) {
       contents = normalizeContents(INITIAL_SIGN);
@@ -95,14 +95,13 @@ static IQsignSign setupSign(IQsignMain main,String name,String email,String cont
    IQsignDatabase db = main.getDatabaseManager();
    IQsignUser u = db.findUser(email);
    if (u == null) {
-      IvyLog.logD("SETUP SIGN: Bad user email");
+      IvyLog.logD("IQSIGN","SETUP SIGN: Bad user email");
       return null;
     }
-   String uid = u.getUserId();
+   Number uid = u.getUserId();
 
    IQsignSign sign = db.createSign(uid,name,namekey,contents);
    if (sign == null) return null;
-
    String dname = sign.computeDisplayName();
    db.addDefineName(uid,dname,contents,false);
 
@@ -119,7 +118,7 @@ static IQsignSign setupSign(IQsignMain main,String name,String email,String cont
 /*										*/
 /********************************************************************************/
 
-String getContents()            { return sign_data.getString("lastsign"); }
+String getContents()		{ return sign_data.getString("lastsign"); }
 
 String setContents(String c)
 {
@@ -129,14 +128,14 @@ String setContents(String c)
    return c;
 }
 
-String getUserId()
+Number getUserId()
 {
-   return IQsignMain.getId(sign_data,"userid");
+   return sign_data.getNumber("userid");
 }
 
-String getId()
+Number getId()
 {
-   return IQsignMain.getId(sign_data,"id");
+   return sign_data.getNumber("id");
 }
 
 String getNameKey()
@@ -150,7 +149,7 @@ File getHtmlFile()
    File f1 = iqsign_main.getWebDirectory();
    File f2 = new File(f1,"signs");
    File f3 = new File(f2,"sign" + getNameKey() + ".html");
-   return f3;	
+   return f3;
 }
 
 
@@ -175,17 +174,14 @@ String getSignUrl()
 
 String getLocalImageUrl()
 {
-   return iqsign_main.getURLLocalPreix() + "/rest/signimage/" + getNameKey() + ".png";
+   return iqsign_main.getURLLocalPreix() + "/rest/signimage/image" + getNameKey() + ".png";
 }
 
 
-int getWidth()                  { return sign_data.getInt("width"); }
-int getHeight()                 { return sign_data.getInt("height"); }
-String getSignName()            { return sign_data.getString("name"); }
-String getDimension()           
-{ 
-   return IQsignMain.getString(sign_data,"dimension"); 
-}
+int getWidth()			{ return sign_data.getInt("width"); }
+int getHeight() 		{ return sign_data.getInt("height"); }
+String getSignName()		{ return sign_data.getString("name"); }
+String getDimension()		{ return IQsignMain.getAsString(sign_data,"dimension"); }
 
 
 
@@ -197,14 +193,14 @@ String getDimension()
 
 void changeSign(String cnts,Consumer<Boolean> next)
 {
-   cnts = setContents(cnts); 
+   cnts = setContents(cnts);
    for_database.changeSign(getId(),cnts);
    String dname = computeDisplayName();
    setDisplayName(dname);
    for_database.addDefineName(getUserId(),dname,cnts,false);
    setupWebPage();
    updateSign(next,true,false);
-} 
+}
 
 
 void updateProperties(String name,String dim,int width,int height)
@@ -254,8 +250,21 @@ private void setupWebPage()
        }
     }
    catch (IOException e) {
-      IvyLog.logE("Problem setting up web page for sign",e);
+      IvyLog.logE("IQSIGN","Problem setting up web page for sign",e);
     }
+   
+   File f5 = getImageFile(false);
+   if (!f5.exists()) {
+      File f6 = new File(f2,"iqsignimagetemplate.png");
+      File f7 = getImageFile(false);
+      try {
+         IvyFile.copyFile(f6,f7);
+       }
+      catch (IOException e) {
+         IvyLog.logE("IQSIGN","Problem setting up image file for sign",e);
+       }
+    }
+   
 }
 
 
@@ -324,9 +333,9 @@ void setDisplayName(String name)
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Output methods                                                          */
-/*                                                                              */
+/*										*/
+/*	Output methods								*/
+/*										*/
 /********************************************************************************/
 
 JSONObject toJson()
@@ -336,8 +345,8 @@ JSONObject toJson()
    sign_data.put("signurl",getSignUrl());
    sign_data.put("imageurl",getImageUrl());
    sign_data.put("signbody",getContents());
-   sign_data.put("signuser",IQsignMain.toDatabaseId(getUserId()));
-   sign_data.put("signid",IQsignMain.toDatabaseId(getId())); 
+   sign_data.put("signuser",getUserId());
+   sign_data.put("signid",getId());
    sign_data.put("localimageurl",getLocalImageUrl());
    return sign_data;
 }
@@ -345,9 +354,9 @@ JSONObject toJson()
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Helper methods                                                          */
-/*                                                                              */
+/*										*/
+/*	Helper methods								*/
+/*										*/
 /********************************************************************************/
 
 static String normalizeContents(String c)

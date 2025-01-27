@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              IQsignSession.java                                              */
+/*              IQsignImage.java                                                */
 /*                                                                              */
-/*      description of class                                                    */
+/*      Holder of information about and image                                   */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2025 Steven P. Reiss                                          */
@@ -34,12 +34,9 @@
 
 package edu.brown.cs.iqsign;
 
-
 import org.json.JSONObject;
 
-import edu.brown.cs.ivy.bower.BowerSession;
-
-class IQsignSession extends BowerSession implements IQsignConstants
+class IQsignImage implements IQsignConstants
 {
 
 
@@ -49,12 +46,8 @@ class IQsignSession extends BowerSession implements IQsignConstants
 /*                                                                              */
 /********************************************************************************/
 
-private BowerSessionStore<IQsignSession> session_store;
-private IQsignUser session_user;
-private Number     session_userid;
-private String     session_code;
-private long       last_time;
-private long       create_time;
+private JSONObject image_data;
+
 
 
 
@@ -64,80 +57,36 @@ private long       create_time;
 /*                                                                              */
 /********************************************************************************/
 
-IQsignSession(BowerSessionStore<IQsignSession> bss)
+IQsignImage(JSONObject data)
 {
-   session_store = bss;
-   session_user = null;
-   session_userid = null;
-   session_code = IQsignMain.randomString(32);
-   last_time = System.currentTimeMillis();
-   create_time = last_time;
-   
+   image_data = data;
 }
-
-
-IQsignSession(BowerSessionStore<IQsignSession> bss,JSONObject data)
-{
-   session_store = bss;
-   session_user = null;
-   session_userid = data.optNumber("userid",null);
-   last_time = data.optLong("last_time");
-   session_code = data.optString("code",null);
-   create_time = data.optLong("creation_time");
-}
-
 
 
 /********************************************************************************/
 /*                                                                              */
-/*      Access Methodsm                                                         */
+/*      Access methods                                                          */
 /*                                                                              */
 /********************************************************************************/
 
-@Override public BowerSessionStore<IQsignSession> getSessionStore()
-{
-   return session_store;
-}
+Number getImageId()             { return image_data.getNumber("id"); }
 
+Number getUserId()              { return image_data.getNumber("userid"); }
 
-IQsignUser getUser()                    { return session_user; }
-Number getUserId()                      { return session_userid; }
-void setUser(IQsignUser u) 
-{
-   session_user = u;
-   session_userid = (u == null ? null : u.getUserId()); 
-}
-void setUserId(Number uid)              { session_userid = uid; }
+String getName()                { return image_data.getString("name"); }
 
-String getCode()                        { return session_code; }
-void setCode(String code)               { session_code = code; }
+String getUrl()                 { return image_data.optString("url",null); }
 
-
-
-/********************************************************************************/
-/*                                                                              */
-/*      Output methods                                                          */
-/*                                                                              */
-/********************************************************************************/
-
-JSONObject toJson()
-{
-   JSONObject rslt = buildJson("session",getSessionId(),
-         "userid",session_userid,
-         "code",session_code,
-         "creation_time",create_time,
-         "last_user",last_time);
-    
-   return rslt;
-}
+String getFile()                { return image_data.optString("file",null); }
 
 
 
 
-}       // end of class IQsignSession
+
+}       // end of class IQsignImage
 
 
 
 
-/* end of IQsignSession.java */
+/* end of IQsignImage.java */
 

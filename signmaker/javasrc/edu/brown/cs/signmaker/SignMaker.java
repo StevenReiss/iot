@@ -16,11 +16,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
@@ -29,6 +31,7 @@ import org.json.JSONObject;
 
 import edu.brown.cs.ivy.file.IvyDatabase;
 import edu.brown.cs.ivy.file.IvyFile;
+import edu.brown.cs.ivy.file.IvyLog;
 
 
 public class SignMaker implements SignMakerConstants {
@@ -63,21 +66,6 @@ private static File	base_directory;
 
 private static Connection sql_database;
 
-static {
-   base_directory = findBaseDirectory();
-
-   sql_database = null;
-   try {
-      File dbf = SignMaker.getDatabasePropertyFile();
-      System.err.println("signmaker: Using database file " + dbf);
-      IvyDatabase.setProperties(dbf);
-      sql_database = IvyDatabase.openDatabase("iqsign");
-    }
-   catch (Exception e) {
-      System.err.println("signmaker: Problem connecting to database " + e);
-    }
-
-}
 
 
 /********************************************************************************/
@@ -92,9 +80,49 @@ private SignMaker(String [] args)
    base_context = new RunContext();
    base_context.setInputStream(System.in);
    base_context.setOutputStream(System.out);
+   
+   base_directory = null;
+   sql_database = null;
 
    scanArgs(args);
+   
+   setupBase();
 }
+
+
+
+private void setupBase()
+{
+   if (base_directory == null) {
+      base_directory = findBaseDirectory();
+    }
+   
+   File f1 = new File(base_directory,"secret");
+   File f2 = new File(f1,"signmaker.props");
+   Properties props = new Properties();
+   props.put("database","iqsign");
+   if (f2.exists()) {
+      try (FileInputStream fis = new FileInputStream(f2)) {
+         props.loadFromXML(fis);
+       }
+      catch (IOException e) { }
+    }
+   
+   sql_database = null;
+   String dbnm = props.getProperty("database","iqsign");
+   try {
+      File dbf = SignMaker.getDatabasePropertyFile();
+      IvyLog.logI("SIGNMAKER","Using database file " + dbf + " " + dbnm);
+      IvyDatabase.setProperties(dbf);
+      sql_database = IvyDatabase.openDatabase(dbnm);
+    }
+   catch (Exception e) {
+      IvyLog.logE("SIGNMAKER","Problem connecting to database ",e);
+    }
+   System.err.println("Connected to database " + dbnm);
+}
+
+
 
 
 /********************************************************************************/
@@ -154,8 +182,23 @@ private void scanArgs(String [] args)
 	 else if (args[i].startsWith("-s")) {                   // -server
 	    run_server = true;
 	  }
-	 else if (args[i].startsWith("-c")) {
+	 else if (args[i].startsWith("-c")) {                   // -counts
 	    base_context.setDoCounts(true);
+	  }
+         else if (args[i].startsWith("-LD")) {                          // -LDebug
+	    IvyLog.setLogLevel(IvyLog.LogLevel.DEBUG);
+	  }
+	 else if (args[i].startsWith("-LI")) {                          // -LInfo
+	    IvyLog.setLogLevel(IvyLog.LogLevel.INFO);
+	  }
+	 else if (args[i].startsWith("-LW")) {                          // -LWarning
+	    IvyLog.setLogLevel(IvyLog.LogLevel.WARNING);
+	  }
+	 else if (args[i].startsWith("-L") && i+1 < args.length) {      // -Log <file>
+	    IvyLog.setLogFile(args[++i]);
+	  }
+         else if (args[i].startsWith("-S")) {                           // -Stderr
+	    IvyLog.useStdErr(true);
 	  }
 	 else badArgs();
        }
@@ -183,7 +226,7 @@ private void scanArgs(String [] args)
 
 private void badArgs()
 {
-   System.err.println("signmaker [-w <width>] [-h <height>] [-u <userid>] [-i <source>] [-o <target>]");
+   System.out.println("signmaker [-w <width>] [-h <height>] [-u <userid>] [-i <source>] [-o <target>]");
    System.exit(1);
 }
 
@@ -225,7 +268,7 @@ static String getFontAwesomeToken()
       if (token != null) return token.trim();
     }
    catch (IOException e) {
-      System.err.println("smartsign: Problem reading fa token: " + e);
+      IvyLog.logE("SIGNMAKER","Problem reading fa token",e);
     }
 
    return null;
@@ -255,10 +298,10 @@ private void process()
 	 processContext(base_context);
        }
       catch (IOException e) {
-	 System.err.println("signmaker: Problem saving image: " + e);
+	 IvyLog.logE("SIGNMAKER","Problem saving image: ",e);
        }
       catch (SignMakerException e) {
-	 System.err.println("signmaker: Problem processing sign data: " + e);
+	 IvyLog.logE("SIGNMAKER","Problem processing sign data: ",e);
 	 e.printStackTrace();
        }
       System.exit(0);
@@ -342,10 +385,11 @@ private class ServerThread extends Thread {
 	 server_socket = new ServerSocket(SERVER_PORT);
        }
       catch (IOException e) {
-	 System.err.println("signmaker: Can't create server socket on " + SERVER_PORT);
+         IvyLog.logE("Can't create server socket on " + SERVER_PORT,e);
+	 System.out.println("signmaker: Can't create server socket on " + SERVER_PORT);
 	 System.exit(1);
        }
-      System.err.println("signmaker: Server running on " + SERVER_PORT);
+      IvyLog.logT("SIGNMAKER","Server running on " + SERVER_PORT);
     }
 
    @Override public void run() {
@@ -355,7 +399,7 @@ private class ServerThread extends Thread {
 	    createClient(client);
 	  }
 	 catch (IOException e) {
-	    System.err.println("signmaker: Error os server accept");
+	    IvyLog.logE("SIGNMAKER","Error on server accept",e);
 	    server_socket = null;
 	    break;
 	  }
@@ -387,15 +431,21 @@ private class ClientThread extends Thread {
    ClientThread(Socket s) {
       super("SignMakerClient_" + s.getRemoteSocketAddress());
       client_socket = s;
-      System.err.println("signmaker: CLIENT " + s.getRemoteSocketAddress());
+      IvyLog.logD("SIGNMAKER","CLIENT " + s.getRemoteSocketAddress());
     }
 
    @Override public void run() {
       ByteArrayOutputStream output = null;
       JSONObject result = new JSONObject();
       try {
-         String args = IvyFile.loadFile(client_socket.getInputStream());
-         System.err.println("signmaker: CLIENT INPUT: " + args);
+         InputStream ins = client_socket.getInputStream();
+         InputStreamReader fr = new InputStreamReader(ins); 
+         char [] buf = new char[10240];
+         int len =  fr.read(buf);
+         IvyLog.logD("SIGNMAKER","Read length = " + len);
+         String args = new String(buf,0,len);
+//       String args = IvyFile.loadFile(client_socket.getInputStream());
+         IvyLog.logD("SIGNMAKER","CLIENT INPUT: " + args);
          JSONObject argobj = new JSONObject(args);
          RunContext ctx = new RunContext();
          ctx.setWidth(argobj.optInt("width"));

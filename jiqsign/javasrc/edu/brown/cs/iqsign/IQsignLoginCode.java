@@ -68,8 +68,8 @@ IQsignLoginCode(JSONObject data)
 /********************************************************************************/
 
 String getCode()                { return code_data.getString("code"); }
-String getUserId()              { return IQsignMain.getId(code_data,"userid"); }
-String getSignId()              { return IQsignMain.getId(code_data,"signid"); }
+Number getUserId()              { return code_data.getNumber("userid"); }
+Number getSignId()              { return code_data.getNumber("signid"); }
 String getCallbackUrl()         { return code_data.getString("callback_url"); }
 long getCreationTime()          { return code_data.getLong("creation_time"); }
 
