@@ -129,9 +129,9 @@ BowerRouter<IQsignSession> setupRouter()
 {
    BowerRouter<IQsignSession> br = new BowerRouter<>(session_store);
    br.addRoute("ALL",BowerRouter::handleParameters);
-   br.addRoute("ALL",br::handleSessions);
+   br.addRoute("ALL",br::handleSessions); 
    br.addRoute("ALL",BowerRouter::handleLogging);
-   br.addRoute("ALL","/rest/ping",new PingAction());
+   br.addRoute("ALL","/rest/ping",new PingAction()); 
    br.addRoute("ALL","/ping",new PingAction());
 
    br.addRoute("GET","/rest/signimage/:filename",new LocalImageAction());
@@ -142,10 +142,9 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("POST","/rest/register",new RegisterAction());
    br.addRoute("ALL","/rest/logout",new LogoutAction());
    br.addRoute("ALL","/rest/authorize",new AuthorizeAction());
-   
-// br.addRoute("POST","/rest/forgotpassword",null);
-// br.addRoute("POST","/rest/newpassword",null);
-// br.addRoute("GET","/validate",null);
+   br.addRoute("GET","/validate",iqsign_auth::handleValidationRequest);
+   br.addRoute("POST","/rest/forgotpassword",iqsign_auth::handleValidationRequest);
+   br.addRoute("POST","/rest/newpassword",iqsign_auth::handleResetPassword);
 
    br.addRoute("USE",new Authenticator());
 
@@ -159,20 +158,18 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("POST","/rest/loadsignimage",new LoadSignImageAction());
    br.addRoute("POST","/rest/savesignimage",new SaveSignImageAction());
    br.addRoute("POST","/rest/removesignimage",new RemvoeSavedSignImageAction());
-//
+
    br.addRoute("POST","/rest/sign/preview",new PreviewAction());
    br.addRoute("POST","/rest/createcode",new CreateCodeAction());
    br.addRoute("ALL","/rest/namedsigns",new GetSavedSignsAction());
    br.addRoute("POST","/rest/addsign",new AddSignAction());
    br.addRoute("POST","/rest/removeuser",new RemoveUserAction());
 
-
+   br.addRoute("ALL",new Handle404Action());
+   br.addErrorHandler(new HandleErrorAction());
 
 // br.addRoute("ALL","/rest/svgimages",null);
 // br.addRoute("ALL","/rest/savedimages",null);
-
-// br.addRoute("ALL","*",null);         // 404
-// br.addRoute("USE",new ErrorHandler());
 
 // br.addRoute("GET","/rest/svg/:svgttopic/:svgname",null);
 // br.addRoute("GET","/rest/image/:imagename",null);
@@ -238,7 +235,7 @@ private final class SessionStore implements BowerSessionStore<IQsignSession> {
 
 private final class PingAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange e,IQsignSession session) {
+   @Override public String handle(HttpExchange e,IQsignSession session) {
       List<String> users = BowerRouter.getParameterList(e,"users");
 
       JSONArray auth = new JSONArray();
@@ -267,7 +264,7 @@ private final class PingAction implements BowerSessionHandler<IQsignSession> {
 
 private final class LoginAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange e,IQsignSession session) {
+   @Override public String handle(HttpExchange e,IQsignSession session) {
       String rslt = iqsign_auth.handleLogin(e,session);
       Number userid = session.getUserId();
       if (userid != null) {
@@ -286,7 +283,7 @@ private final class LoginAction implements BowerSessionHandler<IQsignSession> {
 
 private final class RegisterAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange e,IQsignSession session) {
+   @Override public String handle(HttpExchange e,IQsignSession session) {
       String rslt = iqsign_auth.handleRegister(e,session);
       return rslt;
     }
@@ -296,7 +293,7 @@ private final class RegisterAction implements BowerSessionHandler<IQsignSession>
 
 private final class LogoutAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange e,IQsignSession session) {
+   @Override public String handle(HttpExchange e,IQsignSession session) {
       IQsignUser user = session.getUser();
       if (user != null) {
 	 String name = user.getUserName();
@@ -314,7 +311,7 @@ private final class LogoutAction implements BowerSessionHandler<IQsignSession> {
 
 private final class AuthorizeAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       session.setUser(null);
       String token = BowerRouter.getParameter(he,"token");
       IQsignLoginCode tokinfo = iqsign_database.checkAccessToken(token);
@@ -342,7 +339,7 @@ private final class AuthorizeAction implements BowerSessionHandler<IQsignSession
 
 private final class Authenticator implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String tok = BowerRouter.getAccessToken(he);
       if (tok != null && !tok.equals(session.getCode())) {
          return BowerRouter.errorResponse(he,session,402,"Bad authorization code");
@@ -380,7 +377,7 @@ private final class Authenticator implements BowerSessionHandler<IQsignSession> 
 
 private final class GetAllSignsAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       Number uid = session.getUserId();
       List<IQsignSign> signs = iqsign_database.getAllSignsForUser(uid);
       JSONArray jarr = new JSONArray();
@@ -397,7 +394,7 @@ private final class GetAllSignsAction implements BowerSessionHandler<IQsignSessi
 
 private final class SetSignAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       Number sid = getIdParameter(he,"signid");
       if (sid == null) {
          return BowerRouter.errorResponse(he,session,400,"Bad sign id");
@@ -429,7 +426,7 @@ private final class SetSignAction implements BowerSessionHandler<IQsignSession> 
 
 private final class SignUpdateAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       IQsignSign sign = iqsign_database.findSignById(getIdParameter(he,"signid"));
       if (sign == null) {
          return BowerRouter.errorResponse(he,session,402,"Invalid sign");
@@ -458,7 +455,7 @@ private final class SignUpdateAction implements BowerSessionHandler<IQsignSessio
 
 private final class LoadSignImageAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String name = BowerRouter.getParameter(he,"signname");
       String nameid = BowerRouter.getParameter(he,"nameid");
       if (nameid != null && nameid.equals("*Current*")) name = "*Current*";
@@ -505,7 +502,7 @@ private final class LoadSignImageAction implements BowerSessionHandler<IQsignSes
 
 private final class SaveSignImageAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String uname = session.getUser().getUserName();
       users_updated.add(uname);
       IQsignSign sign = iqsign_database.findSignById(getIdParameter(he,"signid"));
@@ -537,7 +534,7 @@ private final class SaveSignImageAction implements BowerSessionHandler<IQsignSes
 
 private final class RemvoeSavedSignImageAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String uname = session.getUser().getUserName();
       users_updated.add(uname);
       iqsign_database.removeDefineData(BowerRouter.getParameter(he,"name"),
@@ -552,7 +549,7 @@ private final class RemvoeSavedSignImageAction implements BowerSessionHandler<IQ
 
 private final class PreviewAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String cnts = BowerRouter.getParameter(he,"signdata");
       if (cnts == null) {
          return BowerRouter.errorResponse(he,session,400,"No sign given");
@@ -585,7 +582,7 @@ private final class PreviewAction implements BowerSessionHandler<IQsignSession> 
 
 private final class CreateCodeAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       Number sid = getIdParameter(he,"signid");
       Number uid = getIdParameter(he,"signuser");
       String nkey = BowerRouter.getParameter(he,"signkey");
@@ -609,7 +606,7 @@ private final class CreateCodeAction implements BowerSessionHandler<IQsignSessio
 
 private final class GetSavedSignsAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       List<IQsignDefinedImage> defs = iqsign_database.getSavedSigns(session.getUserId());
       if (defs == null) {
 	 return BowerRouter.errorResponse(he,session,400,"No images");
@@ -628,7 +625,7 @@ private final class GetSavedSignsAction implements BowerSessionHandler<IQsignSes
 
 private final class AddSignAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String name = BowerRouter.getParameter(he,"name");
       String email = session.getUser().getEmail();
       String signname = BowerRouter.getParameter(he,"signname");
@@ -673,7 +670,7 @@ private final class FinishAddSign implements Consumer<Boolean> {
 
 private final class RemoveUserAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       Number uid = session.getUserId();
       IQsignUser user = session.getUser();
       if (user.isAdmin()) {
@@ -701,7 +698,7 @@ private final class RemoveUserAction implements BowerSessionHandler<IQsignSessio
 
 private final class LocalImageAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String apply(HttpExchange he,IQsignSession session) {
+   @Override public String handle(HttpExchange he,IQsignSession session) {
       String filename = BowerRouter.getParameter(he,"filename");
       int idx = filename.indexOf("?");
       if (idx > 0) filename = filename.substring(0,idx);
@@ -710,7 +707,35 @@ private final class LocalImageAction implements BowerSessionHandler<IQsignSessio
       File f2 = new File(f1,filename);
       return BowerRouter.sendFileResponse(he,f2);
     }
-}
+   
+}       // end of inner class LocalImageAction
+
+
+
+private final class Handle404Action implements BowerSessionHandler<IQsignSession> {
+   
+   @Override public String handle(HttpExchange he,IQsignSession session) {
+      return BowerRouter.errorResponse(he,session,404,"Invalid URL");
+    }
+   
+}       // end of inner class Handle404Action
+
+
+private final class HandleErrorAction implements BowerSessionHandler<IQsignSession> {
+   
+   @Override public String handle(HttpExchange he,IQsignSession session) {
+      Object t = he.getAttribute(BowerRouter.BOWER_EXCEPTION);
+      String msg = "Internal error";
+      if (t != null) {
+         msg += ": " + t;
+       }
+      
+      return BowerRouter.errorResponse(he,session,500,msg);
+    }
+   
+}       // end of inner class HandleErrorAction
+
+
 
 /********************************************************************************/
 /*										*/

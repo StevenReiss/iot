@@ -331,12 +331,80 @@ private boolean sendRegistrationEmail(HttpExchange he,IQsignSession session,Stri
    msg += "\n";
 
    IvyLog.logD("IQSIGN","SEND EMAIL to " + email + " " + msg);
-   System.err.println("NEED EMAIL TO WORK HERE");
+   
+   IQsignMain.sendEmail(email,"Verify your Email for iQsign",msg);
 
    return true;
 }
 
 
+
+String handleValidationRequest(HttpExchange he,IQsignSession session)
+{
+   String email = BowerRouter.getParameter(he,"email");
+   email = email.toLowerCase();
+   String code = BowerRouter.getParameter(he,"code");
+   
+   IQsignDatabase db = iqsign_main.getDatabaseManager();
+   if (code == null || email == null) {
+      return BowerRouter.errorResponse(he,session,400,"Bad validation request");
+    }
+   
+   boolean fg = db.validateUser(email,code); 
+   
+   if (!fg) {
+//    return BowerRouter.errorResponse(he,session,400,"Outdated or bad validation request");
+    }
+   
+   return BowerRouter.jsonOKResponse(session);
+}
+
+
+String handleForgotPassword(HttpExchange he,IQsignSession session) 
+{
+   IQsignDatabase db = iqsign_main.getDatabaseManager();
+   
+   String email = BowerRouter.getParameter(he,"email");
+   email = email.toLowerCase();
+   if (!validateEmail(email)) {
+      return BowerRouter.errorResponse(he,session,400,"Bad email");
+    }
+   String code = IQsignMain.randomString(48);
+   
+   IQsignUser user = db.findUser(email);
+   if (user != null) {
+      db.registerValidator(email,code);
+      String host = he.getLocalAddress().toString();
+      String msg = "Here is the password reset link for iQsign you requested.\n";
+      msg += "To reset your password, please click on or paste the link:\n";
+      msg += "   https://" + host + "/newpassword?";
+      msg += "email=" + IQsignMain.encodeURIComponent(email);
+      msg += "&code=" + code;
+      msg += "\n";
+      IQsignMain.sendEmail(email,"Password request for iQsign",msg);
+    }
+   
+   return BowerRouter.jsonOKResponse(session);
+}
+
+
+String handleResetPassword(HttpExchange he,IQsignSession session)
+{
+   IQsignDatabase db = iqsign_main.getDatabaseManager();
+   
+   String email = BowerRouter.getParameter(he,"email");
+   email = email.toLowerCase();
+   String code = BowerRouter.getParameter(he,"code");
+   String pwd = BowerRouter.getParameter(he,"password");
+   String altpwd = BowerRouter.getParameter(he,"altpassword");
+   
+   if (db.validateUser(email,code)) {
+      IQsignUser user = db.findUser(email);
+      db.updatePassword(user.getUserId(),pwd,altpwd); 
+    }
+   
+   return BowerRouter.jsonOKResponse(session);
+}
 
 }	// end of class IQsignAuth
 

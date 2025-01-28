@@ -34,10 +34,12 @@
 
 package edu.brown.cs.iqsign;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Base64;
@@ -342,6 +344,44 @@ static String getAsString(JSONObject json,String key)
 }
 
 
+
+static boolean sendEmail(String sendto,String subj,String body)
+{
+   if (sendto == null || subj == null && body == null) return false;
+   
+   try {
+      if (subj != null) subj = URLEncoder.encode(subj,"UTF-8");
+    }
+   catch (UnsupportedEncodingException e) { }
+   try {
+      if (body != null) body = URLEncoder.encode(body,"UTF-8");
+    }
+   catch (UnsupportedEncodingException e) { }
+   
+   String full = "mailto:" + sendto;
+   String pfx = "?";
+   try {
+      if (subj != null) {
+         full += pfx + "subject=" + subj;
+         pfx = "&";
+       }
+      if (body != null) {
+         full +=  pfx + "body=" + body;
+         pfx = "&";
+       }
+      URI u = new URI(full);
+      Desktop.getDesktop().mail(u);
+    }
+   catch (Throwable e) {
+      return false;
+    }
+   
+   return true;
+}
+
+
+
+
 /********************************************************************************/
 /*										*/
 /*	Processing method							*/
@@ -368,32 +408,33 @@ private final class CleanupTask extends TimerTask {
 
    @Override public void run() {
       IvyLog.logD("IQSIGN","Begin cleanup " + new Date());
-
+   
       default_manager.updateDefaults();
-
-      database_manager.deleteOldRestSessions();
+   
+      database_manager.deleteOutOfDateData();
+      
       Set<String> currentsigns = database_manager.getAllSignNameKeys();
       File f = new File(getWebDirectory(),"signs");
-
+   
       for (File file : f.listFiles()) {
-	 Matcher m1 = IMAGE_PATTERN.matcher(file.getName());
-	 Matcher m2 = HTML_PATTERN.matcher(file.getName());
-	 Matcher m3 = PREVIEW_PATTERN.matcher(file.getName());
-	 Matcher m = null;
-	 if (m1.matches()) m = m1;
-	 else if (m2.matches()) m = m2;
-	 else if (m3.matches()) m = m3;
-	 if (m == null) continue;
-	 String key = m.group(1);
-	 if (currentsigns.contains(key)) {
-	    IvyLog.logD("IQSIGN","Cleanup: Keep sign file " + file);
-	  }
-	 else {
-	    IvyLog.logD("IQSIGN","Cleanup: Remvoe sign file " + file);
-	    file.delete();
-	  }
+         Matcher m1 = IMAGE_PATTERN.matcher(file.getName());
+         Matcher m2 = HTML_PATTERN.matcher(file.getName());
+         Matcher m3 = PREVIEW_PATTERN.matcher(file.getName());
+         Matcher m = null;
+         if (m1.matches()) m = m1;
+         else if (m2.matches()) m = m2;
+         else if (m3.matches()) m = m3;
+         if (m == null) continue;
+         String key = m.group(1);
+         if (currentsigns.contains(key)) {
+            IvyLog.logD("IQSIGN","Cleanup: Keep sign file " + file);
+          }
+         else {
+            IvyLog.logD("IQSIGN","Cleanup: Remvoe sign file " + file);
+            file.delete();
+          }
        }
-
+   
       IvyLog.logD("IQSIGN","Cleanup complete");
     }
 

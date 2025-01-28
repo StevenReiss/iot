@@ -127,7 +127,6 @@ BufferedImage createSignImage(int w,int h)
    
    BufferedImage img = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
    Graphics g = img.getGraphics();
-   
   
    for (int i = 0; i < text_regions.length; ++i) {
       setup(pnl,text_regions[i]);

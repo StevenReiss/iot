@@ -101,10 +101,13 @@ IQsignDatabase(IQsignMain main,String db)
 /*										*/
 /********************************************************************************/
 
-void deleteOldRestSessions()
+void deleteOutOfDateData()
 {
-   String q = "DELETE FROM iQsignRestful WHERE last_used + interval '4 days' < CURRENT_TIMESTAMP";
-   sqlUpdate(q);
+   String q1 = "DELETE FROM iQsignRestful WHERE last_used + interval '4 days' < CURRENT_TIMESTAMP";
+   String q2 = "DELETE FROM iQsignValidator WHERE timeout + interval '4 days' < CURRENT_TIMESTAMP";
+   sqlUpdate(q1);
+   sqlUpdate(q2);
+   
 }
 
 
@@ -237,14 +240,44 @@ boolean registerUser(String email,String user,String pwd,String apwd,boolean val
 }
 
 
-boolean registerValidator(String email,String valid)
+boolean registerValidator(String email,String code)
 {
    String q1 = "INSERT INTO iQsignValidator ( userid, validator, timeout ) " +
       "VALUES ( ( SELECT id FROM iQsignUsers WHERE email = $1 ), $2, " +
-      "( CURRENT_TIMESTAMP + INTERVAL '1' DAY ) )";
-   int ct = sqlUpdate(q1,email,valid);
+      "( CURRENT_TIMESTAMP + INTERVAL '2 DAYS' ) )";
+   int ct = sqlUpdate(q1,email,code);
    return ct > 0;
 }
+
+
+boolean validateUser(String email,String code)
+{
+   String q1 = "SELECT U.id as userid " +
+      "FROM iQsignValidator V, IQsignUsers U " +
+      "WHERE V.userid = U.id AND U.email = $1 AND V.validator = $2 " +
+      "V.timeout < CURRENT_STAMP";
+   String q2 = "DELETE FROM iQsignValidator WHERE userid = $1 AND validator = $2";
+   String q3 = "UPDATE iQsignUsers SET valid = TRUE WHERE id = $1";
+   
+   JSONObject rslt = sqlQuery1(q1,email,code);
+   if (rslt == null) return false;
+   
+   Number uid = rslt.getNumber("userid");
+   sqlUpdate(q2,uid,code);
+   sqlUpdate(q3,uid);
+   
+   return true;
+}
+
+
+void updatePassword(Number uid,String pwd,String apwd)
+{
+   String q1 = "UPDATE iQsignUsers SET password = $1, altpassword = $2 " +
+      "WHERE id = $3";
+   sqlUpdate(q1,pwd,apwd,uid);
+}
+
+
 
 
 IQsignLoginCode checkAccessToken(String token)
