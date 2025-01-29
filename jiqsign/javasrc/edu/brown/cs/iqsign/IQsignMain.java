@@ -34,12 +34,10 @@
 
 package edu.brown.cs.iqsign;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Base64;
@@ -54,6 +52,7 @@ import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
+import edu.brown.cs.ivy.bower.BowerMailer;
 import edu.brown.cs.ivy.exec.IvyExecQuery;
 import edu.brown.cs.ivy.file.IvyFile;
 import edu.brown.cs.ivy.file.IvyLog;
@@ -312,7 +311,7 @@ static String randomString(int len)
 static String encodeURIComponent(String v)
 {
    try {
-      return URLEncoder.encode(v,"UTF_8");
+      return URLEncoder.encode(v,"UTF-8");
     }
    catch (UnsupportedEncodingException e) {
       IvyLog.logE("IQSIGN","Problem with URI encoding",e);
@@ -345,40 +344,35 @@ static String getAsString(JSONObject json,String key)
 
 
 
-static boolean sendEmail(String sendto,String subj,String body)
+
+boolean sendEmail(String sendto,String subj,String body)
 {
    if (sendto == null || subj == null && body == null) return false;
    
-   try {
-      if (subj != null) subj = URLEncoder.encode(subj,"UTF-8");
+   File f2 = new File(base_directory,"secret");
+   File f4 = new File(f2,"iqsign.props");
+   Properties props = new Properties();
+   try (FileInputStream fis = new FileInputStream(f4)) {
+      props.loadFromXML(fis);
     }
-   catch (UnsupportedEncodingException e) { }
-   try {
-      if (body != null) body = URLEncoder.encode(body,"UTF-8");
-    }
-   catch (UnsupportedEncodingException e) { }
+   catch (IOException e) { }
    
-   String full = "mailto:" + sendto;
-   String pfx = "?";
-   try {
-      if (subj != null) {
-         full += pfx + "subject=" + subj;
-         pfx = "&";
-       }
-      if (body != null) {
-         full +=  pfx + "body=" + body;
-         pfx = "&";
-       }
-      URI u = new URI(full);
-      Desktop.getDesktop().mail(u);
-    }
-   catch (Throwable e) {
-      return false;
-    }
+   BowerMailer mi = new BowerMailer(sendto,subj,body);
+   mi.setSender(props.getProperty("email.from"),
+         props.getProperty("email.user"),
+         props.getProperty("email.password"));
+   mi.setReplyTo(props.getProperty("email.replyto"));
+   mi.send();
    
-   return true;
+   return false;
 }
+  
 
+
+
+
+
+ 
 
 
 

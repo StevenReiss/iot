@@ -101,7 +101,9 @@ static IQsignSign setupSign(IQsignMain main,String name,String email,String cont
    Number uid = u.getUserId();
 
    IQsignSign sign = db.createSign(uid,name,namekey,contents);
-   if (sign == null) return null;
+   if (sign == null) {
+      return null;
+    }
    String dname = sign.computeDisplayName();
    db.addDefineName(uid,dname,contents,false);
 

@@ -283,7 +283,9 @@ String handleRegister(HttpExchange he,IQsignSession session)
       boolean isvalid = false;
       isvalid = true;				// remove when email works
       boolean ok = db.registerUser(email,uid,pwd,altpwd,isvalid);
-      if (!ok) return errorResponse(session,"Problem registering new user");
+      if (!ok) {
+         return errorResponse(session,"Problem registering new user");
+       }
       undoneeded = true;
       IQsignSign sign = IQsignSign.setupSign(iqsign_main,signname,email,null,null);
       boolean ok1 = db.registerValidator(email,valid);
@@ -332,7 +334,7 @@ private boolean sendRegistrationEmail(HttpExchange he,IQsignSession session,Stri
 
    IvyLog.logD("IQSIGN","SEND EMAIL to " + email + " " + msg);
    
-   IQsignMain.sendEmail(email,"Verify your Email for iQsign",msg);
+   iqsign_main.sendEmail(email,"Verify your Email for iQsign",msg); 
 
    return true;
 }
@@ -342,13 +344,13 @@ private boolean sendRegistrationEmail(HttpExchange he,IQsignSession session,Stri
 String handleValidationRequest(HttpExchange he,IQsignSession session)
 {
    String email = BowerRouter.getParameter(he,"email");
-   email = email.toLowerCase();
    String code = BowerRouter.getParameter(he,"code");
    
    IQsignDatabase db = iqsign_main.getDatabaseManager();
    if (code == null || email == null) {
       return BowerRouter.errorResponse(he,session,400,"Bad validation request");
     }
+   email = email.toLowerCase();
    
    boolean fg = db.validateUser(email,code); 
    
@@ -381,7 +383,7 @@ String handleForgotPassword(HttpExchange he,IQsignSession session)
       msg += "email=" + IQsignMain.encodeURIComponent(email);
       msg += "&code=" + code;
       msg += "\n";
-      IQsignMain.sendEmail(email,"Password request for iQsign",msg);
+      iqsign_main.sendEmail(email,"Password request for iQsign",msg);
     }
    
    return BowerRouter.jsonOKResponse(session);

@@ -143,7 +143,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("ALL","/rest/logout",new LogoutAction());
    br.addRoute("ALL","/rest/authorize",new AuthorizeAction());
    br.addRoute("GET","/validate",iqsign_auth::handleValidationRequest);
-   br.addRoute("POST","/rest/forgotpassword",iqsign_auth::handleValidationRequest);
+   br.addRoute("ALL","/rest/forgotpassword",iqsign_auth::handleForgotPassword);
    br.addRoute("POST","/rest/newpassword",iqsign_auth::handleResetPassword);
 
    br.addRoute("USE",new Authenticator());

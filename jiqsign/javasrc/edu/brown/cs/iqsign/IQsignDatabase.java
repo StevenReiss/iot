@@ -254,8 +254,8 @@ boolean validateUser(String email,String code)
 {
    String q1 = "SELECT U.id as userid " +
       "FROM iQsignValidator V, IQsignUsers U " +
-      "WHERE V.userid = U.id AND U.email = $1 AND V.validator = $2 " +
-      "V.timeout < CURRENT_STAMP";
+      "WHERE V.userid = U.id AND U.email = $1 AND V.validator = $2 AND " +
+      "V.timeout < CURRENT_TIMESTAMP";
    String q2 = "DELETE FROM iQsignValidator WHERE userid = $1 AND validator = $2";
    String q3 = "UPDATE iQsignUsers SET valid = TRUE WHERE id = $1";
    
