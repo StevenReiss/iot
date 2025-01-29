@@ -176,7 +176,7 @@ String getSignUrl()
 
 String getLocalImageUrl()
 {
-   return iqsign_main.getURLLocalPreix() + "/rest/signimage/image" + getNameKey() + ".png";
+   return iqsign_main.getURLLocalPrefix() + "/rest/signimage/image" + getNameKey() + ".png";
 }
 
 

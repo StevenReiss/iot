@@ -4,39 +4,39 @@
  *    Common code for creating widgets
  * 
  */
-/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
+/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /// *******************************************************************************
-///  Copyright 2023, Brown University, Providence, RI.				 *
-///										 *
-///			  All Rights Reserved					 *
-///										 *
-///  Permission to use, copy, modify, and distribute this software and its	 *
-///  documentation for any purpose other than its incorporation into a		 *
-///  commercial product is hereby granted without fee, provided that the 	 *
-///  above copyright notice appear in all copies and that both that		 *
-///  copyright notice and this permission notice appear in supporting		 *
-///  documentation, and that the name of Brown University not be used in 	 *
-///  advertising or publicity pertaining to distribution of the software 	 *
-///  without specific, written prior permission. 				 *
-///										 *
-///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
-///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
-///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
-///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
-///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
-///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
-///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
-///  OF THIS SOFTWARE.								 *
-///										 *
+///  Copyright 2023, Brown University, Providence, RI.                           *
+///                                                                              *
+///                       All Rights Reserved                                    *
+///                                                                              *
+///  Permission to use, copy, modify, and distribute this software and its       *
+///  documentation for any purpose other than its incorporation into a           *
+///  commercial product is hereby granted without fee, provided that the         *
+///  above copyright notice appear in all copies and that both that              *
+///  copyright notice and this permission notice appear in supporting            *
+///  documentation, and that the name of Brown University not be used in         *
+///  advertising or publicity pertaining to distribution of the software         *
+///  without specific, written prior permission.                                 *
+///                                                                              *
+///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS               *
+///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND           *
+///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY     *
+///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY         *
+///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,             *
+///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS              *
+///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
+///  OF THIS SOFTWARE.                                                           *
+///                                                                              *
 ///******************************************************************************
 
 import 'package:flutter/material.dart';
 import 'globals.dart' as globals;
 
 ///******************************************************************************/
-///										*/
-///	Text widgets								*/
-///										*/
+///                                                                             */
+///     Text widgets                                                            */
+///                                                                             */
 ///******************************************************************************/
 
 Widget textFormField({
@@ -114,8 +114,7 @@ TextField textField({
   label ??= hint;
   hint ??= label;
   maxLines ??= 1;
-  keyboardType ??=
-      (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
+  keyboardType ??= (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
 
   return TextField(
     controller: controller,
@@ -141,10 +140,42 @@ Widget errorField(String text) {
   );
 }
 
+Widget loginTextField(
+  BuildContext context, {
+  String? hint,
+  String? label,
+  TextEditingController? controller,
+  ValueChanged<String>? onChanged,
+  String? Function(String?)? validator,
+  TextInputType? keyboardType,
+  bool obscureText = false,
+  double fraction = 0,
+}) {
+  Widget form = textFormField(
+    hint: hint,
+    label: label,
+    controller: controller,
+    onChanged: onChanged,
+    validator: validator,
+    context: context,
+    fraction: fraction,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+  );
+  return Container(
+    constraints: const BoxConstraints(
+      minWidth: 100,
+      maxWidth: 600,
+    ),
+    width: MediaQuery.of(context).size.width * 0.8,
+    child: form,
+  );
+}
+
 ///******************************************************************************/
-///										*/
-///	Buttons 								*/
-///										*/
+///                                                                             */
+///     Buttons                                                                 */
+///                                                                             */
 ///******************************************************************************/
 
 Widget submitButton(String name, void Function()? action, {enabled = true}) {
@@ -179,16 +210,15 @@ Widget textButton(String label, void Function()? action) {
 }
 
 ///******************************************************************************/
-///										*/
-///	Top menus								*/
-///										*/
+///                                                                             */
+///     Top menus                                                               */
+///                                                                             */
 ///******************************************************************************/
 
 Widget topMenu(void Function(String)? handler, List labels) {
   return PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
-    itemBuilder: (context) =>
-        labels.map<PopupMenuItem<String>>(menuItem).toList(),
+    itemBuilder: (context) => labels.map<PopupMenuItem<String>>(menuItem).toList(),
     onSelected: handler,
   );
 }
@@ -196,8 +226,7 @@ Widget topMenu(void Function(String)? handler, List labels) {
 Widget topMenuAction(List labels) {
   return PopupMenuButton(
       icon: const Icon(Icons.menu_sharp),
-      itemBuilder: (context) =>
-          labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
+      itemBuilder: (context) => labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
       onSelected: (dynamic act) => act.action());
 }
 
@@ -233,9 +262,9 @@ class MenuAction {
 }
 
 ///******************************************************************************/
-///										*/
-///	Field separator 							*/
-///										*/
+///                                                                             */
+///     Field separator                                                         */
+///                                                                             */
 ///******************************************************************************/
 
 Widget fieldSeparator() {
@@ -243,9 +272,9 @@ Widget fieldSeparator() {
 }
 
 ///******************************************************************************/
-///										*/
-///	Drop down selectors							*/
-///										*/
+///                                                                             */
+///     Drop down selectors                                                     */
+///                                                                             */
 ///******************************************************************************/
 
 Widget dropDown(
@@ -329,9 +358,9 @@ Widget dropDownWidget<T>(List<T> items,
 }
 
 ///******************************************************************************/
-///										*/
-///	Page navigation assistance						*/
-///										*/
+///                                                                             */
+///     Page navigation assistance                                              */
+///                                                                             */
 ///******************************************************************************/
 
 void goto(BuildContext context, Widget w) {
@@ -355,9 +384,9 @@ void gotoReplace(BuildContext context, Widget w) {
 }
 
 ///******************************************************************************/
-///										*/
-///	Lists and list boxes							*/
-///										*/
+///                                                                             */
+///     Lists and list boxes                                                    */
+///                                                                             */
 ///******************************************************************************/
 
 Widget listBox<T>(
@@ -369,41 +398,37 @@ Widget listBox<T>(
   List<Widget> widgets = data.map(itemBuilder).toList();
   Widget view = ListBody(children: widgets);
   // ListView view = ListView.builder(
-  //	 padding: const EdgeInsets.all(2),
-  //	 itemCount: data.length,
-  //	 itemBuilder: (BuildContext context, int idx) {
-  //	   return itemBuilder(data[idx]);
-  //	 });
+  //     padding: const EdgeInsets.all(2),
+  //     itemCount: data.length,
+  //     itemBuilder: (BuildContext context, int idx) {
+  //       return itemBuilder(data[idx]);
+  //     });
   String label = "${what}s";
-  return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+  return Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
+    Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+      Text(label, style: getLabelStyle()),
+    ]),
+    view,
+    Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-          Text(label, style: getLabelStyle()),
-        ]),
-        view,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.add_box_outlined),
-              tooltip: 'Add New $what',
-              onPressed: add,
-            ),
-          ],
+        IconButton(
+          icon: const Icon(Icons.add_box_outlined),
+          tooltip: 'Add New $what',
+          onPressed: add,
         ),
-      ]);
+      ],
+    ),
+  ]);
 }
 
 ///******************************************************************************/
-///										*/
-///	Dialog setup								*/
-///										*/
+///                                                                             */
+///     Dialog setup                                                            */
+///                                                                             */
 ///******************************************************************************/
 
-Future<void> displayDialog(
-    BuildContext context, String title, String description) async {
+Future<void> displayDialog(BuildContext context, String title, String description) async {
   return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -450,9 +475,7 @@ Future<bool> getValidation(BuildContext context, String title) async {
 
 PreferredSizeWidget appBar(String title) {
   return AppBar(
-    title: Text(title,
-        style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+    title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
   );
 }
 
@@ -463,20 +486,18 @@ Widget circularProgressIndicator() {
 }
 
 ///******************************************************************************/
-///										*/
-///	Top level pages 							*/
-///										*/
+///                                                                             */
+///     Top level pages                                                         */
+///                                                                             */
 ///******************************************************************************/
 
 Widget iqsignPage(BuildContext context, Widget child) {
   return LayoutBuilder(
-    builder: (BuildContext context, BoxConstraints cnst) =>
-        _iqsignPageBuilder(context, cnst, child),
+    builder: (BuildContext context, BoxConstraints cnst) => _iqsignPageBuilder(context, cnst, child),
   );
 }
 
-Widget _iqsignPageBuilder(
-    BuildContext context, BoxConstraints constraints, Widget child) {
+Widget _iqsignPageBuilder(BuildContext context, BoxConstraints constraints, Widget child) {
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
@@ -535,9 +556,9 @@ Widget iqsignNSPage(BuildContext context, Widget child) {
 }
 
 ///******************************************************************************/
-///										*/
-///	Utility methods 							*/
-///										*/
+///                                                                             */
+///     Utility methods                                                         */
+///                                                                             */
 ///******************************************************************************/
 
 ThemeData getTheme() {
@@ -582,7 +603,22 @@ InputDecoration getDecoration({
 }
 
 TextStyle getLabelStyle() {
-  return const TextStyle(
-      color: globals.labelColor, fontWeight: FontWeight.bold);
+  return const TextStyle(color: globals.labelColor, fontWeight: FontWeight.bold);
 }
 
+Widget getPadding(double size) {
+  return Padding(padding: EdgeInsets.all(size));
+}
+
+Widget getIqsignLogo(BuildContext context) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.3,
+    height: MediaQuery.of(context).size.height * 0.25,
+    child: Center(
+      child: Image.asset(
+        "assets/images/iqsignstlogo.png",
+        fit: BoxFit.contain,
+      ),
+    ),
+  );
+}

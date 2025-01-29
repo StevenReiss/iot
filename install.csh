@@ -12,9 +12,13 @@ git push
 ssh sherpa.cs.brown.edu '(cd /vol/iot; git pull)'
 if ($status > 0) exit;
 
+set images = ( baby.jpg snowflake.jpg spring.png )
 pushd savedimages
 # copy any images that you want to maintain here
 # scp baby.jpg sherpa.cs.brown.edu:/vol/iot/images
+for i in ( $images )
+   scp $i sherpa.cs.brown.edu:/vol/iot/savedimages
+end
 popd
 
 scp flutter/iqsign/assets/*.html sherpa.cs.brown.edu:/vol/web/html/iqsign

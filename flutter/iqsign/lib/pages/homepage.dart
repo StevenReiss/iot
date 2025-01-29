@@ -166,7 +166,10 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   }
 
   dynamic _gotoLogin(dynamic) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const IQSignLogin()),
+    );
   }
 
   Future _handleLogout() async {
@@ -175,6 +178,9 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   }
 
   dynamic _goToCreateSign() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()),
+    );
   }
 }

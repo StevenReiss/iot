@@ -53,7 +53,7 @@ CREATE TABLE iQsignUsers (
     valid bool NOT NULL DEFAULT false
 $ENDTABLE;
 CREATE INDEX UsersEmail ON iQsignUsers ( email );
-CREATE INDEX UsersUsername ON iQsignUsers ( username ); 
+CREATE INDEX UsersUsername ON iQsignUsers ( username );
 
 
 CREATE TABLE iQsignValidator (
@@ -93,6 +93,8 @@ CREATE TABLE iQsignImages (
    name text NOT NULL,
    url text,
    file text,
+   is_border bool DEFAULT FALSE,
+   description text,
    UNIQUE (userid,name),
    FOREIGN KEY (userid) REFERENCES iqSignUsers(id) ON DELETE CASCADE
 $ENDTABLE;
@@ -189,94 +191,3 @@ $ENDTABLE;
 
 
 EOF
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

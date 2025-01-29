@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 import com.sun.net.httpserver.HttpExchange;
 
 import edu.brown.cs.ivy.bower.BowerRouter;
-import edu.brown.cs.ivy.file.IvyLog;
+import edu.brown.cs.ivy.file.IvyLog; 
 
 class IQsignAuth implements IQsignConstants
 {
@@ -54,7 +54,7 @@ class IQsignAuth implements IQsignConstants
 
 private IQsignMain	iqsign_main;
 
-// LOOK INT apache commons email validator
+// LOOK INTO apache commons email validator
 
 private static final Pattern EMAIL_PATTERN =
    Pattern.compile("(?:(?:\\r\\n)?[ \\t])*(?:(?:(?:[^()<>@,;:\\\\\".\\[\\] \\000-\\031]+" +
@@ -226,9 +226,8 @@ String handleLogin(HttpExchange he,IQsignSession session)
             tpwd = IQsignMain.secureHash(tpwd + s);
             if (tpwd.equals(upwd)) {
                pwd1 = tpwd;
-               // remove the temporary password
-               // db.updatePassword(user.getUserId(),user.getPassword(),user.getAltPassword());
-               
+               db.updatePassword(user.getUserId(),user.getPassword(),
+                     user.getAltPassword());
              }
           }
          
@@ -292,7 +291,6 @@ String handleRegister(HttpExchange he,IQsignSession session)
 	 return errorResponse(session,err);
        }
       boolean isvalid = false;
-      isvalid = true;				// remove when email works
       boolean ok = db.registerUser(email,uid,pwd,altpwd,isvalid);
       if (!ok) {
          return errorResponse(session,"Problem registering new user");
@@ -308,6 +306,7 @@ String handleRegister(HttpExchange he,IQsignSession session)
     }
    catch (Throwable t) {
       IvyLog.logE("IQSIGN","Problem while registering user",t);
+      return errorResponse(session,"Problem registering new user");
     }
    finally {
       if (undoneeded) {
@@ -334,11 +333,11 @@ private boolean validateEmail(String data)
 
 private boolean sendRegistrationEmail(HttpExchange he,IQsignSession session,String email,String valid)
 {
+   String pfx = iqsign_main.getURLLocalPrefix(); 
    // need to get host from he
-   String host = he.getLocalAddress().toString();
    String msg = "Thank you for registering with iQsign.\n";
    msg += "To complete the reqistration process, please click on or paste the link:\n";
-   msg += "   https://" + host + "/validate?";
+   msg += "   " + pfx + "/validate?";
    msg += "email=" + IQsignMain.encodeURIComponent(email);
    msg += "&code=" + valid;
    msg += "\n";
@@ -366,7 +365,8 @@ String handleValidationRequest(HttpExchange he,IQsignSession session)
    boolean fg = db.validateUser(email,code); 
    
    if (!fg) {
-//    return BowerRouter.errorResponse(he,session,400,"Outdated or bad validation request");
+      return BowerRouter.errorResponse(he,session,400,
+            "Outdated or bad validation request");
     }
    
    String result = "<html>" +
@@ -397,7 +397,7 @@ String handleForgotPassword(HttpExchange he,IQsignSession session)
    
    String code = IQsignMain.randomString(12);
    String pwd = IQsignMain.secureHash(code);
-   pwd += IQsignMain.secureHash(pwd + email);
+   pwd = IQsignMain.secureHash(pwd + email);
 
    IQsignUser user = db.findUser(email);
    if (user != null) {

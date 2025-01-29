@@ -143,7 +143,7 @@ IQsignSession checkSession(BowerSessionStore<IQsignSession> bss,String sid)
    JSONObject json = sqlQuery1(q,sid);
    if (json != null) {
       long now = System.currentTimeMillis();
-      long lupt = json.getLong("last_time");
+      long lupt = json.getLong("last_used");
       if (now - lupt <= SESSION_TIMEOUT) {
 	 IQsignSession bs = new IQsignSession(bss,json);
 	 return bs;
@@ -255,7 +255,7 @@ boolean validateUser(String email,String code)
    String q1 = "SELECT U.id as userid " +
       "FROM iQsignValidator V, IQsignUsers U " +
       "WHERE V.userid = U.id AND U.email = $1 AND V.validator = $2 AND " +
-      "V.timeout < CURRENT_TIMESTAMP";
+      "V.timeout > CURRENT_TIMESTAMP";
    String q2 = "DELETE FROM iQsignValidator WHERE userid = $1 AND validator = $2";
    String q3 = "UPDATE iQsignUsers SET valid = TRUE WHERE id = $1";
    
@@ -522,15 +522,13 @@ void changeSign(Number sid,String cnts)
 /*										*/
 /********************************************************************************/
 
-void saveOrUpdateImage(String name,String file)
+void saveOrUpdateImage(String name,String file,String url,String desc,boolean border)
 {
    String q1 = "SELECT * FROM iQsignImages WHERE userid IS NULL AND name = $1";
    String q2 = "DELETE FROM iQsignImages WHERE userid IS NULL AND name = $1";
-   String q3 = "INSERT INTO iQsignImages ( userid, name, url, file ) VALUES ( NULL, $1, $2, NULL )";
-   String q4 = "INSERT INTO iQsignImages ( userid, name, url, file ) VALUES ( NULL, $1, NULL, $2 )";
-
-   boolean isurl = (file.startsWith("http:") || file.startsWith("https:"));
-
+   String q3 = "INSERT INTO iQsignImages ( userid, name, url, file, is_border, description ) " + 
+          "VALUES ( NULL, $1, $2, $3, $4, $5 )";
+   
    JSONObject imgjs = sqlQuery1(q1,name);
    if (imgjs != null) {
       IQsignImage img = new IQsignImage(imgjs); 
@@ -539,14 +537,49 @@ void saveOrUpdateImage(String name,String file)
       if (file.equals(rf) || file.equals(ru)) return;
       sqlUpdate(q2,name);
     }
-   if (isurl) {
-      sqlUpdate(q3,name,file);
-    }
-   else {
-      sqlUpdate(q4,name,file);
-    }
+   sqlUpdate(q3,name,url,file,border,desc);
 }
 
+
+void saveOrUpdateUserImage(Number uid,String name,String file,String url,String desc,boolean border)
+{
+   String q1 = "SELECT * FROM iQsignImages WHERE userid IS $1 AND name = $2";
+   String q2 = "DELETE FROM iQsignImages WHERE userid IS $1 AND name = $2";
+   String q3 = "INSERT INTO iQsignImages ( userid, name, url, file, is_border, description ) " + 
+         "VALUES ( $1, $2, $3, $4, $5, $6 )";
+   
+   JSONObject imgjs = sqlQuery1(q1,uid,name);
+   if (imgjs != null) {
+      IQsignImage img = new IQsignImage(imgjs);
+      sqlUpdate(q2,uid,name);
+      String rf = img.getFile();
+      if (rf != null && !rf.isEmpty()) {
+         File rff = new File(rf);
+         if (!rff.isAbsolute()) {
+            File f1 = new File(iqsign_main.getBaseDirectory(),"savedimages");
+            rff = new File(f1,rff.getPath());
+          }
+         rff.delete();
+       }
+    }
+   sqlUpdate(q3,uid,name,url,file,border,desc);
+}
+
+
+
+List<IQsignImage> findImages(Number uid,boolean border)
+{
+   String q1 = "SELECT * FROM iQsignImages WHERE (userid IS NULL OR userid = $1) AND " +
+      "is_border = $2";
+   List<JSONObject> imgs = sqlQueryN(q1,uid,border);
+   
+   List<IQsignImage> rslt = new ArrayList<>();
+   for (JSONObject jo : imgs) {
+      rslt.add(new IQsignImage(jo));
+    }
+   
+   return rslt;
+}
 
 
 /********************************************************************************/

@@ -43,6 +43,7 @@ import '../globals.dart' as globals;
 
 Future loginKeyDialog(BuildContext context, SignData sd) async {
   Uri url = util.getServerUri("/rest/createcode");
+  BuildContext dcontext = context;
   var body = {
     'session': globals.iqsignSession,
     'signuser': sd.getSignUserId().toString(),
@@ -52,22 +53,18 @@ Future loginKeyDialog(BuildContext context, SignData sd) async {
   var resp = await http.post(url, body: body);
   var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
   if (js['status'] != 'OK') {
-    if (!context.mounted) return;
+    if (!dcontext.mounted) return;
     Navigator.of(context).pop("CANCEL");
     return;
   }
   String code = js['code'];
-  if (!context.mounted) return;
-  return loginKeyDialog1(context, sd, code);
-}
+  if (!dcontext.mounted) return;
 
-Future loginKeyDialog1(BuildContext context, SignData sd, String code) async {
-  void handleOk() {
-    Navigator.of(context).pop("OK");
-  }
-
-  void accept() {
-    Clipboard.setData(ClipboardData(text: code)).then(handleOk as FutureOr Function(void value));
+  Future accept() async {
+    await Clipboard.setData(ClipboardData(text: code));
+    if (dcontext.mounted) {
+      Navigator.of(dcontext).pop("OK");
+    }
   }
 
   Widget acceptBtn = widgets.submitButton("OK", accept);
@@ -105,6 +102,7 @@ Future loginKeyDialog1(BuildContext context, SignData sd, String code) async {
   return showDialog(
       context: context,
       builder: (context) {
+        dcontext = context;
         return dlg;
       });
 }

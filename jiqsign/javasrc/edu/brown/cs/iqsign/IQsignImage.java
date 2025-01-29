@@ -79,6 +79,10 @@ String getUrl()                 { return image_data.optString("url",null); }
 
 String getFile()                { return image_data.optString("file",null); }
 
+String getDescription()         { return image_data.optString("description",null); }
+
+boolean isBorder()              { return image_data.optBoolean("is_border",false); }
+
 
 
 

@@ -93,6 +93,7 @@ private File		base_directory;
 private File		web_directory;
 private File		default_signs;
 private File		default_images;
+private File            default_borders;
 private boolean 	is_testing;
 
 private static Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
@@ -157,7 +158,14 @@ private IQsignMain(String [] args)
    if (default_images == null) {
       reportError("Can't find default images file");
     }
-
+   
+   if (default_borders == null) {
+      default_borders = findDefaultBorders();
+    }
+   if (default_borders == null) {
+      reportError("Can't find default backgrounds file");
+    }
+   
    String db = props.getProperty("database");
    if (db == null) db = "iqsign";
    database_manager = new IQsignDatabase(this,db);
@@ -194,6 +202,12 @@ private void scanArgs(String [] args)
 	 else if (args[i].startsWith("-di") && i+1 < args.length) {     // -di <default images>
 	    default_images = new File(args[++i]);
 	  }
+         else if (args[i].startsWith("-db") && i+1 < args.length) {     // -db <default borders>
+	    default_borders = new File(args[++i]);
+	  }
+         else if (args[i].startsWith("-s")) {                          // -server
+            // nothing needed
+          }
 	 else if (args[i].startsWith("-LD")) {                          // -LDebug
 	    IvyLog.setLogLevel(IvyLog.LogLevel.DEBUG);
 	  }
@@ -258,6 +272,7 @@ File getWebDirectory()				{ return web_directory; }
 File getDefaultSignsFile()			{ return default_signs; }
 
 File getDefaultImagesFile()			{ return default_images; }
+File getDefaultBordersFile()                    { return default_borders; }
 
 File getSvgLibrary()		
 {
@@ -271,12 +286,12 @@ String getURLHostPrefix()
 {
    String hn = IvyExecQuery.getHostName();
    if (is_testing) hn = "localhost";
-
+   
    return "http://" + hn;
 }
 
 
-String getURLLocalPreix()
+String getURLLocalPrefix()
 {
    String hn = IvyExecQuery.getHostName();
    String pfx = "https";
@@ -522,6 +537,17 @@ private File findDefaultImages()
    File f1 = new File(f0,"defaultimages");
    if (f1.exists() && f1.canRead() && !f1.isDirectory()) return f1;
 
+   return null;
+}
+
+
+
+private File findDefaultBorders()
+{
+   File f0 = new File(base_directory,"resources");
+   File f1 = new File(f0,"defaultborders");
+   if (f1.exists() && f1.canRead() && !f1.isDirectory()) return f1;
+   
    return null;
 }
 

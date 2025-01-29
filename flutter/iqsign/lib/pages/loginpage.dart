@@ -149,43 +149,25 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.4,
-                      child: Center(
-                        child: Image.asset(
-                          "assets/images/iqsignstlogo.png",
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(16.0),
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: widgets.textFormField(
-                        hint: "Username or email",
-                        label: "Username or email",
-                        validator: _validateUserName,
-                        controller: _userController,
-                        context: context,
-                        fraction: 0.8,
-                      ),
+                    widgets.getIqsignLogo(context),
+                    widgets.getPadding(16),
+                    widgets.loginTextField(
+                      context,
+                      hint: "Username or email",
+                      label: "Username or email",
+                      validator: _validateUserName,
+                      controller: _userController,
+                      fraction: 0.8,
                     ),
                     widgets.fieldSeparator(),
-                    Container(
-                      constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: widgets.textFormField(
-                        hint: "Password",
-                        label: "Password",
-                        validator: _validatePassword,
-                        controller: _pwdController,
-                        context: context,
-                        fraction: 0.8,
-                        obscureText: true,
-                      ),
+                    widgets.loginTextField(
+                      context,
+                      hint: "Password",
+                      label: "Password",
+                      validator: _validatePassword,
+                      controller: _pwdController,
+                      fraction: 0.8,
+                      obscureText: true,
                     ),
                     widgets.errorField(_loginError),
                     Container(
@@ -208,9 +190,7 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-              ),
+              widgets.getPadding(16),
               widgets.textButton("Not a user? Register Here.", _gotoRegister),
               widgets.textButton("Forgot Password?", _gotoForgotPassword),
             ],

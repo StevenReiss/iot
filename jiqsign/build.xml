@@ -1,0 +1,68 @@
+<project name='iqsign' default='all'>
+
+   <property file='build.properties' />
+
+   <available file="./build.properties" type='file' property='setup.done' />
+   <path id='setuppath'>
+      <pathelement location='../..' />
+   </path>
+   <path id='iqsignpath'>
+      <pathelement location='.' />
+   </path>
+   <property name='setupfile' refid='setuppath' />
+   <property name='iqsignfile' refid='iqsignpath' />
+   <property name='PRO' value='${setupfile}' />
+   <property name='IQSIGN' value='${iqsignfile}' />
+
+   <target name='setup' unless='setup.done'>
+      <echo file='./build.properties' message="PRO=${setupfile}${line.separator}" />
+      <echo file='./build.properties' message='IQSIGN=${iqsignfile}${line.separator}' append='true' />
+      <mkdir dir='./java/edu/brown/cs/iqsign' />
+      <property name='PRO' value='${setupfile}' />
+      <property name='IQSIGN' value='${iqsignfile}' />
+   </target>
+
+
+   <available file='${PRO}/ivy' type="dir" property="ivy.present" />
+   <property name='IVYBIN' value='${IQLIB}/ivy.jar' />
+   <property name='IVYLIB' value='${PRO}/ivy/lib' />
+
+   <property name='IQLIB' value='${IQSIGN}/lib' />
+   <path id='spr.classpath'>
+     <pathelement location='${IQSIGN}/java' />
+     <pathelement location='${IQSIGN}/javasrc' />
+     <fileset dir='${IVYLIB}' includes='ivy.jar' />
+     <fileset dir='${IVYLIB}' includes='postgresql.jar' />
+     <fileset dir='${IVYLIB}' includes='mysql.jar' />
+     <fileset dir='${IVYLIB}' includes='json.jar' />
+     <fileset dir='${IVYLIB}' includes='jakarta.mail.jar' />
+     <fileset dir='${IVYLIB}' includes='slf4j-api.jar' />
+  </path>
+
+  <target name='all' depends='setup,compile,jar' />
+
+  <target name='compile' depends='setup'>
+     <javac srcdir='.' destdir='${IQSIGN}/java' debug='on' deprecation='on' includeantruntime='false'>
+	<classpath refid='spr.classpath' />
+     </javac>
+  </target>
+
+  <target name='jar' depends='compile'>
+     <jar destfile='iqsign.jar'>
+	<manifest>
+	   <attribute name='Main-Class' value='edu.brown.cs.iqsign.SignMaker' />
+	</manifest>
+	<fileset dir='${IQSIGN}/java' includes='**/iqsign/IQsign*.class' />
+	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/exec/*.class' />
+	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/file/*.class' />
+	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/bower/*.class' />
+	<zipfileset src='${IVYLIB}/postgresql.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/mysql.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/json.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/slf4j-api.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/jakarta.mail.jar' excludes='META-INF/*' />
+     </jar>
+     <copy file='iqsign.jar' tofile='${IQSIGN}/../bin/iqsign.jar' />
+   </target>
+
+</project>

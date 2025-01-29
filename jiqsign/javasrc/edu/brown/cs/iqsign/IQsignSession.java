@@ -126,7 +126,7 @@ JSONObject toJson()
          "userid",session_userid,
          "code",session_code,
          "creation_time",create_time,
-         "last_user",last_time);
+         "last_used",last_time);
     
    return rslt;
 }
