@@ -76,6 +76,7 @@ String getEmail()                       { return user_data.getString("email"); }
 String getUserName()                    { return user_data.getString("username"); }
 String getPassword()                    { return user_data.getString("password"); }
 String getAltPassword()                 { return user_data.getString("altpassword"); }
+String getTempPassword()                { return user_data.optString("temppassword",null); }
 int getMaxSigns()                       { return user_data.getInt("maxsigns"); }
 boolean isAdmin()                       { return user_data.getBoolean("admin"); }
 boolean isValid()                       { return user_data.getBoolean("valid"); }

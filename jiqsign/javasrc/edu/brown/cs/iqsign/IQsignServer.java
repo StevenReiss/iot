@@ -143,6 +143,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("ALL","/rest/logout",new LogoutAction());
    br.addRoute("ALL","/rest/authorize",new AuthorizeAction());
    br.addRoute("GET","/validate",iqsign_auth::handleValidationRequest);
+   br.addRoute("GET","/rest/validate",iqsign_auth::handleValidationRequest);
    br.addRoute("ALL","/rest/forgotpassword",iqsign_auth::handleForgotPassword);
    br.addRoute("POST","/rest/newpassword",iqsign_auth::handleResetPassword);
 
@@ -164,6 +165,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("ALL","/rest/namedsigns",new GetSavedSignsAction());
    br.addRoute("POST","/rest/addsign",new AddSignAction());
    br.addRoute("POST","/rest/removeuser",new RemoveUserAction());
+   br.addRoute("POST","/rest/changepassword",iqsign_auth::handleChangePassword);
 
    br.addRoute("ALL",new Handle404Action());
    br.addErrorHandler(new HandleErrorAction());

@@ -215,12 +215,23 @@ String handleLogin(HttpExchange he,IQsignSession session)
        }
       else {
 	 String pwd = user.getPassword();
+         String tpwd = user.getTempPassword();
 	 String upwd = BowerRouter.getParameter(he,"password");
 	 if (!uid.equals(user.getEmail()) && uid.equals(user.getUserName())) {
 	    pwd = user.getAltPassword();
 	  }
 	 String s = BowerRouter.getParameter(he,"padding");
 	 String pwd1 = IQsignMain.secureHash(pwd + s);
+         if (tpwd != null && !tpwd.isEmpty()) {
+            tpwd = IQsignMain.secureHash(tpwd + s);
+            if (tpwd.equals(upwd)) {
+               pwd1 = tpwd;
+               // remove the temporary password
+               // db.updatePassword(user.getUserId(),user.getPassword(),user.getAltPassword());
+               
+             }
+          }
+         
 	 if (!pwd1.equals(upwd)) {
 	    return errorResponse(session,"Invalid username or password");
 	  }
@@ -358,7 +369,13 @@ String handleValidationRequest(HttpExchange he,IQsignSession session)
 //    return BowerRouter.errorResponse(he,session,400,"Outdated or bad validation request");
     }
    
-   return BowerRouter.jsonOKResponse(session);
+   String result = "<html>" +
+   "<p>Thank you for validating your email. </p> " + 
+   "<p>You should be able to log into iQsign now.</p>" +
+   "<p>WELCOME to iQsign !!!</p>" +
+   "</html>";
+   
+   return result;
 }
 
 
@@ -371,17 +388,24 @@ String handleForgotPassword(HttpExchange he,IQsignSession session)
    if (!validateEmail(email)) {
       return BowerRouter.errorResponse(he,session,400,"Bad email");
     }
-   String code = IQsignMain.randomString(48);
    
+   // Code should be 12 long
+   // Email should say login with the given code and then change your password.
+   // Note that the code is only valid once.
+   // compute a temporary password using email and this code
+   // update the user's temppassword field to the resul
+   
+   String code = IQsignMain.randomString(12);
+   String pwd = IQsignMain.secureHash(code);
+   pwd += IQsignMain.secureHash(pwd + email);
+
    IQsignUser user = db.findUser(email);
    if (user != null) {
-      db.registerValidator(email,code);
-      String host = he.getLocalAddress().toString();
-      String msg = "Here is the password reset link for iQsign you requested.\n";
-      msg += "To reset your password, please click on or paste the link:\n";
-      msg += "   https://" + host + "/newpassword?";
-      msg += "email=" + IQsignMain.encodeURIComponent(email);
-      msg += "&code=" + code;
+      db.setTemporaryPassword(user.getUserId(),pwd);
+      String msg = "To log into iQsign, please use the one-time password " + code + "\n\n";
+      msg += "Note that to use this you must log in with your email, not your user name.\n\n";
+      msg += "Once you have logged in with this code, please change your password.\n\n";
+      msg += "Thank you for using iQsign.\n";
       msg += "\n";
       iqsign_main.sendEmail(email,"Password request for iQsign",msg);
     }
@@ -404,6 +428,26 @@ String handleResetPassword(HttpExchange he,IQsignSession session)
       IQsignUser user = db.findUser(email);
       db.updatePassword(user.getUserId(),pwd,altpwd); 
     }
+   
+   return BowerRouter.jsonOKResponse(session);
+}
+
+
+String handleChangePassword(HttpExchange he,IQsignSession session)
+{
+   IQsignDatabase db = iqsign_main.getDatabaseManager();
+   
+   String email = BowerRouter.getParameter(he,"email");
+   email = email.toLowerCase();
+   String pwd = BowerRouter.getParameter(he,"password");
+   String altpwd = BowerRouter.getParameter(he,"altpassword");
+   
+   IQsignUser user = db.findUser(email);
+   if (user == null) {
+      return BowerRouter.errorResponse(he,session,402,"Bad user");
+    }
+   
+   db.updatePassword(user.getUserId(),pwd,altpwd); 
    
    return BowerRouter.jsonOKResponse(session);
 }

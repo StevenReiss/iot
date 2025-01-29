@@ -33,7 +33,6 @@ DROP TABLE IF EXISTS iQsignValidator CASCADE;
 DROP TABLE IF EXISTS iQsignSigns CASCADE;
 DROP TABLE IF EXISTS iQsignImages CASCADE;
 DROP TABLE IF EXISTS iQsignDefines CASCADE;
-DROP TABLE IF EXISTS iQsignParameters CASCADE;
 DROP TABLE IF EXISTS iQsignLoginCodes CASCADE;
 DROP TABLE IF EXISTS iQsignSignCodes CASCADE;
 DROP TABLE IF EXISTS iQsignUseCounts CASCADE;
@@ -48,12 +47,13 @@ CREATE TABLE iQsignUsers (
     username text,
     password text NOT NULL,
     altpassword text,
+    temppassword text,
     maxsigns int DEFAULT 3,
     admin bool DEFAULT false,
     valid bool NOT NULL DEFAULT false
 $ENDTABLE;
 CREATE INDEX UsersEmail ON iQsignUsers ( email );
-CREATE INDEX UsersUsername ON iQsignUsers ( username ); 	
+CREATE INDEX UsersUsername ON iQsignUsers ( username ); 
 
 
 CREATE TABLE iQsignValidator (
@@ -111,20 +111,6 @@ CREATE TABLE iQsignDefines (
 $ENDTABLE;
 CREATE INDEX DefinesUser on iqSignDefines(userid);
 CREATE INDEX DefineName on iqSignDefines(name);
-
-
-/*************
-CREATE TABLE iQsignParameters (
-   defineid $idtype,
-   name text NOT NULL,
-   description text,
-   value text,
-   index int NOT_NULL,
-   PRIMARY KEY (defineid,name),
-   FOREIGN KEY (defineid) REFERENCES iQsignDefines(id) ON DELETE CASCADE
-$ENDTABLE;
-CREATE INDEX ParameterDef on iQsignParameters(defineid);
-************/
 
 
 CREATE TABLE iQsignLoginCodes (
@@ -203,3 +189,94 @@ $ENDTABLE;
 
 
 EOF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

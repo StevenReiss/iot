@@ -272,9 +272,18 @@ boolean validateUser(String email,String code)
 
 void updatePassword(Number uid,String pwd,String apwd)
 {
-   String q1 = "UPDATE iQsignUsers SET password = $1, altpassword = $2 " +
+   String q1 = "UPDATE iQsignUsers SET password = $1, altpassword = $2, " +
+      " temppassword = NULL " +
       "WHERE id = $3";
    sqlUpdate(q1,pwd,apwd,uid);
+}
+
+
+void setTemporaryPassword(Number uid,String tpwd)
+{
+   String q1 = "UPDATE iQsignUsers SET temppassword = $1 " +
+      "WHERE id = $3";
+   sqlUpdate(q1,tpwd,uid);
 }
 
 
