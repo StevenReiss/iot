@@ -38,6 +38,8 @@ import '../globals.dart' as globals;
 import '../widgets.dart' as widgets;
 import 'package:url_launcher/url_launcher.dart';
 import '../util.dart' as util;
+import 'imagespage.dart';
+import '../imagedata.dart';
 
 class IQSignSignEditWidget extends StatelessWidget {
   final SignData _signData;
@@ -121,10 +123,10 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
         actions: [
           widgets.topMenu(_handleCommand, [
             {'Help': "Sign Instructions"},
-            {'SVGImages': "Browse Image Library"},
-            {'MyImages': "Browse My Images"},
-            {'FAImages': "Browse Font Awesome Images"},
-            {'AddImage': "Add New Image to Image Library"},
+            {'SVGImages': "Add Image From Image Library"},
+            {'MyImages': "Add Image From My Images"},
+            {'BorderImages': "Add Border Image"},
+            {'AddImage': "Upload New Image to Image Library"},
             {"About": "About iQSign"},
           ]),
         ],
@@ -205,25 +207,41 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
         await _launchURI(uri1);
         break;
       case "MyImages":
-        var uri = util.getServerUri(
-          "/rest/savedimages",
-          {'session': globals.iqsignSession},
-        );
-        await _launchURI(uri);
+        ImageData? id = await gotoImagePage(false, false);
+        insertImage(id);
+        break;
+      case "BorderImages":
+        ImageData? id = await gotoImagePage(true, false);
+        insertImage(id);
         break;
       case "FAImages":
-        await _launchURL("https://fontawesome.com/search?m=free&s=solid");
+        //    await _launchURL("https://fontawesome.com/search?m=free&s=solid");
         break;
       case "SVGImages":
-        var uri1 = util.getServerUri(
-          "/rest/svgimages",
-          {'session': globals.iqsignSession},
-        );
-        await _launchURI(uri1);
+        ImageData? id = await gotoImagePage(false, true);
+        insertImage(id);
         break;
       case "AddImage":
         break;
     }
+  }
+
+  Future<ImageData?> gotoImagePage(bool border, bool svg) async {
+    dynamic rslt = await Navigator.push(context, MaterialPageRoute<ImageData?>(
+      builder: (BuildContext context) {
+        return IQSignImagesPage(border, svg);
+      },
+    ));
+    if (rslt.runtimeType == ImageData) {
+      return rslt as ImageData;
+    }
+    return null;
+  }
+
+  void insertImage(ImageData? id) {
+    if (id == null) return;
+    String txt = id.getImageString();
+    _controller.text += "\n$txt";
   }
 
   Widget _createNameSelector({String? val}) {
@@ -351,10 +369,10 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
         });
   }
 
-  Future _launchURL(String url) async {
-    Uri uri = Uri.parse(url);
-    await _launchURI(uri);
-  }
+//   Future _launchURL(String url) async {
+//     Uri uri = Uri.parse(url);
+//     await _launchURI(uri);
+//   }
 
   Future _launchURI(Uri uri) async {
     if (!await launchUrl(uri)) {

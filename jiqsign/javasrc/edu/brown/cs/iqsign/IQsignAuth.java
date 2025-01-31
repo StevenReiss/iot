@@ -437,14 +437,20 @@ String handleChangePassword(HttpExchange he,IQsignSession session)
 {
    IQsignDatabase db = iqsign_main.getDatabaseManager();
    
-   String email = BowerRouter.getParameter(he,"email");
-   email = email.toLowerCase();
+   Number uid = session.getUserId();
    String pwd = BowerRouter.getParameter(he,"password");
    String altpwd = BowerRouter.getParameter(he,"altpassword");
+   String usrpwd = BowerRouter.getParameter(he,"userpwd");
    
-   IQsignUser user = db.findUser(email);
+   IQsignUser user = db.findUser(uid);
    if (user == null) {
       return BowerRouter.errorResponse(he,session,402,"Bad user");
+    }
+   if ((pwd == null || pwd.isEmpty()) && usrpwd != null) {
+      pwd = IQsignMain.secureHash(usrpwd + user.getEmail()); 
+    }
+   if ((altpwd == null || altpwd.isEmpty()) && usrpwd != null) {
+      altpwd = IQsignMain.secureHash(usrpwd + user.getUserName());
     }
    
    db.updatePassword(user.getUserId(),pwd,altpwd); 

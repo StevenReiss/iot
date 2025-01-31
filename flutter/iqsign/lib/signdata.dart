@@ -121,7 +121,12 @@ class SignData {
     if (preview) {
       s = s.replaceAll("/image", "/imagePREVIEW");
     }
-    return "$s?${Random().nextInt(1000000)}";
+    String url = "$s?${Random().nextInt(1000000)}";
+    String? sess = globals.iqsignSession;
+    if (sess != null) {
+      url += "&session=$sess";
+    }
+    return url;
   }
 
   String getSignBody() {

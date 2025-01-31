@@ -34,6 +34,8 @@
 
 package edu.brown.cs.iqsign;
 
+import java.io.File;
+
 import org.json.JSONObject;
 
 class IQsignImage implements IQsignConstants
@@ -82,6 +84,18 @@ String getFile()                { return image_data.optString("file",null); }
 String getDescription()         { return image_data.optString("description",null); }
 
 boolean isBorder()              { return image_data.optBoolean("is_border",false); }
+
+String getInsertion()
+{
+   if (getUrl() != null) {
+      return "@ " + getUrl();
+    }
+   if (getFile() != null) {
+      File f = new File(getFile());
+      return "@ " + f.getName();
+    }
+   return null;
+}
 
 
 

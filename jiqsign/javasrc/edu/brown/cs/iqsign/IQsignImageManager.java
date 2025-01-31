@@ -49,7 +49,6 @@ import java.util.TreeSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import edu.brown.cs.ivy.file.IvyFile;
 import edu.brown.cs.ivy.file.IvyLog;
 
 class IQsignImageManager implements IQsignConstants
@@ -103,6 +102,8 @@ IQsignImageManager(IQsignMain main)
 
 File getLocalImage(String name)
 {
+   int idx = name.indexOf("?");
+   if (idx > 0) name = name.substring(0,idx);
    File f1 = new File(name);
    if (f1.isAbsolute()) return f1;
    File f2 = getImagesDirectory();
@@ -197,36 +198,58 @@ private File getImageFileName(Number uid,String name,String typ)
 
 JSONArray getImageSet(Number uid,boolean border,boolean svg)
 {
-   if (svg) {
-      return getSvgImageSet(uid,border);
-    }
    JSONArray rslt = new JSONArray();
    
-   IQsignDatabase db = iqsign_main.getDatabaseManager();
-   List<IQsignImage> imgs = db.findImages(uid,border); 
-   for (IQsignImage img : imgs) {
-      JSONObject jo = buildJson("name",img.getName(),
-            "description",img.getDescription(),
-            "url",img.getUrl());
-       rslt.put(jo);           
+   if (border) {
+      getSvgImageSet(uid,true,rslt);
+      getUserImageSet(uid,true,rslt);
+    }
+   else if (svg) {
+      getSvgImageSet(uid,false,rslt);
+    }
+   else {
+      getUserImageSet(uid,false,rslt);
     }
    
    return rslt;
 }
 
 
-JSONArray getSvgImageSet(Number uid,boolean border)
+JSONArray getUserImageSet(Number uid,boolean border,JSONArray rslt)
 {
-   JSONArray arr = new JSONArray();
+   IQsignDatabase db = iqsign_main.getDatabaseManager();
+   List<IQsignImage> imgs = db.findImages(uid,border); 
+   for (IQsignImage img : imgs) {
+      String url = img.getUrl();
+      String file = img.getFile();
+      if (url == null && file != null) {
+         File f = new File(file);
+         url = IMAGE_URL_PREFIX + f.getName();
+       }
+      JSONObject jo = buildJson("name",img.getName(),
+            "description",img.getDescription(),
+            "imagestring",img.getInsertion(), 
+            "issvg",false,
+            "url",url);
+      rslt.put(jo);           
+    }
    
+   return rslt;
+}
+
+
+JSONArray getSvgImageSet(Number uid,boolean border,JSONArray arr)
+{
    for (SvgTopicData topdata : svg_topics) {
       if (border && !topdata.getName().equals("borders")) continue;
       if (!border && topdata.getName().equals("borders")) continue;
       for (SvgData svd : topdata.getDataItems()) {
          JSONObject jo = buildJson("name",svd.getName(),
                "description",svd.getDescription(),
-               "url",svd.getUrl(),
-               "svg",svd.getSvg());
+//             "svg",svd .getSvg(),
+               "imagestring",svd.getInsertion(),
+               "issvg",true,
+               "url",svd.getUrl());
          arr.put(jo);      
        }
     }
@@ -271,8 +294,8 @@ private void updateDefaultImages(File defaultfile,boolean border)
          String url = null;
          int idx1 = file.indexOf(",");
          if (idx1 > 0) {
-            desc = file.substring(idx+1).trim();
-            file = file.substring(0,idx).trim();
+            desc = file.substring(idx1+1).trim();
+            file = file.substring(0,idx1).trim();
           }
          if (file.startsWith("http:") || 
                file.startsWith("https:") ||
@@ -353,7 +376,6 @@ private final class SvgData implements Comparable<SvgData> {
    private String svg_name;
    private String svg_url;
    private String svg_topic;
-   private String svg_data;
 
    SvgData(File f) {
       String fnm = f.getName();
@@ -362,13 +384,6 @@ private final class SvgData implements Comparable<SvgData> {
       svg_name = fnm.substring(0,idx);
       svg_url = SVG_URL_PREFIX + d + "/" + fnm;
       svg_topic = d;
-      svg_data = null;
-      try {
-         svg_data = IvyFile.loadFile(f);
-       }
-      catch (IOException e) {
-         IvyLog.logE("Problem reading svg file",e);
-       }
     }
 
    @Override public int compareTo(SvgData sd) {
@@ -387,8 +402,8 @@ private final class SvgData implements Comparable<SvgData> {
       return svg_url;
     }
    
-   String getSvg() {
-      return svg_data;
+   String getInsertion() {
+      return "@ sv-" + svg_name;
     }
 
 }	// end of inner class SvgData

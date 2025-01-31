@@ -634,6 +634,13 @@ void setImage(String name0) throws SignMakerException
       image_contents = svgfile.getAbsolutePath();
       return;
     }
+   File f1 = SignMaker.getImageLibrary();
+   if (f1 != null) {
+      File f2 = new File(f1,name);
+      image_type = SignImageType.FILE;
+      image_contents = f2.getAbsolutePath();
+      return;
+    }
 
    throw new SignMakerException("Unknown image: " + name0);
 }

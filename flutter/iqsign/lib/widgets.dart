@@ -133,9 +133,10 @@ TextField textField({
   );
 }
 
-Widget errorField(String text) {
+Widget errorField(String? text) {
+  String t1 = (text ?? "");
   return Text(
-    text,
+    t1,
     style: const TextStyle(color: Colors.red, fontSize: 16),
   );
 }
@@ -383,6 +384,10 @@ void gotoReplace(BuildContext context, Widget w) {
   Navigator.of(context).push(route);
 }
 
+dynamic gotoResult(BuildContext context, Widget w) async {
+  return goto(context, w);
+}
+
 ///******************************************************************************/
 ///                                                                             */
 ///     Lists and list boxes                                                    */
@@ -491,13 +496,30 @@ Widget circularProgressIndicator() {
 ///                                                                             */
 ///******************************************************************************/
 
-Widget iqsignPage(BuildContext context, Widget child) {
+Widget iqsignPage(BuildContext context, Widget child, [bool scrollable = false]) {
   return LayoutBuilder(
-    builder: (BuildContext context, BoxConstraints cnst) => _iqsignPageBuilder(context, cnst, child),
+    builder: (BuildContext context, BoxConstraints cnst) {
+      return _iqsignPageBuilder(context, cnst, child, scrollable);
+    },
   );
 }
 
-Widget _iqsignPageBuilder(BuildContext context, BoxConstraints constraints, Widget child) {
+Widget _iqsignPageBuilder(
+  BuildContext context,
+  BoxConstraints constraints,
+  Widget child,
+  bool scrollable,
+) {
+  BoxConstraints bc = BoxConstraints(
+    minWidth: constraints.maxWidth,
+  );
+  if (scrollable) {
+    bc = BoxConstraints(
+      minWidth: constraints.maxWidth,
+      // maxHeight: MediaQuery.of(context).size.width * 0.8,
+      maxHeight: 400,
+    );
+  }
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
@@ -512,10 +534,7 @@ Widget _iqsignPageBuilder(BuildContext context, BoxConstraints constraints, Widg
     ),
     child: SingleChildScrollView(
       child: ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: constraints.maxWidth,
-          // minHeight: constraints.maxHeight,
-        ),
+        constraints: bc,
         child: child,
       ),
     ),

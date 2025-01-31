@@ -311,7 +311,7 @@ class _HandleLogin {
     String p3 = util.hasher(p2 + pad);
 
     var body = {
-      globals.iqsignSession: _curSession,
+      'session': _curSession,
       'username': usr,
       'padding': pad,
       'password': p3,

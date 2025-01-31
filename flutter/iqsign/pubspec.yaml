@@ -41,6 +41,7 @@ dependencies:
   crypto: ^3.0.2
   url_launcher: ^6.1.6
   shared_preferences: ^2.0.15
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:

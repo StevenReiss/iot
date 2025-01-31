@@ -249,6 +249,16 @@ static File getSvgLibrary()
 }
 
 
+static File getImageLibrary()
+{
+   if (base_directory == null) return null;
+   
+   File f1 = new File(base_directory,"savedimages");
+   if (!f1.exists()) return null;
+   
+   return f1;
+}
+
 static File getDatabasePropertyFile()
 {
    if (base_directory == null) return null;
@@ -362,8 +372,9 @@ private static boolean isBaseDirectory(File dir)
    if (!f2.exists()) return false;
 
    File f3 = new File(f2,"Database.props");
+   File f4 = new File(dir,"savedimages");
    File f5 = new File(dir,"svgimagelib");  //TODO -- this isn't in my stuff :(
-   if (f3.exists() && f5.exists()) return true;
+   if (f3.exists() && f4.exists() && f5.exists()) return true;
 
    return false;
 }

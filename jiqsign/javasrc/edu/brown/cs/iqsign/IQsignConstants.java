@@ -52,6 +52,7 @@ String SESSION_COOKIE = "iot-iQsign-5567";
 String SESSION_PARAMETER = "session";
 
 String SVG_URL_PREFIX = "/rest/svgimage/";
+String IMAGE_URL_PREFIX = "/rest/userimage/";
 
 String INITIAL_SIGN = "=InitialSign";
 

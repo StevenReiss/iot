@@ -150,7 +150,10 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         ),
         child: Image.network(sd.getLocalImageUrl()),
       ),
-      onTap: () => {Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))},
+      onTap: () => {
+        Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))
+      },
     );
   }
 
@@ -184,3 +187,4 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
     );
   }
 }
+
