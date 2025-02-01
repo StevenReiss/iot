@@ -124,6 +124,24 @@ File getSvgImage(String topic,String name)
 }
 
 
+File getSvgPngImage(String topic,String name)
+{
+   File root = iqsign_main.getSvgLibrary();
+   File f1 = new File(root,topic);
+   if (!name.endsWith(".svg")) {
+      name += ".svg";
+    }
+   if (!name.endsWith(".png")) {
+      name += ".png";
+    }
+   File f2 = new File(f1,name);
+   if (!f2.exists()) return null;
+   
+   return f2;
+}
+
+
+
 /********************************************************************************/
 /*										*/
 /*	Load Svg Images from directory                         		*/
@@ -249,6 +267,7 @@ JSONArray getSvgImageSet(Number uid,boolean border,JSONArray arr)
 //             "svg",svd .getSvg(),
                "imagestring",svd.getInsertion(),
                "issvg",true,
+               "havepng",svd.havePNG(),
                "url",svd.getUrl());
          arr.put(jo);      
        }
@@ -376,13 +395,19 @@ private final class SvgData implements Comparable<SvgData> {
    private String svg_name;
    private String svg_url;
    private String svg_topic;
-
+   private boolean have_png;
+   
    SvgData(File f) {
       String fnm = f.getName();
       String d = f.getParentFile().getName();
       int idx = fnm.lastIndexOf(".");
       svg_name = fnm.substring(0,idx);
       svg_url = SVG_URL_PREFIX + d + "/" + fnm;
+      have_png = false;
+      File f1 = new File(f.getName() + ".png");
+      if (f1.exists()) {
+         have_png = true;
+       }
       svg_topic = d;
     }
 
@@ -404,6 +429,10 @@ private final class SvgData implements Comparable<SvgData> {
    
    String getInsertion() {
       return "@ sv-" + svg_name;
+    }
+   
+   boolean havePNG() {
+      return have_png;
     }
 
 }	// end of inner class SvgData

@@ -31,8 +31,6 @@
 ///******************************************************************************
 
 import 'dart:math';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import '../globals.dart' as globals;
 import '../util.dart' as util;
 
@@ -164,11 +162,7 @@ class SignData {
     String dim0 = dim ?? getDimension();
     int width0 = width ?? getWidth();
     int height0 = height ?? getHeight();
-    var url = util.getServerUri(
-      "/rest/sign/${getSignId()}/update",
-    );
     var body = {
-      'session': globals.iqsignSession,
       'signdata': getSignBody(),
       'signuser': getSignUserId().toString(),
       'signname': name0,
@@ -178,9 +172,10 @@ class SignData {
       'signkey': getNameKey(),
       'signid': getSignId().toString(),
     };
-
-    var resp = await http.post(url, body: body);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.postJson(
+      "/rest/sign/update",
+      body: body,
+    );
     if (js['status'] != "OK") {
       if (name != null) setName(name);
       if (dim != null || width != null || height != null) {

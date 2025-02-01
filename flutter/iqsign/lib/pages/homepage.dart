@@ -35,20 +35,13 @@ import 'package:iqsign/pages/createsignpage.dart';
 import '../util.dart' as util;
 import '../widgets.dart' as widgets;
 import '../signdata.dart';
-import 'signpage.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
+import 'signpage.dart';
+import 'package:flutter/material.dart';
 import 'loginpage.dart';
 
 Future<List<SignData>> getSigns() async {
-  Uri url = util.getServerUri(
-    '/rest/signs',
-    {'session': globals.iqsignSession},
-  );
-  var resp = await http.get(url);
-  var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+  Map<String, dynamic> js = await util.getJson("/rest/signs");
   var rslt = <SignData>[];
   if (js['status'] == 'OK') {
     var jsd = js['data'];
@@ -150,10 +143,7 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         ),
         child: Image.network(sd.getLocalImageUrl()),
       ),
-      onTap: () => {
-        Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))
-      },
+      onTap: () => {Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))},
     );
   }
 
@@ -176,8 +166,8 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   }
 
   Future _handleLogout() async {
-    Uri url = util.getServerUri("/rest/logout");
-    await http.post(url);
+    await util.postJsonOnly("/rest/logout");
+    globals.iqsignSession = null;
   }
 
   dynamic _goToCreateSign() {
@@ -187,4 +177,3 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
     );
   }
 }
-

@@ -28,9 +28,6 @@
 ///******************************************************************************
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import '../globals.dart' as globals;
 import '../util.dart' as util;
 import '../widgets.dart' as widgets;
 import 'loginpage.dart';
@@ -83,16 +80,16 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
     String p3 = util.hasher(p1 + email);
 
     var body = {
-      'session': globals.iqsignSession,
       'email': email,
       'username': usr,
       'password': p3,
       'altpassword': p2,
       'signname': sign,
     };
-    Uri url = util.getServerUri("/rest/register");
-    var resp = await http.post(url, body: body);
-    var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> jresp = await util.postJson(
+      "/rest/register",
+      body: body,
+    );
     if (jresp['status'] == "OK") return null;
     return jresp['message'];
   }

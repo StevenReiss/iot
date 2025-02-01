@@ -31,8 +31,6 @@
 ///******************************************************************************
 
 import '../signdata.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
 import '../widgets.dart' as widgets;
@@ -82,12 +80,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future<List<String>> _getNames() async {
-    Uri url = util.getServerUri(
-      "/rest/namedsigns",
-      {'session': globals.iqsignSession},
-    );
-    var resp = await http.get(url);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.getJson("/rest/namedsigns");
     var jsd = js['data'];
     List<String> rslt = <String>[];
     for (final sd1 in jsd) {
@@ -107,7 +100,11 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_signData.getName(), style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+        title: Text(_signData.getName(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            )),
         actions: [
           widgets.topMenu(_handleCommand, [
             {'EditSign': "Create or Edit Saved Sign"},
@@ -189,12 +186,18 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future _handleLogout() async {
-    Uri url = util.getServerUri("/rest/logout");
-    await http.post(url);
+    await util.postJsonOnly("/rest/logout");
+    globals.iqsignSession = null;
   }
 
   dynamic _gotoEdit() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => IQSignSignEditWidget(_signData, _signNames)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => IQSignSignEditWidget(
+                  _signData,
+                  _signNames,
+                )));
   }
 
   void _handleCommand(String cmd) async {
@@ -280,16 +283,16 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future _previewAction() async {
-    Uri url = util.getServerUri("/rest/sign/preview");
     var body = {
-      'session': globals.iqsignSession,
       'signdata': _signData.getSignBody(),
       'signuser': _signData.getSignUserId().toString(),
       'signid': _signData.getSignId().toString(),
       'signkey': _signData.getNameKey(),
     };
-    var resp = await http.post(url, body: body);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.postJson(
+      "/rest/sign/preview",
+      body: body,
+    );
     if (js['status'] == 'OK') {
       setState(() {
         _preview = true;
@@ -298,9 +301,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   }
 
   Future _updateAction() async {
-    Uri url = util.getServerUri("/rest/sign/update");
     var body = {
-      'session': globals.iqsignSession,
       'signdata': _signData.getSignBody(),
       'signuser': _signData.getSignUserId().toString(),
       'signid': _signData.getSignId().toString(),
@@ -310,11 +311,10 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
       'signwidth': _signData.getWidth().toString(),
       'signheight': _signData.getHeight().toString(),
     };
-    var resp = await http.post(
-      url,
+    Map<String, dynamic> js = await util.postJson(
+      "/rest/sign/update",
       body: body,
     );
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     if (js['status'] == "OK") {
       setState(() {
         _preview = false;

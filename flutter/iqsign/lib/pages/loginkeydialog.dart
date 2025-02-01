@@ -35,23 +35,20 @@ import 'dart:async';
 import '../widgets.dart' as widgets;
 import 'package:flutter/material.dart';
 import '../signdata.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import '../util.dart' as util;
 import 'package:flutter/services.dart';
-import '../globals.dart' as globals;
 
 Future loginKeyDialog(BuildContext context, SignData sd) async {
-  Uri url = util.getServerUri("/rest/createcode");
   BuildContext dcontext = context;
   var body = {
-    'session': globals.iqsignSession,
     'signuser': sd.getSignUserId().toString(),
     'signid': sd.getSignId().toString(),
     'signkey': sd.getNameKey(),
   };
-  var resp = await http.post(url, body: body);
-  var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+  Map<String, dynamic> js = await util.postJson(
+    "/rest/createcode",
+    body: body,
+  );
   if (js['status'] != 'OK') {
     if (!dcontext.mounted) return;
     Navigator.of(context).pop("CANCEL");

@@ -30,10 +30,7 @@
 ///										 *
 ///******************************************************************************
 
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
-import '../globals.dart' as globals;
 import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 
@@ -69,12 +66,7 @@ class _IQSignSignCreatePageState extends State<IQSignSignCreatePage> {
   }
 
   Future<List<String>> _getNames() async {
-    var url = util.getServerUri(
-      "/rest/namedsigns",
-      {'session': globals.iqsignSession},
-    );
-    var resp = await http.get(url);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.getJson("/rest/namedsigns");
     var jsd = js['data'];
     var rslt = <String>[];
     for (final sd1 in jsd) {
@@ -95,14 +87,14 @@ class _IQSignSignCreatePageState extends State<IQSignSignCreatePage> {
   }
 
   Future handleCreate() async {
-    Uri url = util.getServerUri("/rest/addsign");
     var body = {
-      'session': globals.iqsignSession,
       'name': _nameController.text,
       'signname': _selectedSignName,
     };
-    var resp = await http.post(url, body: body);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.postJson(
+      "/rest/addsign",
+      body: body,
+    );
     if (js['status'] == 'OK') {
       if (!mounted) return;
       Navigator.pop(context, true);

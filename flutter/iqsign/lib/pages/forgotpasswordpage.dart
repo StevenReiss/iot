@@ -31,8 +31,6 @@
 ///******************************************************************************
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../globals.dart' as globals;
 import '../util.dart' as util;
 import '../widgets.dart' as widgets;
 import 'loginpage.dart';
@@ -126,10 +124,8 @@ class _IQSignPasswordWidgetState extends State<IQSignPasswordWidget> {
   Future _forgotPassword() async {
     String em = (_emailGiven as String).toLowerCase();
     var body = {
-      'session': globals.iqsignSession,
       'email': em,
     };
-    Uri url = util.getServerUri("/rest/forgotpassword");
-    await http.post(url, body: body);
+    await util.postJsonOnly("/rest/forgotpassword", body: body);
   }
 }

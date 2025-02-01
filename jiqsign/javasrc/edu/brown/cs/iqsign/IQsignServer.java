@@ -35,7 +35,6 @@
 package edu.brown.cs.iqsign;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +48,6 @@ import edu.brown.cs.ivy.bower.BowerRouter;
 import edu.brown.cs.ivy.bower.BowerServer;
 import edu.brown.cs.ivy.bower.BowerConstants.BowerSessionHandler;
 import edu.brown.cs.ivy.bower.BowerConstants.BowerSessionStore;
-import edu.brown.cs.ivy.file.IvyFile;
 import edu.brown.cs.ivy.file.IvyLog;
 
 
@@ -749,13 +747,11 @@ private final class LocalImageAction implements BowerSessionHandler<IQsignSessio
 private final class AboutAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange he,IQsignSession session) {
-      File f1 = new File(iqsign_main.getBaseDirectory(),"resources");
-      File f2 = new File(f1,"iqsignabout.html");
-      String rslt = "About Page";
-      try {
-         rslt = IvyFile.loadFile(f2); 
-       }
-      catch (IOException e) { }
+      Number signid = getIdParameter(he,"signid");
+      IQsignDatabase db = iqsign_main.getDatabaseManager();
+      IQsignSign sign = db.findSignById(signid);
+      String rslt = iqsign_main.loadResource("iqsignabout.html",sign);
+      if (rslt == null) rslt = "About Page";
       return BowerRouter.jsonOKResponse(session,"html",rslt);
     }
    
@@ -766,13 +762,11 @@ private final class AboutAction implements BowerSessionHandler<IQsignSession> {
 private final class InstructionsAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange he,IQsignSession session) {
-      File f1 = new File(iqsign_main.getBaseDirectory(),"resources");
-      File f2 = new File(f1,"iqsigninstructions.html");
-      String rslt = "About Page";
-      try {
-         rslt = IvyFile.loadFile(f2); 
-       }
-      catch (IOException e) { }
+      Number signid = getIdParameter(he,"signid");
+      IQsignDatabase db = iqsign_main.getDatabaseManager();
+      IQsignSign sign = db.findSignById(signid);
+      String rslt = iqsign_main.loadResource("iqsigninstructions.html",sign);
+      if (rslt == null) rslt = "Instruction Page";
       return BowerRouter.jsonOKResponse(session,"html",rslt);
     }
 
@@ -782,10 +776,7 @@ private final class InstructionsAction implements BowerSessionHandler<IQsignSess
 private final class DefineUserImageAction implements BowerSessionHandler<IQsignSession> {
    
    @Override public String handle(HttpExchange he,IQsignSession session) {
-      Number uid = getIdParameter(he,"imageuser");
-      if (uid != session.getUserId()) {
-         return BowerRouter.errorResponse(he,session,402,"invalid user");
-       }
+      Number uid = session.getUserId();
       String typ = BowerRouter.getParameter(he,"imagefile");
       if (typ == null || typ.isEmpty()) typ = BowerRouter.getParameter(he,"imageurl");
       int idx = typ.lastIndexOf(".");

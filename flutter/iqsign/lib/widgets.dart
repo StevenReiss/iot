@@ -360,6 +360,32 @@ Widget dropDownWidget<T>(List<T> items,
 
 ///******************************************************************************/
 ///                                                                             */
+///     Boolean buttons                                                         */
+///                                                                             */
+///******************************************************************************/
+
+Widget booleanField({
+  String? label,
+  bool value = false,
+  void Function(bool?)? onChanged,
+}) {
+  label ??= "";
+  return Row(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: <Widget>[
+      Checkbox(
+        value: value,
+        onChanged: onChanged,
+      ),
+      Text(label),
+    ],
+  );
+}
+
+///******************************************************************************/
+///                                                                             */
 ///     Page navigation assistance                                              */
 ///                                                                             */
 ///******************************************************************************/

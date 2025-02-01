@@ -42,6 +42,8 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -384,7 +386,33 @@ boolean sendEmail(String sendto,String subj,String body)
   
 
 
-
+String loadResource(String name,IQsignSign sign)
+{
+   File f1 = getBaseDirectory();
+   File f2 = new File(f1,"resources");
+   File f3 = new File(f2,name);
+   
+   Map<String,String> map = new HashMap<>();
+   if (sign != null) {
+      map.put("WEBPAGE",sign.getSignUrl());
+      map.put("IMAGEPAGE",sign.getImageUrl());
+      map.put("NAMEKEY",sign.getNameKey());
+      map.put("DISPLAYNAME",sign.getDisplayName());
+      map.put("SIGNNAME",sign.getSignName());
+    }
+   
+   try {
+      String cnts = IvyFile.loadFile(f3);
+      cnts = cnts.trim() + "\n";
+      cnts = IvyFile.expandText(cnts,map,false);
+      return cnts;
+    }
+   catch (IOException e) {
+      IvyLog.logE("IQSIGN","Problem loading resource " + name,e);
+    }
+   
+   return null;
+}
 
 
  

@@ -34,8 +34,6 @@ import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 import 'package:flutter/material.dart';
 import '../signdata.dart';
-import '../globals.dart' as globals;
-import 'package:http/http.dart' as http;
 
 Future changePasswordDialog(BuildContext context, SignData sd) async {
   TextEditingController p1controller = TextEditingController();
@@ -64,15 +62,13 @@ Future changePasswordDialog(BuildContext context, SignData sd) async {
       pwdError = err;
       return;
     }
-    Uri url = util.getServerUri("/rest/changepassword");
     var data = {
-      'session': globals.iqsignSession,
       'userpwd': util.hasher(p1),
     };
     // need to get username and user email to encode the password here
     // or we will send the password over clear text (using https is ok)
 
-    await http.post(url, body: data);
+    await util.postJsonOnly("/rest/changepassword", body: data);
     if (dcontext.mounted) {
       Navigator.of(dcontext).pop("OK");
     }

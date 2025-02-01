@@ -31,10 +31,7 @@
 ///******************************************************************************
 
 import '../imagedata.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
-import '../globals.dart' as globals;
 import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 
@@ -213,13 +210,13 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
 
 Future<List<ImageData>> loadImageData(bool border, bool svg) async {
   dynamic data = {
-    'session': globals.iqsignSession,
     'border': border.toString(),
     'svg': svg.toString(),
   };
-  Uri url = util.getServerUri('/rest/findimages');
-  var resp = await http.post(url, body: data);
-  Map<String, dynamic> js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+  Map<String, dynamic> js = await util.postJson(
+    "/rest/findimages",
+    body: data,
+  );
   List<ImageData> rslt = <ImageData>[];
   dynamic jid = js['data'];
   for (final id1 in jid) {

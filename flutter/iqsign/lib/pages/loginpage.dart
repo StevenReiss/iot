@@ -28,8 +28,6 @@
 ///******************************************************************************
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import '../globals.dart' as globals;
 import '../util.dart' as util;
 import '../widgets.dart' as widgets;
@@ -291,9 +289,7 @@ class _HandleLogin {
   _HandleLogin(this._curUser, this._curPassword);
 
   Future _prelogin() async {
-    Uri url = util.getServerUri('/rest/login');
-    var resp = await http.get(url);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.getJson("/rest/login");
     _curPadding = js['code'];
     _curSession = js['session'];
     globals.iqsignSession = _curSession;
@@ -316,9 +312,10 @@ class _HandleLogin {
       'padding': pad,
       'password': p3,
     };
-    Uri url = util.getServerUri("/rest/login");
-    var resp = await http.post(url, body: body);
-    var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> jresp = await util.postJson(
+      "/rest/login",
+      body: body,
+    );
     if (jresp['status'] == "OK") {
       globals.iqsignSession = jresp['session'];
       _curSession = jresp['session'];

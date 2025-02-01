@@ -89,7 +89,6 @@ CatmodelCalendarEvent(CatreStore cs,Map<String,Object> map)
    rslt += calDate(from_datetime);
    if (to_datetime != null) rslt += " - " + calDate(to_datetime);
    else rslt += " ON";
-   rslt += "UNTIL " + calDate(to_datetime);
    rslt += " from ";
    rslt += calTime(from_datetime);
    if (to_datetime != null) {

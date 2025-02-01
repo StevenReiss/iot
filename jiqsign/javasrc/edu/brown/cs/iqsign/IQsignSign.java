@@ -239,24 +239,20 @@ void updateSign(Consumer<Boolean> next,boolean counts,boolean preview)
 
 private void setupWebPage()
 {
-   File f1 = iqsign_main.getBaseDirectory();
-   File f2 = new File(f1,"resources");
-   File f3 = new File(f2,"iqsigntemplate.html");
-   File f4 = getHtmlFile();
-   try {
-      String cnts = IvyFile.loadFile(f3);
-      cnts = cnts.trim() + "\n";
-      cnts = cnts.replace("{{namekey}}",getNameKey());
-      try (FileWriter fw = new FileWriter(f4)) {
+   String cnts = iqsign_main.loadResource("iqsigntemplate.html",this);
+   if (cnts != null) {
+      try (FileWriter fw = new FileWriter(getHtmlFile())) {
 	 fw.write(cnts);
        }
-    }
-   catch (IOException e) {
-      IvyLog.logE("IQSIGN","Problem setting up web page for sign",e);
+      catch (IOException e) {
+         IvyLog.logE("IQSIGN","Problem copying to initial html page",e);
+       }
     }
    
    File f5 = getImageFile(false);
    if (!f5.exists()) {
+      File f1 = iqsign_main.getBaseDirectory();
+      File f2 = new File(f1,"resources");
       File f6 = new File(f2,"iqsignimagetemplate.png");
       File f7 = getImageFile(false);
       try {

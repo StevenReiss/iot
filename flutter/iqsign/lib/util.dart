@@ -36,6 +36,8 @@ import 'dart:convert' as convert;
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'globals.dart' as globals;
 
 bool debugServer = true;
 
@@ -71,4 +73,49 @@ Uri getServerUri(String path, [Map<String, dynamic>? query]) {
     return Uri.http("localhost:3336", path, query);
   }
   return Uri.https("sherpa.cs.brown.edu:3336", path, query);
+}
+
+Future<Map<String, dynamic>> postJson(String url, {dynamic body}) async {
+  Uri u = getServerUri(url);
+  Map<String, String> headers = {"accept": "application/json"};
+  if (globals.iqsignSession != null) {
+    if (body == null) {
+      body = {"session": globals.iqsignSession};
+    } else if (body["session"] == null) {
+      body["session"] = globals.iqsignSession;
+    }
+  }
+  dynamic resp = await http.post(u, body: body, headers: headers);
+  Map<String, dynamic> js;
+  js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+  return js;
+}
+
+Future<void> postJsonOnly(String url, {dynamic body}) async {
+  Uri u = getServerUri(url);
+  Map<String, String> headers = {"accept": "application/json"};
+  if (globals.iqsignSession != null) {
+    if (body == null) {
+      body = {"session": globals.iqsignSession};
+    } else if (body["session"] == null) {
+      body["session"] = globals.iqsignSession;
+    }
+  }
+  await http.post(u, body: body, headers: headers);
+}
+
+Future<Map<String, dynamic>> getJson(String url, {dynamic body}) async {
+  Map<String, String> headers = {"accept": "application/json"};
+  if (globals.iqsignSession != null) {
+    if (body == null) {
+      body = {"session": globals.iqsignSession};
+    } else if (body["session"] == null) {
+      body["session"] = globals.iqsignSession;
+    }
+  }
+  Uri u = getServerUri(url, body);
+  dynamic resp = await http.get(u, headers: headers);
+  Map<String, dynamic> js = {};
+  js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+  return js;
 }
