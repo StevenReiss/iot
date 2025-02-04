@@ -37,6 +37,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:convert' as convert;
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class IQSignUploadImageWidget extends StatelessWidget {
   const IQSignUploadImageWidget({super.key});
@@ -122,10 +123,17 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
   Widget _imageWidget() {
     Widget c = const Text("No image selected.");
     if (_image != null) {
-      c = Image.file(
-        File(_image!.path),
-        width: 300,
-      );
+      if (kIsWeb) {
+        c = Image.network(
+          _image!.path,
+          width: 300,
+        );
+      } else {
+        c = Image.file(
+          File(_image!.path),
+          width: 300,
+        );
+      }
     }
     return Center(child: c);
   }

@@ -144,6 +144,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                     maxLines: 3,
                     onChanged: _handleOtherText,
                     enabled: _canHaveOtherText(),
+                    tooltip: "Enter additional text to display on the sign, "
+                        "for example, the time you will be back.",
                   ),
                   widgets.fieldSeparator(),
                   Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
@@ -246,15 +248,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   Widget _createNameSelector() {
     String? val = _signData.getDisplayName();
     if (!_signNames.contains(val)) val = null;
-    return DropdownButton<String>(
-      items: _signNames.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+
+    return widgets.dropDown(
+      _signNames,
       onChanged: _handleChangeBaseSign,
       value: val,
+      tooltip: "Select the starting sign you want to display",
     );
   }
 

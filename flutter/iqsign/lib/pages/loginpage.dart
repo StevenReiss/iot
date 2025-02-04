@@ -33,10 +33,8 @@ import '../util.dart' as util;
 import '../widgets.dart' as widgets;
 import 'registerpage.dart';
 import 'homepage.dart' as home;
-import 'signpage.dart' as signpage;
 import 'forgotpasswordpage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../signdata.dart';
 
 //
 //    Private Variables
@@ -107,16 +105,7 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
   }
 
   void _gotoFirstPage() {
-    home.getSigns().then((List<SignData> signs) async {
-      SignData? sd = signs.singleOrNull;
-      if (mounted) {
-        if (sd != null) {
-          widgets.goto(context, signpage.IQSignSignWidget(sd));
-        } else {
-          widgets.goto(context, const home.IQSignHomePage());
-        }
-      }
-    });
+    widgets.goto(context, const home.IQSignHomePage(true));
   }
 
   void _gotoRegister() {

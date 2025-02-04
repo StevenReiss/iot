@@ -167,6 +167,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("ALL","/rest/namedsigns",new GetSavedSignsAction());
    br.addRoute("POST","/rest/addsign",new AddSignAction());
    br.addRoute("POST","/rest/removeuser",new RemoveUserAction());
+   br.addRoute("POST","/rest/removesign",new RemoveSignAction());
    br.addRoute("POST","/rest/changepassword",iqsign_auth::handleChangePassword);
    br.addRoute("POST","/rest/defineimage",new DefineUserImageAction());
    br.addRoute("ALL","/rest/findimages",new FindImagesAction());
@@ -696,6 +697,31 @@ private final class RemoveUserAction implements BowerSessionHandler<IQsignSessio
 
 
 
+private final class RemoveSignAction implements BowerSessionHandler<IQsignSession> {
+   
+   @Override public String handle(HttpExchange he,IQsignSession session) {
+      Number uid = session.getUserId();  
+      Number sid = getIdParameter(he,"signid");
+      
+      Number newsid = iqsign_database.removeSign(uid,sid); 
+      
+      if (newsid == null) {
+         return BowerRouter.errorResponse(he,session,400,
+               "Bad sign specified");
+       }
+      
+      return BowerRouter.jsonOKResponse(session);
+    }
+
+}	// end of inner class RemoveSign
+
+
+
+
+
+
+
+
 
 
 private final class SignImageAction implements BowerSessionHandler<IQsignSession> {
@@ -751,9 +777,12 @@ private final class LocalImageAction implements BowerSessionHandler<IQsignSessio
 private final class AboutAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange he,IQsignSession session) {
-      Number signid = getIdParameter(he,"signid");
       IQsignDatabase db = iqsign_main.getDatabaseManager();
-      IQsignSign sign = db.findSignById(signid);
+      Number signid = getIdParameter(he,"signid");
+      IQsignSign sign = null;
+      if (signid != null && signid.intValue() != 0) {
+         sign = db.findSignById(signid);
+       }
       String rslt = iqsign_main.loadResource("iqsignabout.html",sign);
       if (rslt == null) rslt = "About Page";
       return BowerRouter.jsonOKResponse(session,"html",rslt);
@@ -766,9 +795,12 @@ private final class AboutAction implements BowerSessionHandler<IQsignSession> {
 private final class InstructionsAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange he,IQsignSession session) {
-      Number signid = getIdParameter(he,"signid");
       IQsignDatabase db = iqsign_main.getDatabaseManager();
-      IQsignSign sign = db.findSignById(signid);
+      Number signid = getIdParameter(he,"signid");
+      IQsignSign sign = null;
+      if (signid != null && signid.intValue() != 0) {
+         sign = db.findSignById(signid);
+       }
       String rslt = iqsign_main.loadResource("iqsigninstructions.html",sign);
       if (rslt == null) rslt = "Instruction Page";
       return BowerRouter.jsonOKResponse(session,"html",rslt);

@@ -1,11 +1,9 @@
 %bg ccccff %serif %fg black
 % this is a comment
-@1 fa-hippo
 @ sv-animals/sheep % should be image two
-@ /Users/spr/Desktop/val.jpg
-@ http://clipart-library.com/images_k/teacher-transparent-background/teacher-transparent-background-6.png
-@qr https://www.cs.brown.edu/people/spr
-#red My Sign
-#blue Customize# able	% able should be in default color
-#yellow Updatable
-= TIME=9:00 pm DATE=today
+# this **is** a test
+@0 spring.png
+
+
+
+

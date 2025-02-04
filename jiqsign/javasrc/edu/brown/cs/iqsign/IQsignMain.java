@@ -396,11 +396,13 @@ String loadResource(String name,IQsignSign sign)
    
    Map<String,String> map = new HashMap<>();
    if (sign != null) {
-      map.put("WEBPAGE",sign.getSignUrl());
-      map.put("IMAGEPAGE",sign.getImageUrl());
-      map.put("NAMEKEY",sign.getNameKey());
-      map.put("DISPLAYNAME",sign.getDisplayName());
-      map.put("SIGNNAME",sign.getSignName());
+      if (sign != null) {
+         map.put("WEBPAGE",sign.getSignUrl());
+         map.put("IMAGEPAGE",sign.getImageUrl());
+         map.put("NAMEKEY",sign.getNameKey());
+         map.put("DISPLAYNAME",sign.getDisplayName());
+         map.put("SIGNNAME",sign.getSignName());
+       }
     }
    
    try {

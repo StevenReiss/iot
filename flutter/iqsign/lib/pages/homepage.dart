@@ -40,34 +40,30 @@ import 'signpage.dart';
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
 
-Future<List<SignData>> getSigns() async {
-  Map<String, dynamic> js = await util.getJson("/rest/signs");
-  var rslt = <SignData>[];
-  if (js['status'] == 'OK') {
-    var jsd = js['data'];
-    for (final sd1 in jsd) {
-      SignData sd = SignData(sd1);
-      rslt.add(sd);
-    }
-  }
-  return rslt;
-}
-
 class IQSignHomeWidget extends StatelessWidget {
-  const IQSignHomeWidget({super.key});
+  final bool _initial;
+
+  const IQSignHomeWidget(this._initial, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'iQsign Home Page',
-      theme: util.getTheme(),
-      home: const IQSignHomePage(),
-    );
+    return IQSignHomePage(_initial);
   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'iQsign Home Page',
+//       theme: util.getTheme(),
+//       home: const IQSignHomePage(_initial),
+//     );
+//   }
 }
 
 class IQSignHomePage extends StatefulWidget {
-  const IQSignHomePage({super.key});
+  final bool _initial;
+
+  const IQSignHomePage(this._initial, {super.key});
 
   @override
   State<IQSignHomePage> createState() => _IQSignHomePageState();
@@ -75,18 +71,28 @@ class IQSignHomePage extends StatefulWidget {
 
 class _IQSignHomePageState extends State<IQSignHomePage> {
   List<SignData> _signData = [];
+  bool _initial = false;
 
   @override
   void initState() {
+    _initial = widget._initial;
     _getSigns();
     super.initState();
   }
 
   Future _getSigns() async {
     List<SignData> rslt = await getSigns();
-    setState(() {
-      _signData = rslt;
-    });
+    _signData = rslt;
+    SignData? sd0 = _signData.singleOrNull;
+    if (_initial && sd0 != null) {
+      _initial = false;
+      Future.delayed(Duration.zero, () {
+        _gotoSignPage(sd0);
+        setState(() {});
+      });
+    } else {
+      setState(() {});
+    }
   }
 
   @override
@@ -104,19 +110,20 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
           ]),
         ],
       ),
-      body: Center(
-        child: widgets.iqsignPage(
-          context,
-          _signData.isNotEmpty
-              ? ListView.builder(
-                  padding: const EdgeInsets.all(10.0),
-                  itemCount: _signData.length,
-                  itemBuilder: _getTile,
-                )
-              : widgets.circularProgressIndicator(),
-        ),
-      ),
+      body: widgets.iqsignPage(context, _signListWidget(), true),
     );
+  }
+
+  Widget _signListWidget() {
+    if (_signData.isNotEmpty) {
+      return ListView.builder(
+        padding: const EdgeInsets.all(10.0),
+        itemCount: _signData.length,
+        itemBuilder: _getTile,
+      );
+    } else {
+      return widgets.circularProgressIndicator();
+    }
   }
 
   ListTile _getTile(context, int i) {
@@ -143,7 +150,7 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         ),
         child: Image.network(sd.getLocalImageUrl()),
       ),
-      onTap: () => {Navigator.of(context).push(MaterialPageRoute<void>(builder: (context) => IQSignSignWidget(sd)))},
+      onTap: () => {_gotoSignPage(sd)},
     );
   }
 
@@ -156,6 +163,11 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         _handleLogout().then(_gotoLogin);
         break;
     }
+  }
+
+  void _gotoSignPage(SignData sd) async {
+    await widgets.gotoThen(context, IQSignSignWidget(sd));
+    // hello
   }
 
   dynamic _gotoLogin(dynamic) {
@@ -176,4 +188,17 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
       MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()),
     );
   }
+}
+
+Future<List<SignData>> getSigns() async {
+  Map<String, dynamic> js = await util.getJson("/rest/signs");
+  var rslt = <SignData>[];
+  if (js['status'] == 'OK') {
+    var jsd = js['data'];
+    for (final sd1 in jsd) {
+      SignData sd = SignData(sd1);
+      rslt.add(sd);
+    }
+  }
+  return rslt;
 }

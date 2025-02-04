@@ -30,9 +30,7 @@
 import 'package:iqsign/widgets.dart' as widgets;
 import 'package:flutter/material.dart';
 import 'loginpage.dart' as login;
-import 'signpage.dart' as signpage;
 import 'homepage.dart' as home;
-import '../signdata.dart';
 
 String _curStep = "";
 
@@ -79,20 +77,10 @@ class _SplashWidgetState extends State<SplashWidget> {
         if (mounted) {
           widgets.gotoDirect(context, const login.IQSignLoginWidget());
         }
-        return;
       } else {
-        home.getSigns().then((List<SignData> signs) async {
-          SignData? sd = signs.singleOrNull;
-          if (sd != null) {
-            if (mounted) {
-              widgets.gotoDirect(context, signpage.IQSignSignWidget(sd));
-            }
-          } else {
-            if (mounted) {
-              widgets.gotoDirect(context, const home.IQSignHomePage());
-            }
-          }
-        });
+        if (mounted) {
+          widgets.gotoDirect(context, const home.IQSignHomeWidget(true));
+        }
       }
     });
   }

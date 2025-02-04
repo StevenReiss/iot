@@ -119,8 +119,58 @@ void addText(char c)
 
 void addText(String s)
 {
-   current_text.append(s);
-   is_empty = false;
+   for (int i = 0; i < s.length(); ++i) {
+      char c = s.charAt(i);
+      if (c == '*' || c == '_') {
+         int ct = 1;
+         while (i+1 < s.length() && s.charAt(i+1) == c) {
+            ++ct;
+            ++i;
+          }
+         if (ct == 1) {
+            if (nest_items.isEmpty() || 
+                  (!nest_items.peek().equals("i") &&
+                        !nest_items.peek().equals("em"))) {
+               setItalic();
+             }
+            else pop();
+          }
+         else if (ct == 2) {
+            if (nest_items.isEmpty() || 
+                  (!nest_items.peek().equals("b") && 
+                        !nest_items.peek().equals("strong"))) {
+               setBold();
+             }
+            else pop();
+          }
+         else if (ct == 3) {
+            int popct = 0;
+            boolean done = false;
+            while (!nest_items.isEmpty() && !done && popct < 2) {
+               switch (nest_items.peek()) {
+                  case "b" :
+                  case "strong" :
+                  case "i" :
+                  case "em" :
+                     pop();
+                     ++popct;
+                     break;
+                  default : 
+                     done = true;
+                     break;
+                }
+             }
+            if (popct == 0) {
+               setItalic();
+               setBold();
+             }
+          }
+       }
+      else {
+         current_text.append(c);
+         is_empty = false;
+       }
+    }
 }
 
 
@@ -159,14 +209,14 @@ private void setFont(String color,String family)
 
 void setBold()
 {
-   current_text.append("<b>");
-   nest_items.push("b");
+   current_text.append("<strong>");
+   nest_items.push("strong");
 }
 
 void setItalic()
 {
-   current_text.append("<i>");
-   nest_items.push("i");
+   current_text.append("<em>");
+   nest_items.push("em");
 }
 
 
@@ -184,6 +234,8 @@ void setNormal()
          case "i" :
          case "u" :
          case "b" :
+         case "em" :
+         case "strong" :
             pop();
             break;
          default :
@@ -191,6 +243,7 @@ void setNormal()
        }
     }
 }
+
 
 
 void pop()

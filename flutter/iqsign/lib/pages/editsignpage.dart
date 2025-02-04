@@ -98,12 +98,12 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     if (repl && _controller.text.isEmpty) accept = "Delete";
 
     String btnname = "$accept Saved Image: ${_nameController.text}";
-    TextField namefield = widgets.textField(
+    Widget namefield = widgets.textField(
       label: "SignName",
       controller: _nameController,
       onChanged: _nameChanged,
     );
-    TextField cntsfield = widgets.textField(
+    Widget cntsfield = widgets.textField(
       controller: _controller,
       maxLines: 8,
       showCursor: true,
@@ -120,7 +120,12 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
             )),
         actions: [
           widgets.topMenu(_handleCommand, [
-            {'Help': "Sign Instructions"},
+            {
+              'Help': [
+                "Sign Instructions",
+                "Show instructions for creating a sign",
+              ],
+            },
             {'SVGImages': "Add Image From Image Library"},
             {'MyImages': "Add Image From My Images"},
             {'BorderImages': "Add Border Image"},

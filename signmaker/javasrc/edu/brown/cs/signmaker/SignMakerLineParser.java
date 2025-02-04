@@ -212,8 +212,9 @@ void parseImageLine(List<String> cnts) throws SignMakerException
    for (int i = 0; i < 7; ++i) {
       if (!result_sign.isImageRegionUsed(rgn)) break;
       rgn = (rgn + 1) % 7;
+      if (rgn == 0) rgn = 1;
     }
-   if (result_sign.isImageRegionUsed(rgn)) rgn = 0;
+   if (result_sign.isImageRegionUsed(rgn)) rgn = -1;
 
    for (int i = 0; i < cnts.size(); ++i) {
       String s = cnts.get(i);
@@ -223,6 +224,7 @@ void parseImageLine(List<String> cnts) throws SignMakerException
 	 String cmd = s.substring(1).toLowerCase();
 	 if (i+1 < cnts.size()) {
 	    switch (cmd) {
+               case "0" :
 	       case "1" :
 	       case "2" :
 	       case "3" :
@@ -344,6 +346,13 @@ void parseTextLine(List<String> cnts)
 	    case "-----" :
 	       size -= cmd.length();
 	       break;
+            case "##" :
+            case "###" :
+            case "####" :
+            case "#####" :
+            case "######" :
+               size = 6 - cmd.length();
+               break;
 	    case ">" :
 	    case ">>" :
 	    case ">>>" :

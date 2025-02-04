@@ -291,6 +291,7 @@ static Connection getSqlDatabase()
 }
 
 
+
 /********************************************************************************/
 /*										*/
 /*	Processing methods							*/
@@ -566,7 +567,7 @@ private class RunContext {
    int getWidth()					{ return sign_width; }
    int getHeight() {
       if (sign_height == 0) {
-	 sign_height = sign_width / 16 * 9;
+         sign_height = sign_width / 16 * 9;
        }
       return sign_height;
     }

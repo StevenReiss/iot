@@ -56,6 +56,7 @@ Widget textFormField({
   double fraction = 0,
   BuildContext? context,
   bool? enabled,
+  String tooltip = "",
 }) {
   label ??= hint;
   hint ??= label;
@@ -95,10 +96,12 @@ Widget textFormField({
         width: MediaQuery.of(context).size.width * fraction,
         child: w);
   }
+  w = tooltipWidget(tooltip, w);
+
   return w;
 }
 
-TextField textField({
+Widget textField({
   String? hint,
   String? label,
   TextEditingController? controller,
@@ -110,13 +113,14 @@ TextField textField({
   TextInputType? keyboardType,
   TextInputAction? textInputAction,
   bool? enabled,
+  String tooltip = "",
 }) {
   label ??= hint;
   hint ??= label;
   maxLines ??= 1;
   keyboardType ??= (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
 
-  return TextField(
+  Widget w = TextField(
     controller: controller,
     onChanged: onChanged,
     onEditingComplete: onEditingComplete,
@@ -131,6 +135,10 @@ TextField textField({
       label: label,
     ),
   );
+
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
 Widget errorField(String? text) {
@@ -151,6 +159,7 @@ Widget loginTextField(
   TextInputType? keyboardType,
   bool obscureText = false,
   double fraction = 0,
+  String tooltip = "",
 }) {
   Widget form = textFormField(
     hint: hint,
@@ -163,7 +172,7 @@ Widget loginTextField(
     obscureText: obscureText,
     keyboardType: keyboardType,
   );
-  return Container(
+  Widget w = Container(
     constraints: const BoxConstraints(
       minWidth: 100,
       maxWidth: 600,
@@ -171,6 +180,34 @@ Widget loginTextField(
     width: MediaQuery.of(context).size.width * 0.8,
     child: form,
   );
+
+  w = tooltipWidget(tooltip, w);
+
+  return w;
+}
+
+Widget tooltipWidget(String tooltip, Widget w) {
+  if (tooltip.isEmpty) return w;
+  Widget tt = Tooltip(
+    message: tooltip,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      gradient: LinearGradient(colors: <Color>[
+        Colors.yellow.shade50,
+        Colors.yellow.shade200,
+      ]),
+    ),
+    height: 50,
+    padding: const EdgeInsets.all(8.0),
+    preferBelow: true,
+    textStyle: const TextStyle(
+      fontSize: 18,
+    ),
+    showDuration: const Duration(seconds: 2),
+    waitDuration: const Duration(seconds: 1),
+    child: w,
+  );
+  return tt;
 }
 
 ///******************************************************************************/
@@ -179,7 +216,12 @@ Widget loginTextField(
 ///                                                                             */
 ///******************************************************************************/
 
-Widget submitButton(String name, void Function()? action, {bool enabled = true}) {
+Widget submitButton(
+  String name,
+  void Function()? action, {
+  bool enabled = true,
+  String tooltip = "",
+}) {
   ButtonStyle style = ElevatedButton.styleFrom(
     backgroundColor: Colors.yellow,
     foregroundColor: Colors.black,
@@ -191,23 +233,34 @@ Widget submitButton(String name, void Function()? action, {bool enabled = true})
     style: style,
     child: Text(name),
   );
-  return Padding(
+  Widget w = Padding(
     padding: const EdgeInsets.symmetric(
       vertical: 16.0,
       horizontal: 6.0,
     ),
     child: eb,
   );
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
-Widget textButton(String label, void Function()? action) {
-  return TextButton(
+Widget textButton(
+  String label,
+  void Function()? action, {
+  String tooltip = "",
+}) {
+  Widget w = TextButton(
     style: TextButton.styleFrom(
       textStyle: const TextStyle(fontSize: 14),
     ),
     onPressed: action,
     child: Text(label),
   );
+
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
 ///******************************************************************************/
@@ -219,47 +272,67 @@ Widget textButton(String label, void Function()? action) {
 Widget topMenu(void Function(String)? handler, List labels) {
   return PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
-    itemBuilder: (context) => labels.map<PopupMenuItem<String>>(menuItem).toList(),
+    itemBuilder: (context) => _topMenuBuilder(labels),
     onSelected: handler,
   );
+}
+
+List<PopupMenuItem<String>> _topMenuBuilder(List labels) {
+  return labels.map<PopupMenuItem<String>>(menuItem).toList();
 }
 
 Widget topMenuAction(List labels) {
   return PopupMenuButton(
       icon: const Icon(Icons.menu_sharp),
-      itemBuilder: (context) => labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
+      itemBuilder: (context) => topMenuActionBuilder(labels),
       onSelected: (dynamic act) => act.action());
+}
+
+List<PopupMenuItem<MenuAction>> topMenuActionBuilder(List labels) {
+  return labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList();
 }
 
 PopupMenuItem<MenuAction> menuItemAction(dynamic val) {
   return PopupMenuItem<MenuAction>(
     value: val,
-    child: Text(val.label),
+    child: tooltipWidget(val.tooltip, Text(val.label)),
   );
 }
 
 PopupMenuItem<String> menuItem(dynamic val) {
   String value = 'Unknown';
   String label = 'Unknown';
+  String tooltip = '';
   if (val is String) {
     value = val;
     label = val;
-  } else if (val is Map<String, String>) {
+  } else if (val is Map<String, dynamic>) {
     for (String k in val.keys) {
       value = k;
-      label = val[k] as String;
+      if (val[k] is String) {
+        label = val[k] as String;
+      } else if (val[k] is List<String>) {
+        List<String> vals = val[k] as List<String>;
+        label = vals[0];
+        tooltip = vals[1];
+      }
     }
   }
   return PopupMenuItem<String>(
     value: value,
-    child: Text(label),
+    child: tooltipWidget(tooltip, Text(label)),
   );
 }
 
 class MenuAction {
   String label;
   void Function() action;
-  MenuAction(this.label, this.action);
+  String tooltip;
+  MenuAction(
+    this.label,
+    this.action, {
+    this.tooltip = "",
+  });
 }
 
 ///******************************************************************************/
@@ -282,10 +355,11 @@ Widget dropDown(
   List<String> items, {
   String? value,
   Function(String?)? onChanged,
-  textAlign = TextAlign.left,
+  TextAlign textAlign = TextAlign.left,
+  String tooltip = "",
 }) {
   value ??= items[0];
-  return DropdownButton<String>(
+  Widget w = DropdownButton<String>(
     value: value,
     onChanged: onChanged,
     items: items.map<DropdownMenuItem<String>>((String value) {
@@ -295,6 +369,8 @@ Widget dropDown(
       );
     }).toList(),
   );
+  w = tooltipWidget(tooltip, w);
+  return w;
 }
 
 Widget dropDownMenu(

@@ -35,9 +35,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.apache.batik.swing.gvt.GVTTreeRendererAdapter;
 import org.apache.batik.swing.gvt.GVTTreeRendererEvent;
@@ -88,6 +90,8 @@ private String	image_contents;
 private SignImageType image_type;
 private SvgComponent svg_component;
 private int     user_id;
+
+private static Map<String,BufferedImage> background_map = new HashMap<>();
 
 static private Font fa_solid;
 static private Font fa_regular;
@@ -189,6 +193,7 @@ SignMakerImage(int uid)
 }
 
 
+
 private JComponent setupSVGComponent(Rectangle2D r,JComponent par)
 {
    SvgComponent c = new SvgComponent(r.getBounds().getSize());
@@ -228,6 +233,147 @@ private JComponent setupSVGComponent(Rectangle2D r,JComponent par)
 }
 
 @Override boolean isImage()                             { return true; } 
+
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Handle background images                                                */
+/*                                                                              */
+/********************************************************************************/
+
+void addBackgroundComponent(JPanel pnl)
+{
+   BufferedImage buf0 = background_map.get(image_contents);
+   if (buf0 == null) {
+      buf0 = createBackgroundImage();
+      if (buf0 == null) return;
+      background_map.put(image_contents,buf0);
+    }
+   
+   Rectangle r = pnl.getBounds();
+   JPanel comp = new BackgroundPanel(r,buf0);
+   pnl.add(comp);
+   comp.setBounds(r);
+}
+
+
+BufferedImage createBackgroundImage()
+{
+   BufferedImage buf0 = null;
+   
+   switch (image_type) {
+      case FILE :
+         File f1 = new File(image_contents);
+         if (!f1.exists()) return null;
+         try {
+            buf0 = ImageIO.read(f1);
+          }
+         catch (IOException e) {
+            IvyLog.logE("SIGNMAKER","Problem reading background image file " + f1,e);
+          }
+	 break;
+      case URL :
+         try {
+            URL u = new URI(image_contents).toURL();
+            buf0 = ImageIO.read(u);
+          }
+         catch (Exception e) {
+            IvyLog.logE("SIGNMAKER","Problem reading background web image " + image_contents,e);
+          }
+	 break;
+      case FONT_AWESOME :
+      case NONE :
+      case QR :
+         return null;
+    }
+   
+   if (buf0 == null) return null;
+   int w0 = buf0.getWidth();
+   int h0 = buf0.getHeight();
+   int typ = buf0.getType();
+   if (typ != BufferedImage.TYPE_INT_ARGB) {
+      BufferedImage buf1 = new BufferedImage(w0,h0,BufferedImage.TYPE_INT_ARGB);
+      Graphics g1 = buf1.createGraphics();
+      g1.drawImage(buf0,0,0,null);
+      buf0 = buf1;
+    }
+   
+   
+   Map<Integer,int []> counts = new HashMap<>();
+   int maxct = 0;
+   int bkgcolor = 0;
+   for (int x = 0; x < w0; x += 10) {
+      for (int y = 0; y < h0; y += 10) {
+         int v = buf0.getRGB(x,y);
+         int [] vc = counts.get(v);
+         if (vc == null) {
+            vc = new int[1];
+            counts.put(v,vc);
+          }
+         int vcc = ++vc[0];
+         if (vcc > maxct) {
+            maxct = vcc;
+            bkgcolor = v;
+          }
+       }
+    }
+   
+   double t0 = 0.1;
+   double t1 = 0.3;
+   for (int x = 0; x < w0; ++x) {
+      for (int y = 0; y < h0; ++y) {
+         int pix = buf0.getRGB(x,y);
+         if (pix == bkgcolor) {
+            buf0.setRGB(x,y,0);
+          }
+         else {
+            double dx = Math.min(x,w0-x) / ((double) w0);
+            double dy = Math.min(y,h0-y) / ((double) h0);
+            double d = Math.min(dx,dy);
+            if (d <= t0) continue;
+            else if (d >= t1) buf0.setRGB(x,y,0);
+            else {
+               int a = (pix >> 24) & 0xff;
+               int rgb = (pix & 0x00ffffff);
+               double t2 = (t1-d) / (t1-t0);
+               int a1 = (int)(a * t2);
+               if (a != a1) {
+                  int v = (a1 << 24) | rgb;
+                  buf0.setRGB(x,y,v);
+                }
+             }
+          }
+       }
+    }
+   
+   return buf0;
+}
+
+
+
+private static class BackgroundPanel extends JPanel {
+   
+   private Rectangle target_size;
+   private BufferedImage background_image;
+   private static final long serialVersionUID = 1;
+   
+   BackgroundPanel(Rectangle r,BufferedImage img) {
+      target_size = r;
+      background_image = img;
+    }
+   
+   @Override public void paint(Graphics g) {
+      int w = target_size.width;
+      int h = target_size.height;
+      g.drawImage(background_image,0,0,w,h,
+            SwingColors.SWING_TRANSPARENT,null);
+    }
+   
+}       // end of inner class BackgroundPanel
+
+
 
 
 

@@ -356,6 +356,40 @@ void removeUser(Number uid)
 }
 
 
+Number removeSign(Number uid,Number sid)
+{
+   String q1 = "SELECT * FORM iQsignSigns WHERE userid = $1";
+   String q2 = "DELETE FROM iQsignSignCodes WEHRE signid = $1";
+   String q3 = "DELETE FROM iQsignLoginCodes WEHRE signid = $1";
+   String q4 = "DEELTE FROM OauthTokens WHERE signid = $1";
+   String q5 = "DEELTE FROM OauthCodes WHERE signid = $1";
+   String q6 = "DELETE FROM iQsignSigns WHERE id = $1";
+   
+   List<JSONObject> sds = sqlQueryN(q1,uid);
+   if (sds.size() < 2) return null;
+   Number replace = null;
+   for (JSONObject sd : sds) {
+      IQsignSign ss = new IQsignSign(iqsign_main,sd);
+      if (!ss.getId().equals(sid)) {
+         replace = ss.getId();
+         break;
+       }
+    }
+   if (replace == null) return null;
+   IQsignSign sign = findSignById(sid);
+   if (sign == null) return null;
+   if (!sign.getUserId().equals(uid)) return null;
+   
+   sqlUpdate(q2,sid);
+   sqlUpdate(q3,sid);
+   sqlUpdate(q4,sid);
+   sqlUpdate(q5,sid);
+   sqlUpdate(q6,sid);
+   
+   return replace;
+}
+
+
 /********************************************************************************/
 /*										*/
 /*	Sign Management 							*/

@@ -10,7 +10,7 @@ package edu.brown.cs.signmaker;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -120,18 +120,26 @@ BufferedImage createSignImage(int w,int h)
    pnl.setSize(w,h);
    pnl.setBackground(background_color);
    pnl.setForeground(foreground_color);
+   
+   BufferedImage img = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
+   Graphics2D g = img.createGraphics();
+   
+   g.setColor(background_color);
+   g.fillRect(0,0,w,h);  
+   g.setColor(foreground_color);
+   
+   g.setColor(foreground_color);
+   g.setBackground(background_color);
    if (font_family != null) {
       Font ft = new Font(font_family,0,10);
       pnl.setFont(ft);
+      g.setFont(ft);
     }
    
-   BufferedImage img = new BufferedImage(w,h,BufferedImage.TYPE_INT_RGB);
-   Graphics g = img.getGraphics();
-  
    for (int i = 0; i < text_regions.length; ++i) {
       setup(pnl,text_regions[i]);
     }
-   for (int i = 0; i < image_regions.length; ++i) {
+   for (int i = 1; i < image_regions.length; ++i) {
       setup(pnl,image_regions[i]);
     }
    
@@ -142,7 +150,12 @@ BufferedImage createSignImage(int w,int h)
       waitForReady(image_regions[i]);
     }
  
+   if (image_regions[0] != null) {
+      image_regions[0].addBackgroundComponent(pnl); 
+    }
+   
    pnl.paint(g);
+// pnl.paintComponents(g); 
    
    return img;
 }
