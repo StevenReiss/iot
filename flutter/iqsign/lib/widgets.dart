@@ -179,7 +179,7 @@ Widget loginTextField(
 ///                                                                             */
 ///******************************************************************************/
 
-Widget submitButton(String name, void Function()? action, {enabled = true}) {
+Widget submitButton(String name, void Function()? action, {bool enabled = true}) {
   ButtonStyle style = ElevatedButton.styleFrom(
     backgroundColor: Colors.yellow,
     foregroundColor: Colors.black,

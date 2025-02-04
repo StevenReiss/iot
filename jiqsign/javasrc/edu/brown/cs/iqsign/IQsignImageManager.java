@@ -344,7 +344,7 @@ private void updateDefaultImages(File defaultfile,boolean border)
 
 private File getImagesDirectory()
 {
-   File f1 = new File(iqsign_main.getBaseDirectory(),"savedimages");
+   File f1 = new File(iqsign_main.getBaseDirectory(),IMAGE_DIRECTORY);
    
    return f1;
 }

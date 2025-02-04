@@ -56,6 +56,9 @@ String IMAGE_URL_PREFIX = "/rest/userimage/";
 
 String INITIAL_SIGN = "=InitialSign";
 
+String IMAGE_DIRECTORY = "savedimages";
+
+
 
 
 /********************************************************************************/

@@ -105,7 +105,8 @@ Future<void> postJsonOnly(String url, {dynamic body}) async {
 }
 
 Future<Map<String, dynamic>> getJson(String url, {dynamic body}) async {
-  Map<String, String> headers = {"accept": "application/json"};
+  Map<String, String>? headers = {"accept": "application/json"};
+//   headers = null;
   if (globals.iqsignSession != null) {
     if (body == null) {
       body = {"session": globals.iqsignSession};

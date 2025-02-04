@@ -35,6 +35,7 @@ import 'package:flutter/material.dart';
 import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 import 'imagespage.dart';
+import 'uploadimagepage.dart';
 import '../imagedata.dart';
 import 'displaypage.dart';
 
@@ -211,6 +212,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
         insertImage(id);
         break;
       case "AddImage":
+        await _gotoUploadImagePage();
         break;
     }
   }
@@ -232,16 +234,23 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     Map<String, dynamic> js = await util.postJson(url, body: {
       "signid": _signData.getSignId().toString(),
     });
-    if (js['status]'] == 'OK' && dcontext.mounted) {
+    if (js['status'] == 'OK' && dcontext.mounted) {
       String html = js['html'] as String;
       widgets.goto(dcontext, IQSignDisplayWidget(title, html));
     }
   }
 
+  dynamic _gotoUploadImagePage() async {
+    widgets.goto(context, const IQSignUploadImageWidget());
+  }
+
   void insertImage(ImageData? id) {
     if (id == null) return;
     String txt = id.getImageString();
-    _controller.text += "\n$txt";
+    if (!_controller.text.endsWith("\n")) txt = "\n$txt";
+    setState(() {
+      _controller.text += txt;
+    });
   }
 
   Widget _createNameSelector({String? val}) {

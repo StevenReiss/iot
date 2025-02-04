@@ -120,7 +120,7 @@ void updateDefaults()
 
 private void saveSign(String name,StringBuffer body,long dlm)
 {
-   if (name == null || body == null || body.isEmpty()) return;
+   if (name == null || body == null || body.length() == 0) return;
    
    iqsign_main.getDatabaseManager().saveOrUpdateSign(name,
          body.toString(),dlm);

@@ -47,5 +47,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLiubraryUsageDescription</key>
+	<string>To let user upload images for their sign</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To let user upload images for their sign</string>
 </dict>
 </plist>

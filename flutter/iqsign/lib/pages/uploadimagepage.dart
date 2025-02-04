@@ -88,6 +88,7 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
               hint: "Enter name to refer to image",
               label: "Image Name",
               controller: _nameControl,
+              onChanged: _textChanged,
             ),
             widgets.fieldSeparator(),
             _imageWidget(),
@@ -100,6 +101,7 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
               hint: "Enter descriptionn of image",
               label: "Image Description",
               controller: _descControl,
+              onChanged: _textChanged,
             ),
             widgets.booleanField(
               label: "This is a border image",
@@ -107,9 +109,9 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
               onChanged: _handleBorderSet,
             ),
             widgets.submitButton(
-              "Select Image",
+              "Upload Image",
               _doUploadImage,
-              enabled: _isReady,
+              enabled: _isReady(),
             ),
           ],
         ),
@@ -120,7 +122,10 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
   Widget _imageWidget() {
     Widget c = const Text("No image selected.");
     if (_image != null) {
-      c = Image.file(File(_image!.path));
+      c = Image.file(
+        File(_image!.path),
+        width: 300,
+      );
     }
     return Center(child: c);
   }
@@ -136,9 +141,14 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
     final XFile? selimg = await _picker.pickImage(
       source: ImageSource.gallery,
     );
+    if (selimg == null) return;
     setState(() {
       _image = selimg;
     });
+  }
+
+  _textChanged(String? t) {
+    setState(() {});
   }
 
   bool _isReady() {
@@ -163,8 +173,8 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
       'imagefile': xim.path,
       'imagevalue': filedata,
       'imagename': _nameControl.text,
-      '_imagedescription': _descControl.text,
-      '_imageborder': _isBorder,
+      'imagedescription': _descControl.text,
+      'imageborder': _isBorder.toString(),
     };
     Map<String, dynamic> js = await util.postJson(
       '/rest/defineimage',

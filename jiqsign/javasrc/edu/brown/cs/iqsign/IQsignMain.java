@@ -43,6 +43,8 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -100,7 +102,7 @@ private boolean 	is_testing;
 
 private static Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
 private static Pattern HTML_PATTERN = Pattern.compile("sign(.*)\\.html");
-private static Pattern PREVIEW_PATTERN = Pattern.compile("imagePreview(.*)\\.png");
+private static Pattern PREVIEW_PATTERN = Pattern.compile("imagePREVIEW(.*)\\.png");
 
 private static Random rand_gen = new Random();
 private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -467,8 +469,36 @@ private final class CleanupTask extends TimerTask {
             IvyLog.logD("IQSIGN","Cleanup: Keep sign file " + file);
           }
          else {
-            IvyLog.logD("IQSIGN","Cleanup: Remvoe sign file " + file);
+            IvyLog.logD("IQSIGN","Cleanup: Remove sign file " + file);
             file.delete();
+          }
+       }
+      
+      Set<String> currentimages = database_manager.getAllImageFiles(); 
+      Set<String> checknames = new HashSet<>();
+      for (Iterator<String> it = currentimages.iterator(); it.hasNext(); ) {
+         String fn = it.next();
+         File f1 = new File(fn);
+         File par = f1.getParentFile();
+         if (par == null) {
+            checknames.add(f1.getName());
+          }
+         else if (par.getName().equals(IMAGE_DIRECTORY)) {
+            checknames.add(f1.getName());
+          }
+       }
+      File f2 = new File(getBaseDirectory(),IMAGE_DIRECTORY);
+      long now = System.currentTimeMillis();
+      for (File file : f2.listFiles()) {
+         long dlm = file.lastModified();
+         if (now - dlm > 2*24*60*60*1000) {
+            if (checknames.contains(file.getName())) {
+               IvyLog.logD("IQSIGN","Cleanup: Keep image file " + file);
+             }
+            else {
+               IvyLog.logD("IQSIGN","Cleanup: Remove image file " + file);
+               file.delete();
+             }
           }
        }
    

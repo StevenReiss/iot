@@ -172,7 +172,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("ALL","/rest/findimages",new FindImagesAction());
 
    br.addRoute("ALL","/rest/about",new AboutAction());
-   br.addRoute("GET","/rest/instructions",new InstructionsAction());
+   br.addRoute("ALL","/rest/instructions",new InstructionsAction());
   
    br.addRoute("ALL",new Handle404Action());
    br.addErrorHandler(new HandleErrorAction());
@@ -709,7 +709,7 @@ private final class SignImageAction implements BowerSessionHandler<IQsignSession
       File f2 = new File(f1,filename);
       if (!f2.exists()) {
          return BowerRouter.errorResponse(he,session,500,
-               "sign doesn't exist");
+               "sign " + f2 + " doesn't exist");
        }
       return BowerRouter.sendFileResponse(he,f2);
     }
@@ -723,6 +723,10 @@ private final class LocalSvgImageAction implements BowerSessionHandler<IQsignSes
    @Override public String handle(HttpExchange he,IQsignSession session) {
       String topic = BowerRouter.getParameter(he,"topic");
       String name = BowerRouter.getParameter(he,"name");
+      int idx = name.indexOf("?");
+      if (idx > 0) {
+         name = name.substring(0,idx);
+       }
       File f1 = iqsign_main.getImageManager().getSvgImage(topic,name);
       return BowerRouter.sendFileResponse(he,f1);
     }
@@ -796,7 +800,9 @@ private final class DefineUserImageAction implements BowerSessionHandler<IQsignS
          return BowerRouter.errorResponse(he,session,400,"No name for image");
        }
       String desc = BowerRouter.getParameter(he,"imagedescription");
-      if (desc != null && desc.isEmpty()) desc = null;
+      if (desc != null && desc.isEmpty()) {
+         return BowerRouter.errorResponse(he,session,400,"No description for image");
+       }
       boolean border = BowerRouter.getBooleanParameter(he,"imageborder",false);
       
       String err = iqsign_main.getImageManager().saveUserImage(uid,name,typ,url,

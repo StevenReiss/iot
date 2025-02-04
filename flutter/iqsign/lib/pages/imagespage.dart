@@ -97,7 +97,7 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
               hint: "Filter Images",
               label: "Filter",
               controller: _filterControl,
-              onChanged: filterImages,
+              onChanged: _filterImages,
             ),
             widgets.fieldSeparator(),
             _imageData.isNotEmpty
@@ -144,7 +144,7 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
               hint: "Filter Images",
               label: "Filter",
               controller: _filterControl,
-              onChanged: filterImages,
+              onChanged: _filterImages,
             ),
             widgets.fieldSeparator(),
             ConstrainedBox(
@@ -170,7 +170,7 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
     List<ImageData> rslt = await loadImageData(border, svg);
     setState(() {
       _imageData = rslt;
-      filterImages(_filterControl.text);
+      _filterImages(_filterControl.text);
     });
   }
 
@@ -203,8 +203,11 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
     // go back to previous page with selected image
   }
 
-  void filterImages(String filter) {
-    _filteredData = _imageData.where((ImageData id) => id.filter(filter)).toList();
+  void _filterImages(String filter) {
+    List<ImageData> lid = _imageData.where((ImageData id) => id.filter(filter)).toList();
+    setState(() {
+      _filteredData = lid;
+    });
   }
 } // end of inner class _IQSignImagesPageState
 

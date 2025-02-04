@@ -543,8 +543,8 @@ void saveOrUpdateImage(String name,String file,String url,String desc,boolean bo
 
 void saveOrUpdateUserImage(Number uid,String name,String file,String url,String desc,boolean border)
 {
-   String q1 = "SELECT * FROM iQsignImages WHERE userid IS $1 AND name = $2";
-   String q2 = "DELETE FROM iQsignImages WHERE userid IS $1 AND name = $2";
+   String q1 = "SELECT * FROM iQsignImages WHERE userid = $1 AND name = $2";
+   String q2 = "DELETE FROM iQsignImages WHERE userid = $1 AND name = $2";
    String q3 = "INSERT INTO iQsignImages ( userid, name, url, file, is_border, description ) " + 
          "VALUES ( $1, $2, $3, $4, $5, $6 )";
    
@@ -556,7 +556,7 @@ void saveOrUpdateUserImage(Number uid,String name,String file,String url,String 
       if (rf != null && !rf.isEmpty()) {
          File rff = new File(rf);
          if (!rff.isAbsolute()) {
-            File f1 = new File(iqsign_main.getBaseDirectory(),"savedimages");
+            File f1 = new File(iqsign_main.getBaseDirectory(),IMAGE_DIRECTORY); 
             rff = new File(f1,rff.getPath());
           }
          rff.delete();
@@ -576,6 +576,21 @@ List<IQsignImage> findImages(Number uid,boolean border)
    List<IQsignImage> rslt = new ArrayList<>();
    for (JSONObject jo : imgs) {
       rslt.add(new IQsignImage(jo));
+    }
+   
+   return rslt;
+}
+
+
+Set<String> getAllImageFiles()
+{
+   String q1 = "SELECT file FROM iQsignImages WHERE file IS NOT NULL";
+   
+   Set<String> rslt = new HashSet<>();
+   List<JSONObject> fils = sqlQueryN(q1);
+   for (JSONObject js : fils) {
+      String fn = js.optString("file",null);
+      if (fn != null) rslt.add(fn);
     }
    
    return rslt;
