@@ -69,10 +69,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   final TextEditingController _extraControl = TextEditingController();
   bool _preview = false;
   String? _baseSign;
+  SignData _originalSign = SignData.unknown();
 
   @override
   void initState() {
     _signData = widget._signData;
+    _originalSign = SignData.clone(_signData);
     _signNamesFuture = _getNames();
     _analyzeSign();
 
@@ -111,11 +113,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
             {'EditSize': "Change Sign Size"},
             {'ChangeName': "Change Sign Name"},
             {'GenerateKey': "Generate Login Key For Sherpa"},
+            {'RemoveSign': "Delete this Sign"},
             {'Logout': "Log Out"},
           ]),
         ],
       ),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         FutureBuilder<List<String>>(
           future: _signNamesFuture,
@@ -150,10 +153,15 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                   widgets.fieldSeparator(),
                   Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
                     widgets.submitButton(
+                      "Reset",
+                      _resetAction,
+                      enabled: !_preview,
+                    ),
+                    widgets.submitButton(
                       "Update",
                       _updateAction,
                       enabled: _isSignValid(),
-                    )
+                    ),
                   ])
                 ],
               );
@@ -220,6 +228,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
         break;
       case "GenerateKey":
         await loginkey.loginKeyDialog(context, _signData);
+        break;
+      case "RemoveSign":
         break;
     }
   }
@@ -297,6 +307,14 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
         _preview = true;
       });
     }
+  }
+
+  Future _resetAction() async {
+    _signData = SignData.clone(_originalSign);
+    _analyzeSign();
+    setState(() {
+      _preview = false;
+    });
   }
 
   Future _updateAction() async {

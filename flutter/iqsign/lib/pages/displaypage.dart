@@ -79,7 +79,7 @@ class _IQSignDisplayPageState extends State<IQSignDisplayPage> {
           ),
         ),
       ),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         HtmlWidget(_displayHtml),
       ),

@@ -1,3 +1,9 @@
+/*
+ *        lookandfeel.dart
+ * 
+ *    Define the look and feel for this application
+ * 
+ */
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /// *******************************************************************************
 ///  Copyright 2023, Brown University, Providence, RI.                           *
@@ -24,8 +30,33 @@
 ///                                                                              *
 ///******************************************************************************
 
-library iqsign.globals;
+import 'package:flutter/material.dart';
 
-String? iqsignSession;
+const Color errorColor = Colors.red;
+const double errorFontSize = 16;
 
-bool debugServer = true;
+final Color toolTipLeftColor = Colors.yellow.shade50;
+final Color toolTipRightColor = Colors.yellow.shade200;
+const double toolTipHeight = 50;
+const double toolTipFontSize = 18;
+
+const Color submitBackgroundColor = Colors.yellow;
+const Color submitForegroundColor = Colors.black;
+const double buttonFontSize = 14;
+
+const IconData topMenuIcon = Icons.menu_sharp;
+
+const Color decorationHoverColor = Colors.amber;
+const Color decorationBorderColor = Colors.yellow;
+const Color decorationInputColor = Colors.white;
+
+// APPLICATION-SPECIFIC Definitions
+
+const Color topLevelBackground = Color.fromARGB(128, 140, 180, 210);
+const String topLevelImage = "assets/images/iqsignstlogo.png";
+
+const Color themeSeedColor = Color.fromRGBO(72, 85, 121, 1);
+const Color borderColor = Colors.lightBlue;
+const Color labelColor = Colors.lightBlue;
+
+// end of lookandfeel.dart

@@ -87,7 +87,7 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
               color: Colors.black,
             )),
       ),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         Column(
           mainAxisAlignment: MainAxisAlignment.start,

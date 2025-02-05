@@ -39,8 +39,6 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'globals.dart' as globals;
 
-bool debugServer = true;
-
 String hasher(String msg) {
   final bytes = convert.utf8.encode(msg);
   crypto.Digest rslt = crypto.sha512.convert(bytes);
@@ -69,7 +67,7 @@ ThemeData getTheme() {
 }
 
 Uri getServerUri(String path, [Map<String, dynamic>? query]) {
-  if (kDebugMode && debugServer) {
+  if (kDebugMode && globals.debugServer) {
     return Uri.http("localhost:3336", path, query);
   }
   return Uri.https("sherpa.cs.brown.edu:3336", path, query);

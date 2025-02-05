@@ -276,7 +276,7 @@ void parseImageLine(List<String> cnts) throws SignMakerException
       else img.setImage(image);
       result_sign.setImageRegion(rgn,img);
     }
-   current_image = rgn+1;
+   if (rgn != 0) current_image = rgn+1;
 }
 
 

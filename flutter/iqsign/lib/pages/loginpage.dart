@@ -124,7 +124,7 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widgets.appBar("Login"),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         Center(
           child: Column(
@@ -136,7 +136,7 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    widgets.getIqsignLogo(context),
+                    widgets.getTopLevelLogo(context),
                     widgets.getPadding(16),
                     widgets.loginTextField(
                       context,

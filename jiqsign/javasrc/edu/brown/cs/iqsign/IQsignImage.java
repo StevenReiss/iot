@@ -87,12 +87,13 @@ boolean isBorder()              { return image_data.optBoolean("is_border",false
 
 String getInsertion()
 {
+   String pfx = (isBorder() ? "@0 " : "@ ");
    if (getUrl() != null) {
-      return "@ " + getUrl();
+      return pfx + getUrl();
     }
    if (getFile() != null) {
       File f = new File(getFile());
-      return "@ " + f.getName();
+      return pfx + f.getName();
     }
    return null;
 }

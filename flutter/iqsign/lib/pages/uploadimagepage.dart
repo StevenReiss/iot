@@ -79,7 +79,7 @@ class _IQSignUploadImagePageState extends State<IQSignUploadImagePage> {
           ),
         ),
       ),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         Column(
           mainAxisAlignment: MainAxisAlignment.center,

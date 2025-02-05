@@ -30,7 +30,6 @@
 ///										 *
 ///******************************************************************************
 
-
 import 'storage.dart' as storage;
 import 'dart:convert' as convert;
 import 'util.dart' as util;
@@ -67,8 +66,7 @@ class Cedes {
       }
       if (_authCode != noAuth) {
         storage.AuthData ad = storage.getAuthData();
-        Map<String, dynamic>? resp =
-            await _sendToCedes('ping', {"uid": ad.userId});
+        Map<String, dynamic>? resp = await _sendToCedes('ping', {"uid": ad.userId});
         String sts = "FAIL";
         if (resp != null) sts = resp["status"] ?? "FAIL";
         switch (sts) {
@@ -84,8 +82,7 @@ class Cedes {
             break;
         }
       }
-      _nextTime = DateTime.now()
-          .add(const Duration(seconds: globals.accessEverySeconds));
+      _nextTime = DateTime.now().add(const Duration(seconds: globals.accessEverySeconds));
     } finally {
       _doingPing.release();
     }
@@ -142,12 +139,7 @@ class Cedes {
     dev["NAME"] = "ALDS_${ad.userId}";
     dev["LABEL"] = "ALDS locator for ${ad.userId}";
     dev["BRIDGE"] = "generic";
-    Map<String, dynamic> p0 = {
-      "NAME": "Location",
-      "ISSENSOR": true,
-      "ISTARGET": false,
-      "TYPE": "STRING"
-    };
+    Map<String, dynamic> p0 = {"NAME": "Location", "ISSENSOR": true, "ISTARGET": false, "TYPE": "STRING"};
     Map<String, dynamic> p1 = {
       "NAME": "OnPhone",
       "ISSENSOR": true,
@@ -165,22 +157,24 @@ class Cedes {
     if (_authCode != noAuth) return;
     storage.AuthData ad = storage.getAuthData();
     if (ad.userId == '*' || ad.userPass == '*') return;
-    Map<String, dynamic>? attach =
-        await _sendToCedes("attach", {"uid": ad.userId});
+    Map<String, dynamic>? attach = await _sendToCedes("attach", {"uid": ad.userId});
     if (attach == null) return;
     String seed = attach["seed"] ?? "*";
     if (seed == '*') return;
     String p0 = util.hasher(ad.userPass);
     String p1 = util.hasher(p0 + ad.userId);
     String p2 = util.hasher(p1 + seed);
-    Map<String, dynamic>? auth =
-        await _sendToCedes("authorize", {"uid": ad.userId, "patencoded": p2});
+    Map<String, dynamic>? auth = await _sendToCedes("authorize", {"uid": ad.userId, "patencoded": p2});
     if (auth == null) return;
     _authCode = auth["token"] ?? noAuth;
   }
 
-  Future<Map<String, dynamic>?> _sendToCedes(String cmd, dynamic data) async {
-    var url = Uri.https('sherpa.cs.brown.edu:3333', '/generic/$cmd');
+  Future<Map<String, dynamic>?> _sendToCedes(
+    String cmd,
+    dynamic data, [
+    String hub = 'generic',
+  ]) async {
+    var url = Uri.https('sherpa.cs.brown.edu:3333', '/$hub/$cmd');
     Map<String, String> headers = {};
     if (_authCode != noAuth) {
       headers['Authorization'] = "Bearer $_authCode";
@@ -193,15 +187,14 @@ class Cedes {
     var dresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
     return dresp;
   }
+
+  log(String msg) {
+    storage.AuthData ad = storage.getAuthData();
+    String msgt = "ALDS ${storage.getDeviceId()} ${ad.userId}: $msg";
+    _sendToCedes("log", {"message": msgt}, "alds");
+  }
+
+  rawData(dynamic data) {
+    _sendToCedes("data", data, "alds");
+  }
 }
-
-
-
-
-
-
-
-
-
-
-

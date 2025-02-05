@@ -106,11 +106,12 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         actions: [
           widgets.topMenu(_handleCommand, [
             {'AddSign': 'Create New Sign'},
+            {'RemoveUser': 'Unenroll from iQsign'},
             {'Logout': "Log Out"},
           ]),
         ],
       ),
-      body: widgets.iqsignPage(context, _signListWidget(), true),
+      body: widgets.topLevelPage(context, _signListWidget(), true),
     );
   }
 
@@ -161,6 +162,8 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         break;
       case "Logout":
         _handleLogout().then(_gotoLogin);
+        break;
+      case "RemoveUser":
         break;
     }
   }

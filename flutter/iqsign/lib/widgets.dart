@@ -31,7 +31,10 @@
 ///******************************************************************************
 
 import 'package:flutter/material.dart';
-import 'globals.dart' as globals;
+import 'lookandfeel.dart' as laf;
+import 'package:intl/intl.dart' as intl;
+import 'package:duration_picker/duration_picker.dart';
+import 'package:flutter_spinbox/material.dart';
 
 ///******************************************************************************/
 ///                                                                             */
@@ -145,7 +148,10 @@ Widget errorField(String? text) {
   String t1 = (text ?? "");
   return Text(
     t1,
-    style: const TextStyle(color: Colors.red, fontSize: 16),
+    style: const TextStyle(
+      color: laf.errorColor,
+      fontSize: laf.errorFontSize,
+    ),
   );
 }
 
@@ -186,6 +192,51 @@ Widget loginTextField(
   return w;
 }
 
+Widget itemWithMenu<T>(
+  String lbl,
+  List<MenuAction> acts, {
+  void Function()? onTap,
+  void Function()? onDoubleTap,
+  void Function()? onLongPress,
+}) {
+  Widget btn = PopupMenuButton(
+    icon: const Icon(Icons.menu_sharp),
+    itemBuilder: (context) => _itemMenuBuilder(acts),
+    onSelected: (MenuAction act) => act.action(),
+  );
+  Widget w = Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
+      btn,
+      Expanded(
+        child: Text(lbl),
+      ),
+    ],
+  );
+  if (onTap == null && onDoubleTap == null) return w;
+  onLongPress ??= onDoubleTap;
+  Widget w1 = GestureDetector(
+    key: Key(lbl),
+    onTap: onTap,
+    onDoubleTap: onDoubleTap,
+    onLongPress: onLongPress,
+    onSecondaryTap: onDoubleTap,
+    onTertiaryTapUp: _dummyTapUp(onLongPress),
+    child: w,
+  );
+  return w1;
+}
+
+List<PopupMenuItem<MenuAction>> _itemMenuBuilder(List<MenuAction> acts) {
+  return acts.map<PopupMenuItem<MenuAction>>(menuItemAction).toList();
+}
+
+void Function(TapUpDetails) _dummyTapUp(Function? use) {
+  return (TapUpDetails v) {
+    if (use != null) use();
+  };
+}
+
 Widget tooltipWidget(String tooltip, Widget w) {
   if (tooltip.isEmpty) return w;
   Widget tt = Tooltip(
@@ -193,15 +244,15 @@ Widget tooltipWidget(String tooltip, Widget w) {
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
       gradient: LinearGradient(colors: <Color>[
-        Colors.yellow.shade50,
-        Colors.yellow.shade200,
+        laf.toolTipLeftColor,
+        laf.toolTipRightColor,
       ]),
     ),
-    height: 50,
+    height: laf.toolTipHeight,
     padding: const EdgeInsets.all(8.0),
     preferBelow: true,
     textStyle: const TextStyle(
-      fontSize: 18,
+      fontSize: laf.toolTipFontSize,
     ),
     showDuration: const Duration(seconds: 2),
     waitDuration: const Duration(seconds: 1),
@@ -223,8 +274,8 @@ Widget submitButton(
   String tooltip = "",
 }) {
   ButtonStyle style = ElevatedButton.styleFrom(
-    backgroundColor: Colors.yellow,
-    foregroundColor: Colors.black,
+    backgroundColor: laf.submitBackgroundColor,
+    foregroundColor: laf.submitForegroundColor,
     //  overlayColor: Colors.brown,
   );
   if (!enabled) action = null;
@@ -252,7 +303,7 @@ Widget textButton(
 }) {
   Widget w = TextButton(
     style: TextButton.styleFrom(
-      textStyle: const TextStyle(fontSize: 14),
+      textStyle: const TextStyle(fontSize: laf.buttonFontSize),
     ),
     onPressed: action,
     child: Text(label),
@@ -271,7 +322,7 @@ Widget textButton(
 
 Widget topMenu(void Function(String)? handler, List labels) {
   return PopupMenuButton(
-    icon: const Icon(Icons.menu_sharp),
+    icon: const Icon(laf.topMenuIcon),
     itemBuilder: (context) => _topMenuBuilder(labels),
     onSelected: handler,
   );
@@ -283,7 +334,7 @@ List<PopupMenuItem<String>> _topMenuBuilder(List labels) {
 
 Widget topMenuAction(List labels) {
   return PopupMenuButton(
-      icon: const Icon(Icons.menu_sharp),
+      icon: const Icon(laf.topMenuIcon),
       itemBuilder: (context) => topMenuActionBuilder(labels),
       onSelected: (dynamic act) => act.action());
 }
@@ -444,9 +495,10 @@ Widget booleanField({
   String? label,
   bool value = false,
   void Function(bool?)? onChanged,
+  String tooltip = "",
 }) {
   label ??= "";
-  return Row(
+  Widget w = Row(
     mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -458,6 +510,7 @@ Widget booleanField({
       Text(label),
     ],
   );
+  return tooltipWidget(tooltip, w);
 }
 
 ///******************************************************************************/
@@ -500,10 +553,13 @@ Widget listBox<T>(
   String what,
   List<T> data,
   Widget Function(T) itemBuilder,
-  void Function() add,
-) {
+  void Function() add, {
+  String tooltip = "",
+  String addToolTip = "",
+}) {
   List<Widget> widgets = data.map(itemBuilder).toList();
   Widget view = ListBody(children: widgets);
+  view = tooltipWidget(tooltip, view);
   // ListView view = ListView.builder(
   //     padding: const EdgeInsets.all(2),
   //     itemCount: data.length,
@@ -511,22 +567,369 @@ Widget listBox<T>(
   //       return itemBuilder(data[idx]);
   //     });
   String label = "${what}s";
-  return Column(mainAxisAlignment: MainAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: <Widget>[
-    Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-      Text(label, style: getLabelStyle()),
-    ]),
-    view,
-    Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        IconButton(
-          icon: const Icon(Icons.add_box_outlined),
-          tooltip: 'Add New $what',
-          onPressed: add,
-        ),
-      ],
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+        Text(label, style: getLabelStyle()),
+      ]),
+      view,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          tooltipWidget(
+            addToolTip,
+            IconButton(
+              icon: const Icon(Icons.add_box_outlined),
+              tooltip: 'Add New $what',
+              onPressed: add,
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+///******************************************************************************/
+///                                                                             */
+///     Date and time fields                                                    */
+///                                                                             */
+///******************************************************************************/
+
+class DateFormField {
+  late final BuildContext context;
+  late final TextEditingController _editControl;
+  late TextFormField _textField;
+  final void Function(DateTime)? onChanged;
+  late final DateTime _startDate;
+  late final DateTime _endDate;
+  late final String? _helpText;
+
+  DateFormField(
+    this.context, {
+    String? hint,
+    String? label,
+    DateTime? startDate,
+    DateTime? endDate,
+    DateTime? initialDate,
+    this.onChanged,
+  }) {
+    _editControl = TextEditingController();
+    label ??= hint;
+    hint ??= label;
+    _helpText = label;
+    initialDate ??= DateTime.now();
+    startDate ??= DateTime(2020);
+    endDate ??= DateTime(2030);
+    _startDate = startDate;
+    _endDate = endDate;
+    _editControl.text = _formatDate(initialDate);
+    _textField = TextFormField(
+      controller: _editControl,
+      decoration: getDecoration(hint: hint, label: label),
+      keyboardType: TextInputType.datetime,
+      onTap: _handleTap,
+      onChanged: _handleChange,
+    );
+  }
+
+  Widget get widget => _textField;
+
+  void _handleTap() async {
+    DateTime? newd = _decodeDate(_editControl.text);
+    newd ??= _endDate;
+    //  newd ??= DateTime.now();
+    DateTime? nextd = await showDatePicker(
+      context: context,
+      initialDate: newd,
+      firstDate: _startDate,
+      lastDate: _endDate,
+      helpText: _helpText,
+    );
+    if (nextd != null) {
+      _editControl.text = _formatDate(nextd);
+      onChanged!(nextd);
+    }
+    // bring up date picker here
+  }
+
+  void _handleChange(String s) {
+    DateTime? newd = DateTime.tryParse(_editControl.text);
+    if (newd != null) {
+      onChanged!(newd);
+    }
+  }
+
+  static String _formatDate(DateTime t) {
+    t = t.toLocal();
+    intl.DateFormat dfmt = intl.DateFormat("EEE MMM d, yyyy");
+    return dfmt.format(t);
+  }
+
+  static DateTime? _decodeDate(String txt) {
+    intl.DateFormat dfmt = intl.DateFormat("EEE MMM d, yyyy");
+    try {
+      DateTime t = dfmt.parseLoose(txt);
+      t = t.toUtc();
+      return t;
+    } catch (e) {
+      return null;
+    }
+  }
+}
+
+class TimeFormField {
+  late final BuildContext context;
+  late final TextEditingController _editControl;
+  late TextFormField _textField;
+  final void Function(TimeOfDay)? onChanged;
+  late final String? _helpText;
+
+  TimeFormField(
+    this.context, {
+    String? hint,
+    String? label,
+    TimeOfDay? initialTime,
+    DateTime? current,
+    this.onChanged,
+  }) {
+    _editControl = TextEditingController();
+    label ??= hint;
+    hint ??= label;
+    _helpText = label;
+    if (current != null) initialTime ??= TimeOfDay.fromDateTime(current);
+    initialTime ??= TimeOfDay.now();
+    _editControl.text = _formatTime(initialTime);
+
+    _textField = TextFormField(
+      controller: _editControl,
+      decoration: getDecoration(hint: hint, label: label),
+      keyboardType: TextInputType.datetime,
+      onTap: _handleTap,
+      onChanged: _handleChange,
+    );
+  }
+
+  Widget get widget => _textField;
+
+  void _handleTap() async {
+    TimeOfDay? newd = parseTime(_editControl.text);
+    newd ??= TimeOfDay.now();
+    TimeOfDay? nextd = await showTimePicker(
+      context: context,
+      initialTime: newd,
+      helpText: _helpText,
+    );
+    if (nextd != null) {
+      _editControl.text = _formatTime(nextd);
+      onChanged!(nextd);
+    }
+    // bring up date picker here
+  }
+
+  void _handleChange(String s) {
+    TimeOfDay? newd = parseTime(_editControl.text);
+    if (newd != null) {
+      onChanged!(newd);
+    }
+  }
+
+  String _formatTime(TimeOfDay tod) {
+    return tod.format(context);
+  }
+
+  TimeOfDay? parseTime(String t) {
+    DateTime dt = DateTime.now();
+    String txt = intl.DateFormat.yMd().format(dt);
+    txt += " $t";
+    DateTime? dt1 = DateTime.tryParse(txt);
+    if (dt1 == null) return null;
+    return TimeOfDay.fromDateTime(dt1);
+  }
+}
+
+class DurationFormField {
+  late final BuildContext context;
+  late final TextEditingController _editControl;
+  late TextFormField _textField;
+  final void Function(Duration)? onChanged;
+
+  DurationFormField(this.context, {String? hint, String? label, Duration? initialDuration, this.onChanged}) {
+    _editControl = TextEditingController();
+    label ??= hint;
+    hint ??= label;
+    initialDuration ??= const Duration(minutes: 5);
+    _editControl.text = _formatDuration(initialDuration);
+
+    _textField = TextFormField(
+      controller: _editControl,
+      decoration: getDecoration(hint: hint, label: label),
+      keyboardType: TextInputType.datetime,
+      onTap: _handleTap,
+      onChanged: _handleChange,
+    );
+  }
+
+  Widget get widget => _textField;
+
+  void _handleTap() async {
+    Duration? newd = parseDuration(_editControl.text);
+    newd ??= const Duration(minutes: 5);
+    Duration? nextd = await showDurationPicker(
+      context: context,
+      initialTime: newd,
+      baseUnit: BaseUnit.minute,
+      upperBound: const Duration(hours: 12),
+      lowerBound: const Duration(minutes: 1),
+    );
+    if (nextd != null) {
+      _editControl.text = _formatDuration(nextd);
+      // onChanged!(nextd);
+    }
+    // bring up date picker here
+  }
+
+  void _handleChange(String s) {
+    Duration? newd = parseDuration(_editControl.text);
+    if (newd != null) {
+      onChanged!(newd);
+    }
+  }
+
+  String _formatDuration(Duration tod) {
+    int hrs = tod.inHours;
+    int mins = tod.inMinutes.remainder(60);
+    String shrs = "${twoDigits(hrs)}:";
+    String smins = twoDigits(mins);
+    int sec = tod.inSeconds.remainder(60);
+    String ssec = ":${twoDigits(sec)}";
+
+    return shrs + smins + ssec;
+  }
+
+  Duration? parseDuration(String t) {
+    List<String> timeparts = t.split(":");
+    int hrs = 0;
+    int pt = 0;
+    if (timeparts.length == 3) hrs = int.parse(timeparts[pt++]);
+    int mins = int.parse(timeparts[pt++]);
+    int secs = int.parse(timeparts[pt++]);
+    return Duration(hours: hrs, minutes: mins, seconds: secs);
+  }
+
+  String twoDigits(int n) {
+    if (n >= 10) {
+      return "$n";
+    } else {
+      return "0$n";
+    }
+  }
+} // end of DurationFormField
+
+///******************************************************************************/
+///                                                                             */
+///     Numeric fields                                                          */
+///                                                                             */
+///******************************************************************************/
+
+Widget integerField({
+  required int min,
+  required int max,
+  required int value,
+  TextAlign textAlign = TextAlign.left,
+  required String label,
+  Function(dynamic)? onChanged,
+  String tooltip = "",
+}) {
+  return numberField(
+    min: min.toDouble(),
+    max: max.toDouble(),
+    value: value.toDouble(),
+    textAlign: textAlign,
+    label: label,
+    onChanged: onChanged,
+    decimals: 0,
+    isInt: true,
+    tooltip: tooltip,
+  );
+}
+
+Widget doubleField({
+  required double min,
+  required double max,
+  required double value,
+  TextAlign textAlign = TextAlign.left,
+  required String label,
+  Function(dynamic)? onChanged,
+  int decimals = 1,
+  String tooltip = "",
+}) {
+  return numberField(
+    min: min,
+    max: max,
+    value: value,
+    textAlign: textAlign,
+    label: label,
+    onChanged: onChanged,
+    decimals: decimals,
+    isInt: false,
+    tooltip: tooltip,
+  );
+}
+
+Widget numberField({
+  required double min,
+  required double max,
+  required double value,
+  TextAlign textAlign = TextAlign.left,
+  required String label,
+  Function(dynamic)? onChanged,
+  int decimals = 1,
+  bool isInt = false,
+  String tooltip = "",
+}) {
+  InputDecoration d = getDecoration(label: label);
+  Widget w1 = SpinBox(
+    min: min,
+    max: max,
+    value: value,
+    textAlign: textAlign,
+    decoration: d,
+    decimals: decimals,
+    onChanged: onChanged,
+  );
+  Widget w2 = Slider.adaptive(
+    min: min,
+    max: max,
+    value: value,
+    onChanged: onChanged,
+    label: (isInt ? value.round().toString() : value.toString()),
+  );
+  SliderThemeData sd = SliderThemeData.fromPrimaryColors(
+    primaryColor: const Color.fromARGB(185, 121, 85, 72),
+    primaryColorDark: Colors.brown,
+    primaryColorLight: const Color.fromARGB(73, 121, 85, 72),
+    valueIndicatorTextStyle: const TextStyle(
+      color: Colors.white,
     ),
-  ]);
+  );
+  sd = sd.copyWith(showValueIndicator: ShowValueIndicator.always);
+  Widget w3 = SliderTheme(
+    data: sd,
+    child: w2,
+  );
+  Widget w4 = Row(
+    children: <Widget>[
+      Expanded(flex: 3, child: w1),
+      Expanded(flex: 10, child: w3),
+    ],
+  );
+
+  w4 = tooltipWidget(tooltip, w4);
+
+  return w4;
 }
 
 ///******************************************************************************/
@@ -535,7 +938,11 @@ Widget listBox<T>(
 ///                                                                             */
 ///******************************************************************************/
 
-Future<void> displayDialog(BuildContext context, String title, String description) async {
+Future<void> displayDialog(
+  BuildContext context,
+  String title,
+  String description,
+) async {
   return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -582,7 +989,13 @@ Future<bool> getValidation(BuildContext context, String title) async {
 
 PreferredSizeWidget appBar(String title) {
   return AppBar(
-    title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+    title: Text(
+      title,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+    ),
   );
 }
 
@@ -598,15 +1011,19 @@ Widget circularProgressIndicator() {
 ///                                                                             */
 ///******************************************************************************/
 
-Widget iqsignPage(BuildContext context, Widget child, [bool scrollable = false]) {
+Widget topLevelPage(
+  BuildContext context,
+  Widget child, [
+  bool scrollable = false,
+]) {
   return LayoutBuilder(
     builder: (BuildContext context, BoxConstraints cnst) {
-      return _iqsignPageBuilder(context, cnst, child, scrollable);
+      return _topLevelPageBuilder(context, cnst, child, scrollable);
     },
   );
 }
 
-Widget _iqsignPageBuilder(
+Widget _topLevelPageBuilder(
   BuildContext context,
   BoxConstraints constraints,
   Widget child,
@@ -618,18 +1035,18 @@ Widget _iqsignPageBuilder(
   if (scrollable) {
     bc = BoxConstraints(
       minWidth: constraints.maxWidth,
-      // maxHeight: MediaQuery.of(context).size.width * 0.8,
-      maxHeight: 400,
+      maxHeight: MediaQuery.of(context).size.height * 0.8,
+      // maxHeight: 400,
     );
   }
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
         width: 8,
-        color: const Color.fromARGB(128, 140, 180, 210),
+        color: laf.topLevelBackground,
       ),
       image: const DecorationImage(
-        image: AssetImage("assets/images/iqsignstlogo.png"),
+        image: AssetImage(laf.topLevelImage),
         fit: BoxFit.fitWidth,
         opacity: 0.05,
       ),
@@ -648,7 +1065,7 @@ Widget boxWidgets(List<Widget> wlist, {double width = 8}) {
     decoration: BoxDecoration(
       border: Border.all(
         width: width,
-        color: const Color.fromARGB(128, 140, 180, 210),
+        color: laf.topLevelBackground,
       ),
     ),
     child: Column(
@@ -659,15 +1076,15 @@ Widget boxWidgets(List<Widget> wlist, {double width = 8}) {
   );
 }
 
-Widget iqsignNSPage(BuildContext context, Widget child) {
+Widget topLevelNSPage(BuildContext context, Widget child) {
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
         width: 8,
-        color: const Color.fromARGB(128, 140, 180, 210),
+        color: laf.topLevelBackground,
       ),
       image: const DecorationImage(
-        image: AssetImage("assets/images/iqsignstlogo.png"),
+        image: AssetImage(laf.topLevelImage),
         fit: BoxFit.fitWidth,
         opacity: 0.05,
       ),
@@ -685,7 +1102,7 @@ Widget iqsignNSPage(BuildContext context, Widget child) {
 ThemeData getTheme() {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color.fromRGBO(72, 85, 121, 1),
+      seedColor: laf.themeSeedColor,
     ),
   );
 }
@@ -703,17 +1120,17 @@ InputDecoration getDecoration({
     hintText: hint,
     labelText: label,
     labelStyle: getLabelStyle(),
-    hoverColor: Colors.amber,
+    hoverColor: laf.decorationHoverColor,
     focusedBorder: const OutlineInputBorder(
       borderSide: BorderSide(
         width: 2,
-        color: Colors.yellow,
+        color: laf.decorationBorderColor,
       ),
     ),
     border: const OutlineInputBorder(
       borderSide: BorderSide(
         width: 2,
-        color: Colors.white,
+        color: laf.decorationInputColor,
       ),
     ),
     contentPadding: EdgeInsets.symmetric(
@@ -724,22 +1141,27 @@ InputDecoration getDecoration({
 }
 
 TextStyle getLabelStyle() {
-  return const TextStyle(color: globals.labelColor, fontWeight: FontWeight.bold);
+  return const TextStyle(
+    color: laf.labelColor,
+    fontWeight: FontWeight.bold,
+  );
 }
 
 Widget getPadding(double size) {
   return Padding(padding: EdgeInsets.all(size));
 }
 
-Widget getIqsignLogo(BuildContext context) {
+Widget getTopLevelLogo(BuildContext context) {
   return SizedBox(
     width: MediaQuery.of(context).size.width * 0.3,
     height: MediaQuery.of(context).size.height * 0.25,
     child: Center(
       child: Image.asset(
-        "assets/images/iqsignstlogo.png",
+        laf.topLevelImage,
         fit: BoxFit.contain,
       ),
     ),
   );
 }
+
+// end of widgets.dart

@@ -30,7 +30,6 @@
 ///										 *
 ///******************************************************************************
 
-
 import 'package:geolocator/geolocator.dart';
 import 'util.dart' as util;
 import 'dart:math';
@@ -60,12 +59,15 @@ class Locator {
 
   void setup() async {
     String? s = await storage.readLocationData();
+    _knownLocations = [];
     if (s != null) {
       var x = jsonDecode(s) as List;
-      List<KnownLocation> klst =
-          x.map((json) => KnownLocation.fromJson(json)).toList();
+      List<KnownLocation> klst = x
+          .map(
+            (json) => KnownLocation.fromJson(json),
+          )
+          .toList();
       _knownLocations = klst;
-      _knownLocations = [];
     }
   }
 
@@ -83,10 +85,11 @@ class Locator {
     return nloc;
   }
 
-  Future<String?> findLocation(
-      {LocationData? location,
-      bool userset = false,
-      bool update = false}) async {
+  Future<String?> findLocation({
+    LocationData? location,
+    bool userset = false,
+    bool update = false,
+  }) async {
     String? rslt;
     LocationData? ld = location;
     if (update) ld = await recheck.recheck();
@@ -126,13 +129,12 @@ class Locator {
       _nextCount = 1;
     }
 
-    util.sendDataToCedes({
-      "type": "DATA",
+    device.Cedes().rawData({
       "data": ld.toJson(),
       "location": rslt,
       "set": userset,
       "next": _nextLocation,
-      "nextCount": _nextCount
+      "nextCount": _nextCount,
     });
 
     return rslt;
@@ -170,7 +172,9 @@ class LocationData {
   int _count = 1;
 
   LocationData(this._gpsPosition, List<BluetoothData> bts) {
-    _bluetoothData = {for (BluetoothData bt in bts) bt._id: bt};
+    _bluetoothData = {
+      for (BluetoothData bt in bts) bt._id: bt,
+    };
   }
 
   LocationData? update(Position? pos, List<BluetoothData> btdata) {
@@ -206,9 +210,20 @@ class LocationData {
         accuracy: max(gpos.accuracy, pos.accuracy),
         timestamp: gpos.timestamp,
         altitude: (gpos.altitude * _count + pos.altitude) / (_count + 1),
+        altitudeAccuracy: max(
+          gpos.altitudeAccuracy,
+          pos.altitudeAccuracy,
+        ),
         heading: gpos.heading,
+        headingAccuracy: max(
+          gpos.headingAccuracy,
+          pos.headingAccuracy,
+        ),
         speed: max(gpos.speed, pos.speed),
-        speedAccuracy: max(gpos.speedAccuracy, pos.speedAccuracy),
+        speedAccuracy: max(
+          gpos.speedAccuracy,
+          pos.speedAccuracy,
+        ),
       );
     }
 
@@ -219,8 +234,11 @@ class LocationData {
   }
 
   Map<String, dynamic> toJson() {
-    List btdata =
-        _bluetoothData.values.map((BluetoothData bd) => bd.toJson()).toList();
+    List btdata = _bluetoothData.values
+        .map(
+          (BluetoothData bd) => bd.toJson(),
+        )
+        .toList();
     return {
       "bluetoothData": btdata,
       "gpsPosition": _gpsPosition?.toJson(),
@@ -265,7 +283,12 @@ class KnownLocation {
       bmap[ent.key] = v;
     }
     totsq = sqrt(totsq);
-    _bluetoothMap = bmap.map((k, v) => MapEntry(k, v / totsq));
+    _bluetoothMap = bmap.map(
+      (k, v) => MapEntry(
+        k,
+        v / totsq,
+      ),
+    );
   }
 
   double score(KnownLocation kl) {
@@ -275,7 +298,11 @@ class KnownLocation {
     Position? p1 = kl._position;
     if (p0 != null && p1 != null) {
       double d0 = util.calculateDistance(
-          p0.latitude, p0.longitude, p1.latitude, p1.longitude);
+        p0.latitude,
+        p0.longitude,
+        p1.latitude,
+        p1.longitude,
+      );
       double d1 = max(p0.accuracy, p1.accuracy);
       util.log("GPS DISTANCE $d0 $d1 $p0 $p1");
       double d2 = d0 / (2 * d1);
@@ -287,6 +314,7 @@ class KnownLocation {
       util.log("GPS SCORES $d2 $a1");
       score = d2 * locFraction + a1 * altFraction + score * btFraction;
     }
+    // else reduce the bluetooth score a bit to account for position variance
 
     return score;
   }
@@ -316,6 +344,7 @@ class KnownLocation {
     }
     Position? p0 = _position;
     Position? p1 = kl._position;
+    // if the distance is too great, clear position so it isn't used
     if (p0 != null && p1 != null) {
       // accuracy should include max distance as well
       _position = Position(
@@ -324,9 +353,20 @@ class KnownLocation {
         accuracy: max(p0.accuracy, p1.accuracy),
         timestamp: p0.timestamp,
         altitude: (p0.altitude * ct + p1.altitude * kct) / tct,
+        altitudeAccuracy: max(
+          p0.altitudeAccuracy,
+          p1.altitudeAccuracy,
+        ),
         heading: p0.heading,
+        headingAccuracy: max(
+          p0.headingAccuracy,
+          p1.headingAccuracy,
+        ),
         speed: max(p0.speed, p1.speed),
-        speedAccuracy: max(p0.speedAccuracy, p1.speedAccuracy),
+        speedAccuracy: max(
+          p0.speedAccuracy,
+          p1.speedAccuracy,
+        ),
       );
     }
     _count++;
@@ -352,15 +392,3 @@ class KnownLocation {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

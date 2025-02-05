@@ -100,7 +100,7 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
       appBar: AppBar(
         title: const Text("Sign Up"),
       ),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         Center(
           child: Column(
@@ -111,7 +111,7 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    widgets.getIqsignLogo(context),
+                    widgets.getTopLevelLogo(context),
                     const Padding(
                       padding: EdgeInsets.all(8.0),
                     ),

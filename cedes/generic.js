@@ -50,7 +50,7 @@ const catre = require("./catre");
 let users = { };
 let tokens = { };
 let queues = { };
-
+"de"
 
 /********************************************************************************/
 /*                                                                              */
@@ -62,7 +62,8 @@ function getRouter(restful)
 {
    restful.post("/generic/attach",handleAttach);
    restful.post("/generic/authorize",handleAuthorize);
-
+   restful.post("/generic/log",handleLog);
+   
    restful.use(authenticate);
 
    restful.post("/generic/devices",handleDevices);
@@ -321,6 +322,16 @@ function handleActiveSensors(bid,uid,active)
       user.active[devid].add(nm);
     }
 }
+
+
+function handleLog(req,res)
+{
+   // log request
+   console.log("GENERIC LOG",req.body.user,req.body.message);
+   
+   config.handleSuccess(req,res);
+}
+
 
 
 

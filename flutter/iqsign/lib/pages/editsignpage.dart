@@ -134,7 +134,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
           ]),
         ],
       ),
-      body: widgets.iqsignPage(
+      body: widgets.topLevelPage(
         context,
         Column(
           mainAxisAlignment: MainAxisAlignment.start,

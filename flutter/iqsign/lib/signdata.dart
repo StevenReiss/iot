@@ -66,6 +66,20 @@ class SignData {
     _signBody = "";
     _signUser = 0;
   }
+  SignData.clone(SignData d) {
+    _name = d._name;
+    _displayName = d._displayName;
+    _width = d._width;
+    _height = d._height;
+    _nameKey = d._nameKey;
+    _signDim = d._signDim;
+    _signUrl = d._signUrl;
+    _imageUrl = d._imageUrl;
+    _localImageUrl = d._localImageUrl;
+    _signId = d._signId;
+    _signBody = d._signBody;
+    _signUser = d._signUser;
+  }
 
   void update(d) {
     _name = d['name'] as String;
