@@ -39,6 +39,11 @@ pushd catre
 ant
 popd
 
+pushd jiqsign
+ant
+popd
+
+
 ssh sherpa.cs.brown.edu '(cd /vol/iot/iqsign; npm update)'
 echo npm status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/signmaker; ant)'
@@ -47,12 +52,14 @@ ssh sherpa.cs.brown.edu '(cd /vol/iot/catre; ant)'
 echo catre ant status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/devices; ant)'
 echo devices ant status $status
+ssh sherpa.cs.brown.edu '(cd /vol/iot/jiqsign; ant)'
+echo jiqsign ant status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/cedes; npm update)'
 echo npm status $status
 
 
-ssh sherpa.cs.brown.edu '(cd /vol/iot/iqsign; start.csh)'
-echo iqsign start status $status
+ssh sherpa.cs.brown.edu '(cd /vol/iot/jiqsign; start.csh)'
+echo jiqsign start status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/cedes; start.csh)'
 echo cedes start status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/signmaker; start.csh)'
