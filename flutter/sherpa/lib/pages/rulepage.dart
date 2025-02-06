@@ -78,10 +78,12 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     String ttl = "Rule Editor for ${_forDevice.getName()}";
     return Scaffold(
       appBar: AppBar(title: Text(ttl), actions: [
-        widgets.topMenuAction([
-          widgets.MenuAction('Save Changes', _saveRule),
-          widgets.MenuAction('Revert rule', _revertRule),
-        ]),
+        widgets.topMenuAction(
+          [
+            widgets.MenuAction('Save Changes', _saveRule),
+            widgets.MenuAction('Revert rule', _revertRule),
+          ],
+        ),
       ]),
       body: widgets.sherpaPage(
         context,

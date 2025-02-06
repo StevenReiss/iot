@@ -1,3 +1,9 @@
+/*
+ *        lookandfeel.dart
+ * 
+ *    Define the look and feel for this application
+ * 
+ */
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /// *******************************************************************************
 ///  Copyright 2023, Brown University, Providence, RI.                           *
@@ -25,67 +31,32 @@
 ///******************************************************************************
 
 import 'package:flutter/material.dart';
-import 'package:phone_state/phone_state.dart';
-import 'pages/selectpage.dart';
-import 'storage.dart' as storage;
-import 'globals.dart' as globals;
-import 'recheck.dart' as recheck;
-import 'device.dart' as device;
-import 'util.dart' as util;
-import "locator.dart";
-import 'dart:async';
 
-void main() {
-  initialize(false);
-  runApp(
-    const MaterialApp(
-      title: "ALDS Location Selector",
-      home: AldsSelectPage(),
-    ),
-  );
-}
+const Color errorColor = Colors.red;
+const double errorFontSize = 16;
 
-void initialize(bool flag) async {
-  await util.setup();
-  await storage.setupStorage();
-  await recheck.initialize();
-  Locator loc = Locator();
-  loc.setup();
+final Color toolTipLeftColor = Colors.yellow.shade50;
+final Color toolTipRightColor = Colors.yellow.shade200;
+const double toolTipHeight = 50;
+const double toolTipFontSize = 18;
 
-  Timer.periodic(
-    const Duration(seconds: globals.recheckEverySeconds),
-    _handleRecheck,
-  );
-  Timer.periodic(
-    const Duration(seconds: globals.pingEverySeconds),
-    _handleDevice,
-  );
+const Color submitBackgroundColor = Colors.yellow;
+const Color submitForegroundColor = Colors.black;
+const double buttonFontSize = 14;
 
-  PhoneState.stream.forEach(handlePhoneStream);
-}
+const IconData topMenuIcon = Icons.menu_sharp;
 
-void _handleRecheck(Timer timer) async {
-  await recheck.recheck();
-}
+const Color decorationHoverColor = Colors.amber;
+const Color decorationBorderColor = Colors.yellow;
+const Color decorationInputColor = Colors.white;
 
-void _handleDevice(Timer timer) async {
-  device.Cedes cedes = device.Cedes();
-  await cedes.ping();
-}
+// APPLICATION-SPECIFIC Definitions
 
-void handlePhoneStream(PhoneState state) {
-  PhoneStateStatus sts = state.status;
-  sts != PhoneStateStatus.NOTHING;
+const Color topLevelBackground = Color.fromARGB(128, 144, 140, 210);
+const String topLevelImage = "assets/images/aldsicon.png";
 
-  switch (sts) {
-    case PhoneStateStatus.CALL_STARTED:
-      device.Cedes().updatePhoneState(true);
-      break;
-    case PhoneStateStatus.CALL_ENDED:
-      device.Cedes().updatePhoneState(false);
-      break;
-    case PhoneStateStatus.CALL_INCOMING:
-    case PhoneStateStatus.NOTHING:
-      break;
-  }
-}
+const Color themeSeedColor = Color.fromARGB(255, 3, 15, 244);
+const Color borderColor = Color.fromARGB(255, 2, 152, 222);
+const Color labelColor = Color.fromARGB(255, 1, 155, 226);
+
+// end of lookandfeel.dart

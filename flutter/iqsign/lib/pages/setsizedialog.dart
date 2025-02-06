@@ -39,58 +39,67 @@ const List<String> _dims = <String>['16by9', '4by3', '16by10', 'other'];
 class _IQSignSetSizeDialog extends AlertDialog {
   final BuildContext context;
 
-  _IQSignSetSizeDialog(this.context, signData, widthController,
-      heightController, void Function(int, String?) changeCallback)
-      : super(
-            title: const Text("Set Sign Size"),
-            content: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    widgets.textField(
-                        hint: "Width",
-                        controller: widthController,
-                        keyboardType: TextInputType.number,
-                        onEditingComplete: () {
-                          changeCallback(0, widthController.text);
-                        }),
-                    widgets.fieldSeparator(),
-                    widgets.textField(
-                      hint: "Height",
-                      controller: heightController,
+  _IQSignSetSizeDialog(
+    this.context,
+    SignData signData,
+    TextEditingController widthController,
+    TextEditingController heightController,
+    void Function(int, String?) changeCallback,
+  ) : super(
+          title: const Text("Set Sign Size"),
+          content: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  widgets.textField(
+                      hint: "Width",
+                      controller: widthController,
                       keyboardType: TextInputType.number,
                       onEditingComplete: () {
-                        changeCallback(1, heightController.text);
-                      },
-                    ),
-                    widgets.fieldSeparator(),
-                    widgets.dropDownMenu(_dims, value: signData.getDimension(),
-                        onChanged: (String? v) {
-                      changeCallback(2, v);
-                    }),
-                  ],
-                ),
+                        changeCallback(0, widthController.text);
+                      }),
+                  widgets.fieldSeparator(),
+                  widgets.textField(
+                    hint: "Height",
+                    controller: heightController,
+                    keyboardType: TextInputType.number,
+                    onEditingComplete: () {
+                      changeCallback(1, heightController.text);
+                    },
+                  ),
+                  widgets.fieldSeparator(),
+                  widgets.dropDownMenu(_dims, value: signData.getDimension(), onChanged: (String? v) {
+                    changeCallback(2, v);
+                  }),
+                ],
               ),
             ),
-            actions: <Widget>[
-              widgets.submitButton("Cancel", () {
-                Navigator.of(context).pop("CANCEL");
-              }),
-              widgets.submitButton("OK", () {
+          ),
+          actions: <Widget>[
+            widgets.submitButton("Cancel", () {
+              Navigator.of(context).pop("CANCEL");
+            }),
+            widgets.submitButton(
+              "OK",
+              () {
                 Navigator.of(context).pop("OK");
-              }),
-            ]);
+              },
+            ),
+          ],
+        );
 }
 
 Future<String?> showSizeDialog(BuildContext context, SignData sd) async {
-  TextEditingController widthController =
-      TextEditingController(text: sd.getWidth().toString());
-  TextEditingController heightController =
-      TextEditingController(text: sd.getHeight().toString());
+  TextEditingController widthController = TextEditingController(
+    text: sd.getWidth().toString(),
+  );
+  TextEditingController heightController = TextEditingController(
+    text: sd.getHeight().toString(),
+  );
   String dim = sd.getDimension();
   int wd = sd.getWidth();
   int ht = sd.getHeight();
@@ -132,7 +141,12 @@ Future<String?> showSizeDialog(BuildContext context, SignData sd) async {
     context: context,
     builder: (context) {
       return _IQSignSetSizeDialog(
-          context, sd, widthController, heightController, changeCallback);
+        context,
+        sd,
+        widthController,
+        heightController,
+        changeCallback,
+      );
     },
   );
   if (rslt == "OK") {
@@ -153,4 +167,3 @@ double fract(String dim) {
       return 0;
   }
 }
-

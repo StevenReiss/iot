@@ -49,16 +49,7 @@ class IQSignHomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return IQSignHomePage(_initial);
   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'iQsign Home Page',
-//       theme: util.getTheme(),
-//       home: const IQSignHomePage(_initial),
-//     );
-//   }
-}
+} // end of class IQSignHomeWidget
 
 class IQSignHomePage extends StatefulWidget {
   final bool _initial;

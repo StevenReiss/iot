@@ -4,30 +4,30 @@
  *    Talk to CATRE as a device
  * 
  */
-/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
+/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /// *******************************************************************************
-///  Copyright 2023, Brown University, Providence, RI.				 *
-///										 *
-///			  All Rights Reserved					 *
-///										 *
-///  Permission to use, copy, modify, and distribute this software and its	 *
-///  documentation for any purpose other than its incorporation into a		 *
-///  commercial product is hereby granted without fee, provided that the 	 *
-///  above copyright notice appear in all copies and that both that		 *
-///  copyright notice and this permission notice appear in supporting		 *
-///  documentation, and that the name of Brown University not be used in 	 *
-///  advertising or publicity pertaining to distribution of the software 	 *
-///  without specific, written prior permission. 				 *
-///										 *
-///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
-///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
-///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
-///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
-///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
-///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
-///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
-///  OF THIS SOFTWARE.								 *
-///										 *
+///  Copyright 2023, Brown University, Providence, RI.                           *
+///                                                                              *
+///                       All Rights Reserved                                    *
+///                                                                              *
+///  Permission to use, copy, modify, and distribute this software and its       *
+///  documentation for any purpose other than its incorporation into a           *
+///  commercial product is hereby granted without fee, provided that the         *
+///  above copyright notice appear in all copies and that both that              *
+///  copyright notice and this permission notice appear in supporting            *
+///  documentation, and that the name of Brown University not be used in         *
+///  advertising or publicity pertaining to distribution of the software         *
+///  without specific, written prior permission.                                 *
+///                                                                              *
+///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS               *
+///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND           *
+///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY     *
+///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY         *
+///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,             *
+///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS              *
+///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
+///  OF THIS SOFTWARE.                                                           *
+///                                                                              *
 ///******************************************************************************
 
 import 'storage.dart' as storage;
@@ -66,7 +66,10 @@ class Cedes {
       }
       if (_authCode != noAuth) {
         storage.AuthData ad = storage.getAuthData();
-        Map<String, dynamic>? resp = await _sendToCedes('ping', {"uid": ad.userId});
+        Map<String, dynamic>? resp = await _sendToCedes(
+          'ping',
+          {"uid": ad.userId},
+        );
         String sts = "FAIL";
         if (resp != null) sts = resp["status"] ?? "FAIL";
         switch (sts) {
@@ -156,15 +159,26 @@ class Cedes {
   Future<void> _setup() async {
     if (_authCode != noAuth) return;
     storage.AuthData ad = storage.getAuthData();
-    if (ad.userId == '*' || ad.userPass == '*') return;
-    Map<String, dynamic>? attach = await _sendToCedes("attach", {"uid": ad.userId});
+    if (ad.userId == '*' || ad.password == '*') return;
+    Map<String, dynamic>? attach = await _sendToCedes(
+      "attach",
+      {
+        "uid": ad.userId,
+      },
+    );
     if (attach == null) return;
     String seed = attach["seed"] ?? "*";
     if (seed == '*') return;
-    String p0 = util.hasher(ad.userPass);
+    String p0 = util.hasher(ad.password);
     String p1 = util.hasher(p0 + ad.userId);
     String p2 = util.hasher(p1 + seed);
-    Map<String, dynamic>? auth = await _sendToCedes("authorize", {"uid": ad.userId, "patencoded": p2});
+    Map<String, dynamic>? auth = await _sendToCedes(
+      "authorize",
+      {
+        "uid": ad.userId,
+        "patencoded": p2,
+      },
+    );
     if (auth == null) return;
     _authCode = auth["token"] ?? noAuth;
   }

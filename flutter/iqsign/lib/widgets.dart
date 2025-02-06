@@ -117,6 +117,7 @@ Widget textField({
   TextInputAction? textInputAction,
   bool? enabled,
   String tooltip = "",
+  bool readOnly = false,
 }) {
   label ??= hint;
   hint ??= label;
@@ -133,6 +134,7 @@ Widget textField({
     keyboardType: keyboardType,
     textInputAction: textInputAction,
     enabled: enabled,
+    readOnly: readOnly,
     decoration: getDecoration(
       hint: hint,
       label: label,
@@ -228,7 +230,7 @@ Widget itemWithMenu<T>(
 }
 
 List<PopupMenuItem<MenuAction>> _itemMenuBuilder(List<MenuAction> acts) {
-  return acts.map<PopupMenuItem<MenuAction>>(menuItemAction).toList();
+  return acts.map<PopupMenuItem<MenuAction>>(_menuItemAction).toList();
 }
 
 void Function(TapUpDetails) _dummyTapUp(Function? use) {
@@ -329,28 +331,17 @@ Widget topMenu(void Function(String)? handler, List labels) {
 }
 
 List<PopupMenuItem<String>> _topMenuBuilder(List labels) {
-  return labels.map<PopupMenuItem<String>>(menuItem).toList();
+  return labels.map<PopupMenuItem<String>>(_menuItem).toList();
 }
 
-Widget topMenuAction(List labels) {
-  return PopupMenuButton(
-      icon: const Icon(laf.topMenuIcon),
-      itemBuilder: (context) => topMenuActionBuilder(labels),
-      onSelected: (dynamic act) => act.action());
-}
-
-List<PopupMenuItem<MenuAction>> topMenuActionBuilder(List labels) {
-  return labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList();
-}
-
-PopupMenuItem<MenuAction> menuItemAction(dynamic val) {
+PopupMenuItem<MenuAction> _menuItemAction(dynamic val) {
   return PopupMenuItem<MenuAction>(
     value: val,
     child: tooltipWidget(val.tooltip, Text(val.label)),
   );
 }
 
-PopupMenuItem<String> menuItem(dynamic val) {
+PopupMenuItem<String> _menuItem(dynamic val) {
   String value = 'Unknown';
   String label = 'Unknown';
   String tooltip = '';
@@ -358,14 +349,21 @@ PopupMenuItem<String> menuItem(dynamic val) {
     value = val;
     label = val;
   } else if (val is Map<String, dynamic>) {
-    for (String k in val.keys) {
-      value = k;
-      if (val[k] is String) {
-        label = val[k] as String;
-      } else if (val[k] is List<String>) {
-        List<String> vals = val[k] as List<String>;
-        label = vals[0];
-        tooltip = vals[1];
+    if (val['name'] != null && val['label'] != null) {
+      label = val['label'];
+      value = val['name'];
+      String? tt = val['tooltip'];
+      if (tt != null) tooltip = tt;
+    } else {
+      for (String k in val.keys) {
+        value = k;
+        if (val[k] is String) {
+          label = val[k] as String;
+        } else if (val[k] is List<String>) {
+          List<String> vals = val[k] as List<String>;
+          label = vals[0];
+          tooltip = vals[1];
+        }
       }
     }
   }

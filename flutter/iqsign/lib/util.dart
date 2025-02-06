@@ -68,14 +68,24 @@ ThemeData getTheme() {
 
 Uri getServerUri(String path, [Map<String, dynamic>? query]) {
   if (kDebugMode && globals.debugServer) {
-    return Uri.http("localhost:3336", path, query);
+    return Uri.http(
+      "localhost:3336",
+      path,
+      query,
+    );
   }
-  return Uri.https("sherpa.cs.brown.edu:3336", path, query);
+  return Uri.https(
+    "sherpa.cs.brown.edu:3336",
+    path,
+    query,
+  );
 }
 
 Future<Map<String, dynamic>> postJson(String url, {dynamic body}) async {
   Uri u = getServerUri(url);
-  Map<String, String> headers = {"accept": "application/json"};
+  Map<String, String> headers = {
+    "accept": "application/json",
+  };
   if (globals.iqsignSession != null) {
     if (body == null) {
       body = {"session": globals.iqsignSession};
@@ -91,7 +101,9 @@ Future<Map<String, dynamic>> postJson(String url, {dynamic body}) async {
 
 Future<void> postJsonOnly(String url, {dynamic body}) async {
   Uri u = getServerUri(url);
-  Map<String, String> headers = {"accept": "application/json"};
+  Map<String, String> headers = {
+    "accept": "application/json",
+  };
   if (globals.iqsignSession != null) {
     if (body == null) {
       body = {"session": globals.iqsignSession};
@@ -103,7 +115,9 @@ Future<void> postJsonOnly(String url, {dynamic body}) async {
 }
 
 Future<Map<String, dynamic>> getJson(String url, {dynamic body}) async {
-  Map<String, String>? headers = {"accept": "application/json"};
+  Map<String, String>? headers = {
+    "accept": "application/json",
+  };
 //   headers = null;
   if (globals.iqsignSession != null) {
     if (body == null) {

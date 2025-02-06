@@ -1,7 +1,7 @@
 /*  
- *       setnamedialog.dart 
+ *       loginkeydialog.dart 
  * 
- *    Dialog for changing sign name
+ *    Dialog for getting login credentials
  * 
  */
 /*	Copyright 2023 Brown University -- Steven P. Reiss			*/
