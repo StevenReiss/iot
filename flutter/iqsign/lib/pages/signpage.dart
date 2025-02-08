@@ -191,13 +191,20 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     );
   }
 
-  dynamic _gotoLogin(dynamic) {
+  dynamic _gotoLogin(bool fg) {
+    if (!fg) return;
     Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
-  Future _handleLogout() async {
+  dynamic _gotoHome(dynamic fg) {
+    if (fg == false) return;
+    Navigator.pop(context);
+  }
+
+  Future<bool> _handleLogout() async {
     await util.postJsonOnly("/rest/logout");
     globals.iqsignSession = null;
+    return true;
   }
 
   dynamic _gotoEdit() {
@@ -230,6 +237,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
         await loginkey.loginKeyDialog(context, _signData);
         break;
       case "RemoveSign":
+        _removeSignAction().then(_gotoHome);
         break;
     }
   }
@@ -337,6 +345,25 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
         _preview = false;
       });
     }
+  }
+
+  Future<bool> _removeSignAction() async {
+    String msg = "This will completely remove the sign ";
+    msg += "'${_signData.getName()}'.\n";
+    msg += "If you are sure, click YES, otherwise click NO.";
+
+    bool fg = await widgets.getValidation(context, msg);
+    if (!fg) return false;
+
+    Map<String, dynamic> js = await util.postJson(
+      "/rest/removersign",
+      body: {
+        "signid": _signData.getSignId(),
+      },
+    );
+    if (js['status'] != "OK") return false;
+
+    return true;
   }
 
   bool _isSignValid() {

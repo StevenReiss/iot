@@ -55,6 +55,7 @@ var users = { };
 let iqsign_url = "https://sherpa.cs.brown.edu:3336/rest/";
 
 
+
 /********************************************************************************/
 /*										*/
 /*	Setup Router								*/
@@ -68,8 +69,7 @@ function getRouter(restful)
    restful.all("*",config.handle404)
    restful.use(config.handleError);
 
-   setInterval(periodicChecker,10*60*1000);
-   setInterval(pingChecker,30*1000);
+   setInterval(pingChecker,120*1000);
 
    return restful;
 }
@@ -91,10 +91,10 @@ function authenticate(req,res,next)
 async function addBridge(authdata,bid)
 {
    console.log("IQSIGN ADD BRIDGE",authdata.username,authdata.token,bid);
-
+   
    let username = authdata.username;
    let pat = authdata.token;
-
+   
    let user = users[username];
    if (user == null) {
       user = { username : username, authtoken : pat,
@@ -104,29 +104,42 @@ async function addBridge(authdata,bid)
    else {
       user.bridgeid = bid;
     }
-
-   let login = { username : username, accesstoken : pat };
-   let resp1 = await sendToIQsign("POST","login",login);
-   if (resp1.status != 'OK') return false;
-   user.session = resp1.session;
-
+   
+   await reauthorize(user);
+   if (user.session == null) return false;
+   
    getDevices(user);
-
+   
    return false;
 }
 
 
 async function reauthorize(user)
 {
-   let login = { username: user.username, accesstoken: user.authtoken };
+   let resp0 = await sendToIQsign("GET","login");
+   let code = resp0.code;
+   if (code == null) {
+      user.session = null;
+      return;
+    }
+   
+   let tok1 = config.hasher(user.authtoken);
+   let tok2 = config.hasher(tok1 + code);
+   
+   let login = { username: user.username, accesscode: tok2 };
    let resp1 = await sendToIQsign("POST","login",login);
-   user.session = resp1.session;
+   if (resp1.status != 'OK') {
+      user.session = null;
+    }
+   else {
+      user.session = resp1.session;
+    }
 }
 
 
 async function getDevices(user)
 {
-   getSavedSigns(user);
+   await getSavedSigns(user);
 
    let resp = await sendToIQsign("POST","signs",{ session : user.session });
    if (resp.status != 'OK') return;
@@ -149,7 +162,7 @@ async function getDevices(user)
 	       BRIDGE : "iqsign",
 	       NAME : "iQsign " + newdev.name,
 	       LABEL : "iQsign " + newdev.name,
-	       DESCRIPTION: "iQsign " + newdev.name,
+	       DESCRIPTION: "iQsign " + newdev.displayname,
 	       PARAMETERS :  [
 		  { NAME: "savedValues", TYPE: "STRINGLIST", ISSENSOR: false, VOLATILE: true }
 	       ],
@@ -181,6 +194,8 @@ async function getDevices(user)
       await updateValues(user,null);
     }
 }
+
+
 
 async function getSavedSigns(user)
 {
@@ -214,6 +229,8 @@ async function handleCommand(bid,uid,devid,command,values)
       else sets = sets + " " + txt;
     }
 
+   await reauthorize(user);
+   
    for (let dev of user.devices) {
       if (dev.UID == devid) {
 	  switch (command) {
@@ -251,6 +268,10 @@ async function updateValues(user,devid)
    console.log("UPDATE VALUES ",devid,user);
 
    if (user == null || user.devices == null) return;
+   
+   reauthorize(user);
+   
+   getDevices(user);
 
    for (let dev of user.devices) {
       if (devid != null && dev.UID != devid) continue;
@@ -269,20 +290,12 @@ async function updateValues(user,devid)
 }
 
 
+
 /********************************************************************************/
 /*										*/
 /*	Periodic checker to keep up to date					*/
 /*										*/
 /********************************************************************************/
-
-async function periodicChecker()
-{
-   for (let uid in users) {
-      let user = users[uid];
-      getDevices(user);
-    }
-}
-
 
 async function pingChecker()
 {
@@ -290,6 +303,8 @@ async function pingChecker()
    for (let uid in users) {
       ulist.push(uid);
     }
+   if (users.length == 0) return;
+   
    let resp = await sendToIQsign("POST","ping",{ users : ulist });
    console.log("PING",resp);
 
@@ -297,10 +312,6 @@ async function pingChecker()
    for (let uid of resp.update) {
       let user = users[uid];
       updateValues(user);
-    }
-   for (let uid of resp.authorize) {
-      let user = users[uid];
-      reauthorize(user);
     }
 }
 
@@ -344,16 +355,6 @@ async function sendToIQsign(method,path,data)
 
 
 
-function hasher(msg)
-{
-   const hash = crypto.createHash('sha512');
-   const data = hash.update(msg,'utf-8');
-   const gen = data.digest('base64');
-   return gen;
-}
-
-
-
 /********************************************************************************/
 /*										*/
 /*	Exports 								*/
@@ -369,43 +370,3 @@ exports.handelParameters = handleParameters;
 
 
 /* end of iqsign.js */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

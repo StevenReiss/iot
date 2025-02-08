@@ -338,6 +338,7 @@ void setDisplayName(String name)
 
 JSONObject toJson()
 {
+   // namekey, userid, name, lastupdate, width, height, interval also available 
    sign_data.put("displayname",getDisplayName());
    sign_data.put("dim",getDimension());
    sign_data.put("signurl",getSignUrl());

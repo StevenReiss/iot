@@ -34,9 +34,6 @@ library alds.util;
 
 import 'dart:convert' as convert;
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:flutter/material.dart';
-import 'package:flutter_logs/flutter_logs.dart';
-// import 'package:flutter/foundation.dart';
 import 'device.dart' as device;
 
 import 'dart:math';

@@ -206,12 +206,20 @@ String handleLogin(HttpExchange he,IQsignSession session)
       if (user == null) {
 	 return errorResponse(session,"Invalid username or password");
        }
-      String acc = BowerRouter.getParameter(he,"accesstoken");
-      if (acc != null) {
-	 IQsignLoginCode tokinfo = db.checkAccessToken(acc);
+      String actok = BowerRouter.getParameter(he,"accesstoken");
+      String accod = BowerRouter.getParameter(he,"accesscode");
+      if (actok != null && !actok.isEmpty()) { 
+	 IQsignLoginCode tokinfo = db.checkAccessToken(actok,null,null);
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
 	    return errorResponse(session,"Invalid access token");
 	  }
+       }
+      else if (accod != null && !accod.isEmpty() && session.getCode() != null) {
+         IQsignLoginCode tokinfo = db.checkAccessToken(actok,
+               user.getUserId(),session.getCode()); 
+	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
+	    return errorResponse(session,"Invalid access token");
+	  } 
        }
       else {
 	 String pwd = user.getPassword();

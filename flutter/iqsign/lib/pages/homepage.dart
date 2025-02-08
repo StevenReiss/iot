@@ -155,25 +155,30 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
         _handleLogout().then(_gotoLogin);
         break;
       case "RemoveUser":
+        _handleRemoveUser().then(_gotoLogin);
         break;
     }
   }
 
   void _gotoSignPage(SignData sd) async {
     await widgets.gotoThen(context, IQSignSignWidget(sd));
-    // hello
+    setState(() {
+      _getSigns();
+    });
   }
 
-  dynamic _gotoLogin(dynamic) {
+  dynamic _gotoLogin(bool fg) {
+    if (!fg) return;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const IQSignLogin()),
     );
   }
 
-  Future _handleLogout() async {
+  Future<bool> _handleLogout() async {
     await util.postJsonOnly("/rest/logout");
     globals.iqsignSession = null;
+    return true;
   }
 
   dynamic _goToCreateSign() {
@@ -181,6 +186,26 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
       context,
       MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()),
     );
+  }
+
+  Future<bool> _handleRemoveUser() async {
+    String msg = "Thank you for trying iQsign. We are sorry to see you go.\n";
+    msg += "If you really meant to leave, then click YES.  If this was a ";
+    msg += "mistake then click NO";
+
+    bool fg = await widgets.getValidation(context, msg);
+    if (!fg) return false;
+
+    Map<String, dynamic> js = await util.postJson(
+      "rest/removeuser",
+    );
+    if (js['status'] == 'OK') {
+      globals.iqsignSession = null;
+      fg = true;
+    } else {
+      fg = false;
+    }
+    return fg;
   }
 }
 

@@ -1,11 +1,8 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_blue (0.0.1):
+  - flutter_blue_plus_darwin (0.0.2):
     - Flutter
-    - flutter_blue/Protos (= 0.0.1)
-  - flutter_blue/Protos (0.0.1):
-    - Flutter
-    - Protobuf (~> 3.11.4)
+    - FlutterMacOS
   - flutter_logs (0.0.1):
     - Flutter
     - ZIPFoundation
@@ -14,9 +11,8 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - phone_state (1.0.4):
+  - phone_state (2.1.1):
     - Flutter
-  - Protobuf (3.11.4)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -24,7 +20,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_blue (from `.symlinks/plugins/flutter_blue/ios`)
+  - flutter_blue_plus_darwin (from `.symlinks/plugins/flutter_blue_plus_darwin/darwin`)
   - flutter_logs (from `.symlinks/plugins/flutter_logs/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
@@ -33,14 +29,13 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Protobuf
     - ZIPFoundation
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_blue:
-    :path: ".symlinks/plugins/flutter_blue/ios"
+  flutter_blue_plus_darwin:
+    :path: ".symlinks/plugins/flutter_blue_plus_darwin/darwin"
   flutter_logs:
     :path: ".symlinks/plugins/flutter_logs/ios"
   geolocator_apple:
@@ -54,12 +49,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_blue: 98e9bec352ab6584a882536c31c7610f7102b3f0
+  flutter_blue_plus_darwin: 09444a26fb6bdef523e55b68fc1c59af5a877ea6
   flutter_logs: 30a36079651dcdfb260dbff875bf882bbbcaa22e
-  geolocator_apple: d981750b9f47dbdb02427e1476d9a04397beb8d9
+  geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
-  phone_state: 09524710fc44aabcf0b392ac5cbe51ae72c76352
-  Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
+  phone_state: 498a43ae8795d4341a78a12ac2144cd0ac7a77cd
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 

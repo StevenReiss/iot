@@ -69,10 +69,7 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: const Image(
-          image: AssetImage('assets/images/aldsicon.png'),
-          fit: BoxFit.contain,
-        ),
+        title: const Text("Check Location"),
         actions: [
           widgets.topMenu(_handleCommand, [
             {
@@ -98,6 +95,13 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
+                widgets.fieldSeparator(),
+                const Image(
+                  image: AssetImage('assets/images/aldsicon.png'),
+                  fit: BoxFit.contain,
+                ),
+                widgets.fieldSeparator(),
+                widgets.fieldSeparator(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[

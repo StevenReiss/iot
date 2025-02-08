@@ -38,6 +38,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.function.Consumer;
 
 import org.json.JSONArray;
@@ -68,7 +69,7 @@ private IQsignAuth	iqsign_auth;
 private IQsignDatabase	iqsign_database;
 private SessionStore	session_store;
 private Set<String>	users_updated;
-private Set<String>	users_active;
+
 
 
 
@@ -92,7 +93,6 @@ IQsignServer(IQsignMain main,String keystorepwd)
    BowerRouter<IQsignSession> br = setupRouter();
 
    users_updated = new HashSet<>();
-   users_active = new HashSet<>();
 
    http_server = new BowerServer<>(HTTPS_PORT,session_store);
    http_server.setRouter(br);
@@ -238,18 +238,16 @@ private final class PingAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange e,IQsignSession session) {
       List<String> users = BowerRouter.getParameterList(e,"users");
-
-      JSONArray auth = new JSONArray();
+   
       JSONArray update = new JSONArray();
       if (users != null) {
-	 for (String u : users) {
-	    IvyLog.logD("IQSIGN","Check on user " + u);
-	    if (users_active.contains(u)) auth.put(u);
-	    if (users_updated.remove(u)) update.put(u);
-	  }
+         for (String u : users) {
+            IvyLog.logD("IQSIGN","Check on user " + u);
+            if (users_updated.remove(u)) update.put(u);
+          }
        }
-
-      return BowerRouter.jsonOKResponse(session,"authorize",auth,"update",update);
+   
+      return BowerRouter.jsonOKResponse(session,"update",update);
     }
 
 }	// end of inner class PingAction
@@ -269,12 +267,9 @@ private final class LoginAction implements BowerSessionHandler<IQsignSession> {
       String rslt = iqsign_auth.handleLogin(e,session);
       Number userid = session.getUserId();
       if (userid != null) {
-	 IQsignUser user = session.getUser();
-	 String name = user.getUserName();
-	 users_active.add(name);
-	 session_store.updateSession(session.getSessionId(),userid);
+         session_store.updateSession(session.getSessionId(),userid);
        }
-
+   
       return rslt;
     }
 
@@ -295,14 +290,9 @@ private final class RegisterAction implements BowerSessionHandler<IQsignSession>
 private final class LogoutAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange e,IQsignSession session) {
-      IQsignUser user = session.getUser();
-      if (user != null) {
-	 String name = user.getUserName();
-	 users_active.remove(name);
-       }
       session.setUser(null);
       session_store.updateSession(session.getSessionId(),null);
-
+   
       return BowerRouter.jsonOKResponse(session);
     }
 
@@ -315,17 +305,17 @@ private final class AuthorizeAction implements BowerSessionHandler<IQsignSession
    @Override public String handle(HttpExchange he,IQsignSession session) {
       session.setUser(null);
       String token = BowerRouter.getParameter(he,"token");
-      IQsignLoginCode tokinfo = iqsign_database.checkAccessToken(token);
+      IQsignLoginCode tokinfo = iqsign_database.checkAccessToken(token,null,null);  
       if (tokinfo == null) {
-	 return BowerRouter.errorResponse(he,session,402,"Bad access token");
+         return BowerRouter.errorResponse(he,session,402,"Bad access token");
        }
       Number uid = tokinfo.getUserId();
       session.setUserId(uid);
       session_store.updateSession(session.getSessionId(),uid);
-
+   
       return BowerRouter.jsonOKResponse(session,
-	    "userid",tokinfo.getUserId(),
-	    "signid",tokinfo.getSignId());
+            "userid",tokinfo.getUserId(),
+            "signid",tokinfo.getSignId());
     }
 
 }	// end of inner class AuthorizeAction
@@ -358,7 +348,6 @@ private final class Authenticator implements BowerSessionHandler<IQsignSession> 
       else {
          user.clearPasswords();
          session.setUser(user);
-         users_active.add(user.getUserName());
        }
    
       IvyLog.logD("IQSIGN","REST DONE AUTHENTICATION");
@@ -380,6 +369,9 @@ private final class GetAllSignsAction implements BowerSessionHandler<IQsignSessi
 
    @Override public String handle(HttpExchange he,IQsignSession session) {
       Number uid = session.getUserId();
+      if (uid == null) {
+         BowerRouter.errorResponse(he,session,402,"Bad user id");
+       }
       List<IQsignSign> signs = iqsign_database.getAllSignsForUser(uid);
       JSONArray jarr = new JSONArray();
       for (IQsignSign sign : signs) {
@@ -402,12 +394,19 @@ private final class SetSignAction implements BowerSessionHandler<IQsignSession> 
        }
       IQsignSign sign = iqsign_database.findSignById(sid);
       if (sign == null) return BowerRouter.errorResponse(he,session,400,"Bad sign id");
+      
+      String setval = BowerRouter.getParameter(he,"value");
+      if (setval == null || setval.isEmpty()) {
+         return BowerRouter.errorResponse(he,session,400,"No value given");
+       }
    
-      String cnts = "=" + BowerRouter.getParameter(he,"value") + "\n";
-      List<String> sets = BowerRouter.getParameterList(he,"sets");
-      if (sets != null) {
-         for (String s : sets) {
-            cnts += "=" + s + "\n";
+      String cnts = "=" + setval + "\n";
+      
+      String sets = BowerRouter.getParameter(he,"sets");
+      if (sets != null && !sets.isEmpty()) {
+         for (StringTokenizer tok = new StringTokenizer(sets); tok.hasMoreTokens(); ) {
+            String s = tok.nextToken();
+            cnts += "= " + s + "\n";
           }
        }
       String other = BowerRouter.getParameter(he,"other");
@@ -539,8 +538,8 @@ private final class RemvoeSavedSignImageAction implements BowerSessionHandler<IQ
       String uname = session.getUser().getUserName();
       users_updated.add(uname);
       iqsign_database.removeDefineData(BowerRouter.getParameter(he,"name"),
-	    session.getUserId());
-
+            session.getUserId());
+   
       return BowerRouter.jsonOKResponse(session);	
     }
 
@@ -639,6 +638,10 @@ private final class AddSignAction implements BowerSessionHandler<IQsignSession> 
       if (sign == null) {
 	 return BowerRouter.errorResponse(he,session,400,"Can't create sign");
        }
+      
+      IQsignUser user = session.getUser();
+      users_updated.add(user.getUserName());
+      
       return BowerRouter.deferredResponse();
     }
 
@@ -687,8 +690,10 @@ private final class RemoveUserAction implements BowerSessionHandler<IQsignSessio
       else {
 	 session.setUser(null);
        }
-
+      
       iqsign_database.removeUser(uid);
+      
+      users_updated.add(user.getUserName());
 
       return BowerRouter.jsonOKResponse(session);
     }
@@ -709,6 +714,9 @@ private final class RemoveSignAction implements BowerSessionHandler<IQsignSessio
          return BowerRouter.errorResponse(he,session,400,
                "Bad sign specified");
        }
+      
+      IQsignUser user = session.getUser();
+      users_updated.add(user.getUserName());
       
       return BowerRouter.jsonOKResponse(session);
     }

@@ -289,12 +289,29 @@ void setTemporaryPassword(Number uid,String tpwd)
 
 
 
-IQsignLoginCode checkAccessToken(String token)
+IQsignLoginCode checkAccessToken(String token,Number uid,String code)
 {
    String q1 = "SELECT * FROM iQsignLoginCodes WHERE code = $1";
    String q2 = "UPDATE iQsignLoginCodes SET last_used = CURRENT_TIMETTAMP WHERE code = $1";
+   String q3 = "SELECT * FROM iQsignLoginCodes WHERE userid = $1";
 
-   JSONObject rslt = sqlQuery1(q1,token);
+   JSONObject rslt = null;
+   if (code == null) {
+      rslt = sqlQuery1(q1,token);
+    }
+   else if (uid != null) {
+      List<JSONObject> rslts = sqlQueryN(q3,uid);
+      for (JSONObject r : rslts) {
+         IQsignLoginCode lc = new IQsignLoginCode(r);
+         String c1 = IQsignMain.secureHash(lc.getCode());
+         String c2 = IQsignMain.secureHash(c1 + code);
+         if (c2.equals(token)) {
+            rslt = r;
+            break;
+          }
+       }
+    }
+   
    if (rslt !=	null) {
       sqlUpdate(q2,token);
     }
@@ -358,24 +375,12 @@ void removeUser(Number uid)
 
 Number removeSign(Number uid,Number sid)
 {
-   String q1 = "SELECT * FORM iQsignSigns WHERE userid = $1";
    String q2 = "DELETE FROM iQsignSignCodes WEHRE signid = $1";
    String q3 = "DELETE FROM iQsignLoginCodes WEHRE signid = $1";
    String q4 = "DEELTE FROM OauthTokens WHERE signid = $1";
    String q5 = "DEELTE FROM OauthCodes WHERE signid = $1";
    String q6 = "DELETE FROM iQsignSigns WHERE id = $1";
    
-   List<JSONObject> sds = sqlQueryN(q1,uid);
-   if (sds.size() < 2) return null;
-   Number replace = null;
-   for (JSONObject sd : sds) {
-      IQsignSign ss = new IQsignSign(iqsign_main,sd);
-      if (!ss.getId().equals(sid)) {
-         replace = ss.getId();
-         break;
-       }
-    }
-   if (replace == null) return null;
    IQsignSign sign = findSignById(sid);
    if (sign == null) return null;
    if (!sign.getUserId().equals(uid)) return null;
@@ -386,7 +391,7 @@ Number removeSign(Number uid,Number sid)
    sqlUpdate(q5,sid);
    sqlUpdate(q6,sid);
    
-   return replace;
+   return sid;
 }
 
 
