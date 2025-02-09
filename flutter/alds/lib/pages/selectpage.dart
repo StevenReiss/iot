@@ -82,6 +82,11 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
               'name': 'EditLocations',
               'label': 'Edit Locations',
               'tooltip': 'Add or remove abstract locations from the set of available locations',
+            },
+            {
+              'name': 'ClearData',
+              'label': 'Clear Location Data',
+              'tooltip': 'Clear old location information; learn new locations.',
             }
           ]),
         ],
@@ -159,6 +164,15 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
       case 'EditLocations':
         await widgets.gotoThen(context, const AldsLocationPage());
         setState(() {});
+        break;
+      case 'ClearData':
+        bool fg = await widgets.getValidation(
+          context,
+          'Do you really want to clear location data?',
+        );
+        if (!fg) return;
+        Locator loc = Locator();
+        await loc.clear();
         break;
     }
   }

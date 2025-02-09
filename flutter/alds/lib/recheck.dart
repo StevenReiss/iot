@@ -122,7 +122,11 @@ Future<LocationData> recheck() async {
       onDone: _btscanDone,
     );
     FlutterBluePlus.cancelWhenScanComplete(sub1);
-    await FlutterBluePlus.adapterState.where((val) => val == BluetoothAdapterState.on).first;
+    await FlutterBluePlus.adapterState
+        .where(
+          (val) => val == BluetoothAdapterState.on,
+        )
+        .first;
 
     await FlutterBluePlus.startScan(
       timeout: const Duration(seconds: 6),

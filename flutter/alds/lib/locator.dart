@@ -130,7 +130,7 @@ class Locator {
     }
 
     device.Cedes().rawData({
-      "data": ld.toJson(),
+      "locdata": ld.toJson(),
       "location": rslt,
       "set": userset,
       "next": _nextLocation,
@@ -163,12 +163,17 @@ class Locator {
     storage.saveLocatorData(data);
   }
 
+  Future<void> clear() async {
+    _knownLocations.clear();
+  }
+
   Locator._internal();
 }
 
 class LocationData {
   Map<String, BluetoothData> _bluetoothData = {};
   Position? _gpsPosition;
+  DateTime _when = DateTime.now();
   int _count = 1;
 
   LocationData(this._gpsPosition, List<BluetoothData> bts) {
@@ -230,6 +235,8 @@ class LocationData {
     _bluetoothData = nmap;
     _gpsPosition = npos;
     _count++;
+    _when = DateTime.now();
+
     return this;
   }
 
@@ -243,6 +250,7 @@ class LocationData {
       "bluetoothData": btdata,
       "gpsPosition": _gpsPosition?.toJson(),
       "count": _count,
+      "date": _when.toString(),
     };
   }
 }
