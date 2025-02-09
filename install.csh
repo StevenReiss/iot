@@ -16,10 +16,7 @@ set images = ( baby.jpg snowflake.jpg spring.png )
 pushd savedimages
 # copy any images that you want to maintain here
 # scp baby.jpg sherpa.cs.brown.edu:/vol/iot/images
-echo Images: $images
-
-
-for i in ( $images )
+foreach i ( $images )
    scp $i sherpa.cs.brown.edu:/vol/iot/savedimages
 end
 popd
