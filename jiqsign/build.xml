@@ -50,7 +50,7 @@
   <target name='jar' depends='compile'>
      <jar destfile='iqsign.jar'>
 	<manifest>
-	   <attribute name='Main-Class' value='edu.brown.cs.iqsign.SignMaker' />
+	   <attribute name='Main-Class' value='edu.brown.cs.iqsign.IQsignMain' />
 	</manifest>
 	<fileset dir='${IQSIGN}/java' includes='**/iqsign/IQsign*.class' />
 	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/exec/*.class' />
