@@ -13,9 +13,8 @@ else
    LIB=/pro/ivy/lib
 fi
 
-echo java -cp $LIB/jakarta.mail.jar:$LIB/jakarta.activation.jar -jar $SRD1/iqsign.jar -server -L jiqsign.log -S -LD
+java -cp $LIB/jakarta.mail.jar:$LIB/jakarta.activation.jar -jar $SRD1/iqsign.jar -server -L jiqsign.log -S -LD
 
-# java -jar $SRD1/iqsign.jar -server -L jiqsign.log -S -LD
 
 
 
