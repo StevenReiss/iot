@@ -13,7 +13,7 @@ else
    LIB=/pro/ivy/lib
 fi
 
-CP=-cp $LIB/jakarta.mail.jar:$LIB/jakarta.activation.jar:$SRD1/iqsign.jar
+CP=$LIB/jakarta.mail.jar:$LIB/jakarta.activation.jar:$SRD1/iqsign.jar
 echo java -cp $CP edu.brown.cs.iqsign.IQsignMain -server -L jiqsign.log -S -LD
 java -cp $CP edu.brown.cs.iqsign.IQsignMain -server -L jiqsign.log -S -LD
 
