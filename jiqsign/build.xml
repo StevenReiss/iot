@@ -61,8 +61,9 @@
 	<zipfileset src='${IVYLIB}/mysql.jar' excludes='META-INF/*' />
 	<zipfileset src='${IVYLIB}/json.jar' excludes='META-INF/*' />
 	<zipfileset src='${IVYLIB}/slf4j-api.jar' excludes='META-INF/*' />
-	<zipfileset src='${IVYLIB}/jakarta.mail.jar' excludes='META-INF/*' />
+<!--	<zipfileset src='${IVYLIB}/jakarta.mail.jar' excludes='META-INF/*' />
 	<zipfileset src='${IVYLIB}/jakarta.activation.jar' excludes='META-INF/*' />
+-->
      </jar>
      <copy file='iqsign.jar' tofile='${IQSIGN}/../bin/iqsign.jar' />
    </target>
