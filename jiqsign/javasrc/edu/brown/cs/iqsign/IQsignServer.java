@@ -177,6 +177,8 @@ BowerRouter<IQsignSession> setupRouter()
   
    br.addRoute("ALL",new Handle404Action());
    br.addErrorHandler(new HandleErrorAction());
+   
+   BowerServer.setAccessOrigin("*"); 
 
    return br;
 }
