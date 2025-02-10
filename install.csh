@@ -26,6 +26,11 @@ scp flutter/iqsign/assets/images/*.png sherpa.cs.brown.edu:/vol/web/html/iqsign/
 scp /pro/ivy/lib/ivy.jar sherpa.cs.brown.edu:/vol/iot/catre/lib
 scp /pro/ivy/lib/ivy.jar sherpa.cs.brown.edu:/vol/iot/signmaker/lib
 
+set ivylib = ( ivy.jar postgresql.jar mysql.jar json.jar jakarta.mail.jar slf4j-api.jar )
+foreach i ( $ivylib )
+   scp /pro/ivy/lib/$i sherpa.cs.brown.edu:/vol/ivy/lib
+end
+
 
 pushd secret
 update.csh
