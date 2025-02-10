@@ -1,7 +1,7 @@
 #! /bin/csh -f
 
 pushd /pro/ivy
-ant
+# ant
 make jar
 popd
 
@@ -84,5 +84,5 @@ start.csh
 popd
 
 pushd flutter/iqsign
-buildweb.csh
+buildweb.csh >&! buildweb.out
 popd
