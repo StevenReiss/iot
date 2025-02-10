@@ -1,5 +1,10 @@
 #! /bin/csh -f
 
+pushd /pro/ivy
+ant
+make jar
+popd
+
 git commit -a --dry-run >&! /dev/null
 if ($status == 0) then
    git commit -a

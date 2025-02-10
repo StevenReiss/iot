@@ -45,6 +45,7 @@ import org.json.JSONArray;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import edu.brown.cs.ivy.bower.BowerCORS;
 import edu.brown.cs.ivy.bower.BowerRouter;
 import edu.brown.cs.ivy.bower.BowerServer;
 import edu.brown.cs.ivy.bower.BowerConstants.BowerSessionHandler;
@@ -131,6 +132,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("ALL",BowerRouter::handleParameters);
    br.addRoute("ALL",br::handleSessions); 
    br.addRoute("ALL",BowerRouter::handleLogging);
+   br.addRoute("ALL",new BowerCORS("*"));
    br.addRoute("ALL","/rest/ping",new PingAction()); 
    br.addRoute("ALL","/ping",new PingAction());
 
@@ -177,8 +179,6 @@ BowerRouter<IQsignSession> setupRouter()
   
    br.addRoute("ALL",new Handle404Action());
    br.addErrorHandler(new HandleErrorAction());
-   
-   BowerServer.setAccessOrigin("*"); 
 
    return br;
 }

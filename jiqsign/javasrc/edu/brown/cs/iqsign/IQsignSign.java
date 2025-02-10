@@ -166,12 +166,12 @@ File getImageFile(boolean preview)
 
 String getImageUrl()
 {
-   return iqsign_main.getURLHostPrefix() + "/iqsign/signs/image" + getNameKey() + ".png";
+   return iqsign_main.getURLHostPrefix() + "/iqsigndata/signs/image" + getNameKey() + ".png";
 }
 
 String getSignUrl()
 {
-   return iqsign_main.getURLHostPrefix() + "/iqsign/signs/sign" + getNameKey() + ".html";
+   return iqsign_main.getURLHostPrefix() + "/iqsigndata/signs/sign" + getNameKey() + ".html";
 }
 
 String getLocalImageUrl()
