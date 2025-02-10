@@ -154,7 +154,7 @@ CREATE INDEX UseUsers on iQsignUseCounts(userid);
 CREATE TABLE iQsignRestful (
    session text NOT NULL PRIMARY KEY,
    userid $idtype,
-   code text,				      '
+   code text,				
    creation_time $datetime DEFAULT CURRENT_TIMESTAMP,
    last_used $datetime DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (userid) REFERENCES iQsignUsers(id) ON DELETE CASCADE
