@@ -28,4 +28,4 @@ library iqsign.globals;
 
 String? iqsignSession;
 
-bool debugServer = true;
+bool debugServer = false;

@@ -36,6 +36,7 @@
      <fileset dir='${IVYLIB}' includes='mysql.jar' />
      <fileset dir='${IVYLIB}' includes='json.jar' />
      <fileset dir='${IVYLIB}' includes='jakarta.mail.jar' />
+     <fileset dir='${IVYLIB}' includes='jakarta.activation.jar' />
      <fileset dir='${IVYLIB}' includes='slf4j-api.jar' />
   </path>
 
@@ -61,8 +62,15 @@
 	<zipfileset src='${IVYLIB}/json.jar' excludes='META-INF/*' />
 	<zipfileset src='${IVYLIB}/slf4j-api.jar' excludes='META-INF/*' />
 	<zipfileset src='${IVYLIB}/jakarta.mail.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/jakarta.activation.jar' excludes='META-INF/*' />
      </jar>
      <copy file='iqsign.jar' tofile='${IQSIGN}/../bin/iqsign.jar' />
    </target>
 
 </project>
+
+
+
+
+
+
