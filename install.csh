@@ -72,3 +72,7 @@ echo catre start status $status
 pushd devices
 start.csh
 popd
+
+pushd flutter/iqsign
+buildweb.csh
+popd
