@@ -60,6 +60,10 @@
 	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/exec/*.class' />
 	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/file/*.class' />
 	<zipfileset src='${IVYLIB}/ivy.jar' includes='**/swing/*.class' />
+	<zipfileset src='${IVYLIB}/postgresql.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/mysql.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/json.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/slf4j-api.jar' excludes='META-INF/*' />
 	<zipfileset src='${SMLIB}/batik-all-1.14.jar' excludes='META-INF/*' />
 	<zipfileset src='${SMLIB}/cssparser-0.9.29.jar' excludes='META-INF/*' />
 	<zipfileset src='${SMLIB}/sac-1.3.jar' excludes='META-INF/*' />
@@ -68,10 +72,6 @@
 	<zipfileset src='${SMLIB}/xmlgraphics-commons-2.6.jar' excludes='META-INF/*' />
 	<zipfileset src='${SMLIB}/zxcore.jar' excludes='META-INF/*' />
 	<zipfileset src='${SMLIB}/zxjavase.jar' excludes='META-INF/*' />
-	<zipfileset src='${IVYLIB}/postgresql.jar' excludes='META-INF/*' />
-	<zipfileset src='${IVYLIB}/mysql.jar' excludes='META-INF/*' />
-	<zipfileset src='${IVYLIB}/json.jar' excludes='META-INF/*' />
-	<zipfileset src='${IVYLIB}/slf4j-api.jar' excludes='META-INF/*' />
      </jar>
      <copy file='signmaker.jar' tofile='${SIGNMAKER}/../bin/signmaker.jar' />
    </target>

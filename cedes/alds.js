@@ -77,13 +77,13 @@ function getRouter(restful)
 
 function handleRawData(req,res)
 {
-   console.log("ALDS DATA",req.body.aldsdata,JSON.stringify(req.body.aldsdata,null,3));
+   console.log("ALDS DATA",req.body.data);
 
    if (data_stream == null) {
       data_stream = fs.createWriteStream('aldsdata.json',{flags: 'a'});
     }
 
-   let data = req.body.aldsdata;
+   let data = req.body.data;
    let adata = JSON.parse(data);
    data = JSON.stringify(adata,null,3);
 
@@ -97,15 +97,13 @@ function handleRawData(req,res)
 
 function handleLogData(req,res)
 {
-   console.log("ALDS DATA",JSON.stringify(req.body.aldsdata,null,3));
+   console.log("ALDS LOG",req.body.message);
    
    if (log_stream == null) {
       log_stream = fs.createWriteStream('alds.log');
     }
    
-   let data = req.body.aldsdata;
-   let adata = JSON.parse(data);
-   data = JSON.stringify(adata,null,3);
+   var data = req.body.message;
    
    if (data != null) {
       log_stream.write(data + "\n");

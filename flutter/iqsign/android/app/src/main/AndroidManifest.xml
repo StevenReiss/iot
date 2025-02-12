@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.alds">
+    package="com.example.iqsign">
    <application
-	android:label="alds"
+	android:label="iqsign"
 	android:name="${applicationName}"
 	android:icon="@mipmap/ic_launcher">
 	<activity

@@ -52,6 +52,7 @@ import javax.annotation.Tainted;
 
 import com.sun.net.httpserver.HttpExchange;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -273,6 +274,11 @@ void removeSession(CatreController cc)
    return value_map.get(key);
 }
 
+
+@Override public Collection<String> getValueKeys()
+{
+   return value_map.keySet();
+}
 
 
 @Override public @Tainted String getStringValue(String key)

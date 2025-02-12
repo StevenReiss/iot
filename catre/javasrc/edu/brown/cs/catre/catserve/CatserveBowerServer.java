@@ -36,6 +36,7 @@
 package edu.brown.cs.catre.catserve;
 
 
+import edu.brown.cs.ivy.bower.BowerCORS;
 import edu.brown.cs.ivy.bower.BowerRouter;
 import edu.brown.cs.ivy.bower.BowerServer;
 import edu.brown.cs.ivy.bower.BowerConstants.BowerSessionStore;
@@ -189,6 +190,7 @@ private BowerRouter<CatserveSessionImpl> setupRouter()
    br.addRoute("ALL",BowerRouter::handleParameters);
    br.addRoute("ALL",br::handleSessions);
    br.addRoute("ALL",BowerRouter::handleLogging);
+   br.addRoute("ALL",new BowerCORS("*"));
    
    br.addRoute("ALL","/static",this::handleStatic);
    

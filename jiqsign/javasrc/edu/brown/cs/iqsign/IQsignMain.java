@@ -98,6 +98,7 @@ private File		web_directory;
 private File		default_signs;
 private File		default_images;
 private File            default_borders;
+private String          url_prefix;
 private boolean 	is_testing;
 
 private static Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
@@ -136,6 +137,7 @@ private IQsignMain(String [] args)
       props.loadFromXML(fis);
     }
    catch (IOException e) { }
+   url_prefix = props.getProperty("hostpfx");
 
    if (web_directory == null) {
       web_directory = findWebDirectory(props.getProperty("webdirectory"));
@@ -168,6 +170,16 @@ private IQsignMain(String [] args)
     }
    if (default_borders == null) {
       reportError("Can't find default backgrounds file");
+    }
+   
+   if (url_prefix == null) {
+      url_prefix = findUrlPrefix();
+    }
+   if (url_prefix == null) {
+      reportError("Can't find HTTP URL prefix");
+    }
+   else {
+      fixUrlPrefix();
     }
    
    String db = props.getProperty("database");
@@ -208,6 +220,9 @@ private void scanArgs(String [] args)
 	  }
          else if (args[i].startsWith("-db") && i+1 < args.length) {     // -db <default borders>
 	    default_borders = new File(args[++i]);
+	  }
+         else if (args[i].startsWith("-u") && i+1 < args.length) {     // -u <url prefix>
+	    url_prefix = args[++i];
 	  }
          else if (args[i].startsWith("-s")) {                          // -server
             // nothing needed
@@ -300,14 +315,7 @@ String getURLHostPrefix()
 
 String getURLLocalPrefix()
 {
-   String hn = IvyExecQuery.getHostName();
-   String pfx = "https";
-   if (is_testing) {
-      pfx = "http";
-      hn = "localhost";
-    }
-
-   return pfx + "://" + hn + ":" + HTTPS_PORT;
+   return url_prefix;
 }
 
 
@@ -613,6 +621,48 @@ private File findDefaultBorders()
    
    return null;
 }
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Find HTTP URL prefix                                                    */
+/*                                                                              */
+/********************************************************************************/
+
+private String findUrlPrefix()
+{
+   String hn = IvyExecQuery.getHostName();
+   String pfx = "https";
+   if (is_testing) {
+      pfx = "http";
+      hn = "localhost";
+    }
+   
+   return pfx + "://" + hn;
+}
+
+
+private void fixUrlPrefix()
+{
+   String pfx = url_prefix;
+   
+   // add https: if needed
+   int idx = pfx.indexOf(":");
+   if (idx < 0 || idx > 6) {
+      pfx = "https://" + pfx;
+      idx = pfx.indexOf(":");
+    }
+   
+   // add port number if needed
+   if (idx < 6) {
+      int idx1 = pfx.indexOf(":",idx+1);
+      if (idx1 < 0) {
+         pfx += ":" + HTTPS_PORT;
+       }
+    }
+   url_prefix = pfx;
+}
+
 
 
 
