@@ -43,8 +43,7 @@ class SherpaActionWidget extends StatefulWidget {
   final CatreRule _forRule;
   final CatreAction _forAction;
 
-  const SherpaActionWidget(this._forDevice, this._forRule, this._forAction,
-      {super.key});
+  const SherpaActionWidget(this._forDevice, this._forRule, this._forAction, {super.key});
 
   @override
   State<SherpaActionWidget> createState() => _SherpaActionWidgetState();
@@ -87,7 +86,7 @@ class _SherpaActionWidgetState extends State<SherpaActionWidget> {
           widgets.MenuAction('Revert', _revertAction),
         ]),
       ]),
-      body: widgets.sherpaPage(
+      body: widgets.topLevelPage(
         context,
         Form(
           key: _formKey,
@@ -377,4 +376,3 @@ class _ActionParameter {
     _action.setValue(_parameter, val);
   }
 }
-

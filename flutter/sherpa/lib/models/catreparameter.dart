@@ -186,7 +186,11 @@ class CatreParameterRef extends CatreData {
   late String _deviceName;
   late String _parameterName;
 
-  CatreParameterRef.build(CatreUniverse cu, dynamic data) : super(cu, data as Map<String, dynamic>) {
+  CatreParameterRef.build(CatreUniverse cu, dynamic data)
+      : super(
+          cu,
+          data as Map<String, dynamic>,
+        ) {
     _deviceName = getString("DEVICE");
     _parameterName = getString("PARAMETER");
   }

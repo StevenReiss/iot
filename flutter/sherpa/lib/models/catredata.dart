@@ -310,7 +310,10 @@ class CatreData {
     return hc;
   }
 
-  Future<Map<String, dynamic>?> issueCommand(String cmd, String argname) async {
+  Future<Map<String, dynamic>?> issueCommand(
+    String cmd,
+    String argname,
+  ) async {
     var url = Uri.https(util.getServerURL(), cmd);
     var body = {
       globals.catreSession: globals.sessionId,

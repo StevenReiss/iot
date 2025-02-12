@@ -51,7 +51,7 @@ bool _geolocEnabled = false;
 BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
 
 Future<void> initialize() async {
-  FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
+  FlutterBluePlus.setLogLevel(LogLevel.warning, color: false);
   FlutterBluePlus.logs.listen((String s) {
     util.log(s);
   });

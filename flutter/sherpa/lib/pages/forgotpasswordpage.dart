@@ -36,6 +36,7 @@ import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/widgets.dart' as widgets;
 import 'loginpage.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SherpaPasswordWidget extends StatefulWidget {
   const SherpaPasswordWidget({super.key});
@@ -74,30 +75,39 @@ class _SherpaPasswordWidgetState extends State<SherpaPasswordWidget> {
                     padding: EdgeInsets.all(16.0),
                   ),
                   Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 100, maxWidth: 600),
+                    constraints: const BoxConstraints(
+                      minWidth: 100,
+                      maxWidth: 600,
+                    ),
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: widgets.textFormField(
-                        hint: "Email",
-                        label: "Email",
-                        validator: _validateEmail),
+                      hint: "Email",
+                      label: "Email",
+                      validator: _validateEmail,
+                    ),
                   ),
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                   ),
                   Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 200, maxWidth: 350),
+                    constraints: const BoxConstraints(
+                      minWidth: 200,
+                      maxWidth: 350,
+                    ),
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: widgets.submitButton(
-                        "Request Password Email", _handleForgotPassword),
+                      "Request Password Email",
+                      _handleForgotPassword,
+                    ),
                   ),
                   const Padding(
                     padding: EdgeInsets.all(16.0),
                   ),
                   Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 200, maxWidth: 600),
+                    constraints: const BoxConstraints(
+                      minWidth: 200,
+                      maxWidth: 600,
+                    ),
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: const Text(
                         "If this is a valid email, you will be sent a temporary password you can use to log in and change your password"),
@@ -124,7 +134,7 @@ class _SherpaPasswordWidgetState extends State<SherpaPasswordWidget> {
     _emailGiven = value;
     if (value == null || value.isEmpty) {
       return "Email must not be null";
-    } else if (!util.validateEmail(value)) {
+    } else if (!EmailValidator.validate(value)) {
       return "Invalid email address";
     }
     return null;
@@ -144,4 +154,3 @@ class _SherpaPasswordWidgetState extends State<SherpaPasswordWidget> {
     await http.post(url, body: body);
   }
 }
-

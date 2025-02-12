@@ -34,6 +34,7 @@ import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/widgets.dart' as widgets;
 import 'loginpage.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SherpaRegister extends StatelessWidget {
   const SherpaRegister({super.key});
@@ -162,8 +163,7 @@ class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
                   widgets.fieldSeparator(),
                   widgets.errorField(_registerError),
                   Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 150, maxWidth: 350),
+                    constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: widgets.submitButton("Submit", _handleRegister),
                   ),
@@ -231,10 +231,9 @@ class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
     _curEmail = value;
     if (value == null || value.isEmpty) {
       return "Email must not be null";
-    } else if (!util.validateEmail(value)) {
+    } else if (!EmailValidator.validate(value)) {
       return "Invalid email address";
     }
     return null;
   }
 }
-

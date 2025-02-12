@@ -1,9 +1,9 @@
 /*
- *        globals.dart 
- *  
- *    Global constants and variables for SHERPA
+ *        lookandfeel.dart
  * 
- **/
+ *    Define the look and feel for this application
+ * 
+ */
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /// *******************************************************************************
 ///  Copyright 2023, Brown University, Providence, RI.                           *
@@ -28,25 +28,35 @@
 ///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
 ///  OF THIS SOFTWARE.                                                           *
 ///                                                                              *
-///*******************************************************************************/
+///******************************************************************************
 
-library sherpa.globals;
+import 'package:flutter/material.dart';
 
-// Catre access constants
-const String catreURL = "sherpa.cs.brown.edu:3334";
-const String localhostURL = "localhost:3334";
-const String catreSession = "CATRESESSION";
+const Color errorColor = Colors.red;
+const double errorFontSize = 16;
 
-// minimum priorities for various external levels
-const num minPriority = 1;
-const num defaultPriority = 1;
-const num lowPriority = 200;
-const num mediumPriority = 400;
-const num highPriority = 600;
-const num overridePriority = 800;
-const num maxPriority = 999;
+final Color toolTipLeftColor = Colors.yellow.shade50;
+final Color toolTipRightColor = Colors.yellow.shade200;
+const double toolTipHeight = 50;
+const double toolTipFontSize = 18;
 
-const int numRulesToDisplay = 8;
+const Color submitBackgroundColor = Colors.yellow;
+const Color submitForegroundColor = Colors.black;
+const double buttonFontSize = 14;
 
-// Global variables
-String? sessionId;
+const IconData topMenuIcon = Icons.menu_sharp;
+
+const Color decorationHoverColor = Colors.amber;
+const Color decorationBorderColor = Colors.yellow;
+const Color decorationInputColor = Colors.white;
+
+// APPLICATION-SPECIFIC Definitions
+
+const Color topLevelBackground = Color.fromARGB(128, 210, 180, 140);
+const String topLevelImage = "assets/images/sherpaimage.png";
+
+const Color themeSeedColor = Color.fromRGBO(121, 85, 72, 1);
+const Color borderColor = Colors.brown;
+const Color labelColor = Colors.brown;
+
+// end of lookandfeel.dart

@@ -48,14 +48,6 @@ String hasher(String msg) {
   return srslt;
 }
 
-bool validateEmail(String email) {
-  const res =
-      r'^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-  final regExp = RegExp(res);
-  if (!regExp.hasMatch(email)) return false;
-  return true;
-}
-
 bool validatePassword(String? pwd) {
   if (pwd == null || pwd == '') return false;
   // check length, contents

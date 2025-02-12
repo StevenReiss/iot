@@ -43,20 +43,14 @@ class CatreDevice extends CatreData {
   late List<CatreTransition> _transitions;
   late CatreTransition _defaultTransition;
 
-  CatreDevice.build(CatreUniverse cu, dynamic d)
-      : super(cu, d as Map<String, dynamic>) {
+  CatreDevice.build(CatreUniverse cu, dynamic d) : super(cu, d as Map<String, dynamic>) {
     setup();
   }
 
   CatreDevice.dummy(CatreUniverse cu, String id)
       : _parameters = [],
         _transitions = [],
-        super(cu, <String, dynamic>{
-          "UID": id,
-          "ENABLED": false,
-          "VTYPE": "UNKNOWN",
-          "LABEL": "Unknown device"
-        }) {
+        super(cu, <String, dynamic>{"UID": id, "ENABLED": false, "VTYPE": "UNKNOWN", "LABEL": "Unknown device"}) {
     setup();
   }
 
@@ -73,7 +67,9 @@ class CatreDevice extends CatreData {
     }
     if (dct == null) {
       _defaultTransition = CatreTransition.doNothing(this);
-      if (_transitions.isNotEmpty) _transitions.insert(0, _defaultTransition);
+      if (_transitions.isNotEmpty) {
+        _transitions.insert(0, _defaultTransition);
+      }
     } else {
       _defaultTransition = dct;
     }
@@ -138,7 +134,10 @@ class CatreTransition extends CatreData {
   late CatreParameterSet _parameters;
 
   CatreTransition.build(CatreUniverse cu, dynamic data)
-      : super(cu, data as Map<String, dynamic>) {
+      : super(
+          cu,
+          data as Map<String, dynamic>,
+        ) {
     setup();
   }
 

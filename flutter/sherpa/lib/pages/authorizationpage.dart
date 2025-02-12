@@ -62,7 +62,7 @@ class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
       appBar: AppBar(
         title: const Text("Configure Device Bridges"),
       ),
-      body: widgets.sherpaPage(
+      body: widgets.topLevelPage(
         context,
         Center(
           child: Column(
@@ -74,7 +74,9 @@ class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
                   const Text(
                     "Configure Bridge:   ",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.brown),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.brown,
+                    ),
                   ),
                   widgets.fieldSeparator(),
                   Expanded(child: _createBridgeSelector()),

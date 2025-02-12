@@ -38,6 +38,7 @@ import 'package:sherpa/models/catremodel.dart';
 import 'package:sherpa/pages/authorizationpage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
+import 'package:sherpa/lookandfeel.dart' as laf;
 
 /// ******
 ///   Widget definitions
@@ -101,7 +102,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
           ]),
         ],
       ),
-      body: widgets.sherpaPage(
+      body: widgets.topLevelPage(
         context,
         Center(
           child: Column(
@@ -112,7 +113,10 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
                 children: <Widget>[
                   const Text(
                     "Rules for Device:   ",
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.brown),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.brown,
+                    ),
                   ),
                   widgets.fieldSeparator(),
                   Expanded(child: _createDeviceSelector()),
@@ -145,27 +149,30 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     bool? sts = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        return SimpleDialog(title: const Text("Select Device to Remove"), children: <Widget>[
-          _createDeviceSelector(
-            onChanged: _removeDeviceSelected,
-            nullValue: "No Device",
-            useAll: true,
-          ),
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              child: const Text("Remove"),
+        return SimpleDialog(
+          title: const Text("Select Device to Remove"),
+          children: <Widget>[
+            _createDeviceSelector(
+              onChanged: _removeDeviceSelected,
+              nullValue: "No Device",
+              useAll: true,
             ),
-            SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-              child: const Text("Cancel"),
-            ),
-          ]),
-        ]);
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text("Remove"),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text("Cancel"),
+              ),
+            ]),
+          ],
+        );
       },
     );
     if (sts == null || !sts || _removeDevice == null) return;
@@ -255,7 +262,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     String nrul = "$ct Rule${(ct == 1) ? '' : 's'}";
     TextStyle lblstyle = const TextStyle(
       fontWeight: FontWeight.bold,
-      color: globals.labelColor,
+      color: laf.labelColor,
       fontSize: 20.0,
     );
     List<Text> rulew = rules.map((s) => Text(s)).toList();
@@ -265,22 +272,30 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       style: lblstyle,
     );
     return GestureDetector(
-        onTap: () => _handleSelect(lvl),
-        onDoubleTap: () => _handleSelect(lvl),
-        child: Container(
-            padding: const EdgeInsets.all(4.0),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              border: Border.all(width: 4, color: globals.borderColor),
+      onTap: () => _handleSelect(lvl),
+      onDoubleTap: () => _handleSelect(lvl),
+      child: Container(
+        padding: const EdgeInsets.all(4.0),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 4,
+            color: laf.borderColor,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(child: label),
+                Text(nrul),
+              ],
             ),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(child: label),
-                  Text(nrul),
-                ],
-              ),
-              ...rulew
-            ])));
+            ...rulew,
+          ],
+        ),
+      ),
+    );
   }
 }

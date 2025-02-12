@@ -85,7 +85,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
           ],
         ),
       ]),
-      body: widgets.sherpaPage(
+      body: widgets.topLevelPage(
         context,
         Column(
           mainAxisAlignment: MainAxisAlignment.start,

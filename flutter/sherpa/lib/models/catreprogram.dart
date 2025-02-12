@@ -141,7 +141,11 @@ class CatreRule extends CatreData {
   late CatreDevice _forDevice;
   bool _forceTrigger = false;
 
-  CatreRule.build(CatreUniverse cu, dynamic data) : super(cu, data as Map<String, dynamic>) {
+  CatreRule.build(CatreUniverse cu, dynamic data)
+      : super(
+          cu,
+          data as Map<String, dynamic>,
+        ) {
     setup();
   }
 
@@ -728,7 +732,9 @@ class CatreAction extends CatreData {
 
   CatreTransitionRef getTransitionRef() => _transition;
   CatreDevice? getDevice() => _device;
-  CatreTransition getTransition() => _transition.getTransition() as CatreTransition;
+  CatreTransition getTransition() {
+    return _transition.getTransition() as CatreTransition;
+  }
 
   void setTransition(CatreTransition ct) {
     _transition.setTransition(ct);
@@ -756,10 +762,17 @@ class CatreAction extends CatreData {
 /// *****
 
 class CatreParamRef extends CatreData {
-  CatreParamRef.build(CatreUniverse cu, dynamic data) : super(cu, data as Map<String, dynamic>);
+  CatreParamRef.build(CatreUniverse cu, dynamic data)
+      : super(
+          cu,
+          data as Map<String, dynamic>,
+        );
 
-  CatreParamRef.create(CatreUniverse cu, [CatreDevice? cd, CatreParameter? param])
-      : super(cu, {
+  CatreParamRef.create(
+    CatreUniverse cu, [
+    CatreDevice? cd,
+    CatreParameter? param,
+  ]) : super(cu, {
           "DEVICE": cd?.getDeviceId() ?? "Unknown",
           "PARAMETER": param?.getName() ?? "Unknown",
         });
@@ -791,7 +804,11 @@ class CatreParamRef extends CatreData {
 /// *****
 
 class CatreTransitionRef extends CatreData {
-  CatreTransitionRef.build(CatreUniverse cu, dynamic data) : super(cu, data as Map<String, dynamic>);
+  CatreTransitionRef.build(CatreUniverse cu, dynamic data)
+      : super(
+          cu,
+          data as Map<String, dynamic>,
+        );
 
   String getDeviceId() => getString("DEVICE");
   String getTransitionName() => getString("TRANSITION");
@@ -818,7 +835,11 @@ class CatreTimeSlot extends CatreData {
   late DateTime _fromDateTime;
   late DateTime _toDateTime;
 
-  CatreTimeSlot.build(CatreUniverse cu, dynamic data) : super(cu, data as Map<String, dynamic>) {
+  CatreTimeSlot.build(CatreUniverse cu, dynamic data)
+      : super(
+          cu,
+          data as Map<String, dynamic>,
+        ) {
     setup();
   }
 
@@ -897,11 +918,25 @@ class CatreTimeSlot extends CatreData {
   }
 
   DateTime _merge(DateTime date, DateTime time) {
-    return DateTime(date.year, date.month, date.day, time.hour, time.minute, time.second);
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+      time.second,
+    );
   }
 
   DateTime _mergeTime(DateTime date, TimeOfDay time) {
-    return DateTime(date.year, date.month, date.day, time.hour, time.minute, 0);
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+      0,
+    );
   }
 }
 

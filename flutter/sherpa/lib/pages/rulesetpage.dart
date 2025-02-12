@@ -46,7 +46,12 @@ class SherpaRulesetWidget extends StatefulWidget {
   final CatreDevice? _theDevice;
   final PriorityLevel _priority;
 
-  const SherpaRulesetWidget(this._theUniverse, this._theDevice, this._priority, {super.key});
+  const SherpaRulesetWidget(
+    this._theUniverse,
+    this._theDevice,
+    this._priority, {
+    super.key,
+  });
 
   @override
   State<SherpaRulesetWidget> createState() => _SherpaRulesetWidgetState();
@@ -101,23 +106,45 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     ];
     if (_forDevice != null) {
       acts.addAll([
-        widgets.MenuAction('Add New Rule Before', () => _newRule(cr, false, true)),
-        widgets.MenuAction('Add New Rule After', () => _newRule(cr, false, false)),
-        widgets.MenuAction('Add New Trigger Before', () => _newRule(cr, true, true)),
-        widgets.MenuAction('Add New Trigger After', () => _newRule(cr, true, false)),
+        widgets.MenuAction(
+          'Add New Rule Before',
+          () => _newRule(cr, false, true),
+        ),
+        widgets.MenuAction(
+          'Add New Rule After',
+          () => _newRule(cr, false, false),
+        ),
+        widgets.MenuAction(
+          'Add New Trigger Before',
+          () => _newRule(cr, true, true),
+        ),
+        widgets.MenuAction(
+          'Add New Trigger After',
+          () => _newRule(cr, true, false),
+        ),
       ]);
     }
 
     PriorityLevel? pl1 = _priority.getLowerLevel();
     if (pl1 != null) {
       PriorityLevel pl1a = pl1;
-      acts.add(widgets.MenuAction("Move to ${pl1.name}", () => _findRulePriority(pl1a.highPriority - 1, true, pl1a)));
+      acts.add(
+        widgets.MenuAction(
+          "Move to ${pl1.name}",
+          () => _findRulePriority(pl1a.highPriority - 1, true, pl1a),
+        ),
+      );
     }
     pl1 = _priority.getHigherLevel();
     if (pl1 != null) {
       PriorityLevel pl1a = pl1;
       num h = pl1a.lowPriority;
-      acts.add(widgets.MenuAction("Move to ${pl1.name}", () => _findRulePriority(h, false, pl1a)));
+      acts.add(
+        widgets.MenuAction(
+          "Move to ${pl1.name}",
+          () => _findRulePriority(h, false, pl1a),
+        ),
+      );
     }
     return widgets.itemWithMenu(
       cr.getLabel(),
@@ -211,7 +238,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
           ]),
         ],
       ),
-      body: widgets.sherpaNSPage(
+      body: widgets.topLevelNSPage(
         context,
         Center(
           child: Column(
@@ -296,7 +323,10 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
   num _findRulePriority(num p, bool below, PriorityLevel lvl) {
     num prior = (below ? p : lvl.highPriority);
     num next = (below ? lvl.lowPriority : p);
-    for (CatreRule xr in _forUniverse.getProgram().getSelectedRules(lvl, _forDevice)) {
+    for (CatreRule xr in _forUniverse.getProgram().getSelectedRules(
+          lvl,
+          _forDevice,
+        )) {
       if (xr.getPriority() > p) {
         prior = xr.getPriority();
       } else if (xr.getPriority() == p) {

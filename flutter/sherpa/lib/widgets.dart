@@ -1,8 +1,8 @@
 /*
- *        widgets.dart
- *
+ *        widgets.dart  
+ * 
  *    Common code for creating widgets
- *
+ * 
  */
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /// *******************************************************************************
@@ -28,12 +28,12 @@
 ///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
 ///  OF THIS SOFTWARE.                                                           *
 ///                                                                              *
-///*******************************************************************************/
+///******************************************************************************
 
 import 'package:flutter/material.dart';
+import 'lookandfeel.dart' as laf;
 import 'package:intl/intl.dart' as intl;
 import 'package:duration_picker/duration_picker.dart';
-import 'globals.dart' as globals;
 import 'package:flutter_spinbox/material.dart';
 
 ///******************************************************************************/
@@ -58,6 +58,8 @@ Widget textFormField({
   bool obscureText = false,
   double fraction = 0,
   BuildContext? context,
+  bool? enabled,
+  String tooltip = "",
 }) {
   label ??= hint;
   hint ??= label;
@@ -83,6 +85,7 @@ Widget textFormField({
     showCursor: showCursor,
     maxLines: maxLines,
     obscureText: obscureText,
+    enabled: enabled,
   );
   if (fraction != 0 && context != null) {
     double minw = 100;
@@ -96,10 +99,12 @@ Widget textFormField({
         width: MediaQuery.of(context).size.width * fraction,
         child: w);
   }
+  w = tooltipWidget(tooltip, w);
+
   return w;
 }
 
-TextField textField({
+Widget textField({
   String? hint,
   String? label,
   TextEditingController? controller,
@@ -110,14 +115,16 @@ TextField textField({
   int? maxLines,
   TextInputType? keyboardType,
   TextInputAction? textInputAction,
+  bool? enabled,
+  String tooltip = "",
+  bool readOnly = false,
 }) {
   label ??= hint;
   hint ??= label;
   maxLines ??= 1;
-  keyboardType ??=
-      (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
+  keyboardType ??= (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
 
-  return TextField(
+  Widget w = TextField(
     controller: controller,
     onChanged: onChanged,
     onEditingComplete: onEditingComplete,
@@ -126,18 +133,65 @@ TextField textField({
     maxLines: maxLines,
     keyboardType: keyboardType,
     textInputAction: textInputAction,
+    enabled: enabled,
+    readOnly: readOnly,
     decoration: getDecoration(
       hint: hint,
       label: label,
     ),
   );
+
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
-Widget errorField(String text) {
+Widget errorField(String? text) {
+  String t1 = (text ?? "");
   return Text(
-    text,
-    style: const TextStyle(color: Colors.red, fontSize: 16),
+    t1,
+    style: const TextStyle(
+      color: laf.errorColor,
+      fontSize: laf.errorFontSize,
+    ),
   );
+}
+
+Widget loginTextField(
+  BuildContext context, {
+  String? hint,
+  String? label,
+  TextEditingController? controller,
+  ValueChanged<String>? onChanged,
+  String? Function(String?)? validator,
+  TextInputType? keyboardType,
+  bool obscureText = false,
+  double fraction = 0,
+  String tooltip = "",
+}) {
+  Widget form = textFormField(
+    hint: hint,
+    label: label,
+    controller: controller,
+    onChanged: onChanged,
+    validator: validator,
+    context: context,
+    fraction: fraction,
+    obscureText: obscureText,
+    keyboardType: keyboardType,
+  );
+  Widget w = Container(
+    constraints: const BoxConstraints(
+      minWidth: 100,
+      maxWidth: 600,
+    ),
+    width: MediaQuery.of(context).size.width * 0.8,
+    child: form,
+  );
+
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
 Widget itemWithMenu<T>(
@@ -149,8 +203,7 @@ Widget itemWithMenu<T>(
 }) {
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
-    itemBuilder: (context) =>
-        acts.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
+    itemBuilder: (context) => _itemMenuBuilder(acts),
     onSelected: (MenuAction act) => act.action(),
   );
   Widget w = Row(
@@ -176,10 +229,38 @@ Widget itemWithMenu<T>(
   return w1;
 }
 
+List<PopupMenuItem<MenuAction>> _itemMenuBuilder(List<MenuAction> acts) {
+  return acts.map<PopupMenuItem<MenuAction>>(_menuItemAction).toList();
+}
+
 void Function(TapUpDetails) _dummyTapUp(Function? use) {
   return (TapUpDetails v) {
     if (use != null) use();
   };
+}
+
+Widget tooltipWidget(String tooltip, Widget w) {
+  if (tooltip.isEmpty) return w;
+  Widget tt = Tooltip(
+    message: tooltip,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      gradient: LinearGradient(colors: <Color>[
+        laf.toolTipLeftColor,
+        laf.toolTipRightColor,
+      ]),
+    ),
+    height: laf.toolTipHeight,
+    padding: const EdgeInsets.all(8.0),
+    preferBelow: true,
+    textStyle: const TextStyle(
+      fontSize: laf.toolTipFontSize,
+    ),
+    showDuration: const Duration(seconds: 2),
+    waitDuration: const Duration(seconds: 1),
+    child: w,
+  );
+  return tt;
 }
 
 ///******************************************************************************/
@@ -188,11 +269,16 @@ void Function(TapUpDetails) _dummyTapUp(Function? use) {
 ///                                                                             */
 ///******************************************************************************/
 
-Widget submitButton(String name, void Function()? action, {enabled = true}) {
+Widget submitButton(
+  String name,
+  void Function()? action, {
+  bool enabled = true,
+  String tooltip = "",
+}) {
   ButtonStyle style = ElevatedButton.styleFrom(
-    backgroundColor: Colors.yellow,
-    foregroundColor: Colors.black,
-//  overlayColor: Colors.brown,
+    backgroundColor: laf.submitBackgroundColor,
+    foregroundColor: laf.submitForegroundColor,
+    //  overlayColor: Colors.brown,
   );
   if (!enabled) action = null;
   ElevatedButton eb = ElevatedButton(
@@ -200,23 +286,34 @@ Widget submitButton(String name, void Function()? action, {enabled = true}) {
     style: style,
     child: Text(name),
   );
-  return Padding(
+  Widget w = Padding(
     padding: const EdgeInsets.symmetric(
       vertical: 16.0,
       horizontal: 6.0,
     ),
     child: eb,
   );
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
-Widget textButton(String label, void Function()? action) {
-  return TextButton(
+Widget textButton(
+  String label,
+  void Function()? action, {
+  String tooltip = "",
+}) {
+  Widget w = TextButton(
     style: TextButton.styleFrom(
-      textStyle: const TextStyle(fontSize: 14),
+      textStyle: const TextStyle(fontSize: laf.buttonFontSize),
     ),
     onPressed: action,
     child: Text(label),
   );
+
+  w = tooltipWidget(tooltip, w);
+
+  return w;
 }
 
 ///******************************************************************************/
@@ -227,50 +324,79 @@ Widget textButton(String label, void Function()? action) {
 
 Widget topMenu(void Function(String)? handler, List labels) {
   return PopupMenuButton(
-    icon: const Icon(Icons.menu_sharp),
-    itemBuilder: (context) =>
-        labels.map<PopupMenuItem<String>>(menuItem).toList(),
+    icon: const Icon(laf.topMenuIcon),
+    itemBuilder: (context) => _topMenuBuilder(labels),
     onSelected: handler,
   );
+}
+
+List<PopupMenuItem<String>> _topMenuBuilder(List labels) {
+  return labels.map<PopupMenuItem<String>>(_menuItem).toList();
 }
 
 Widget topMenuAction(List labels) {
   return PopupMenuButton(
       icon: const Icon(Icons.menu_sharp),
-      itemBuilder: (context) =>
-          labels.map<PopupMenuItem<MenuAction>>(menuItemAction).toList(),
+      itemBuilder: (context) => _topMenuActionBuilder(labels),
       onSelected: (dynamic act) => act.action());
 }
 
-PopupMenuItem<MenuAction> menuItemAction(dynamic val) {
+List<PopupMenuItem<MenuAction>> _topMenuActionBuilder(List labels) {
+  return labels
+      .map<PopupMenuItem<MenuAction>>(
+        _menuItemAction,
+      )
+      .toList();
+}
+
+PopupMenuItem<MenuAction> _menuItemAction(dynamic val) {
   return PopupMenuItem<MenuAction>(
     value: val,
-    child: Text(val.label),
+    child: tooltipWidget(val.tooltip, Text(val.label)),
   );
 }
 
-PopupMenuItem<String> menuItem(dynamic val) {
+PopupMenuItem<String> _menuItem(dynamic val) {
   String value = 'Unknown';
   String label = 'Unknown';
+  String tooltip = '';
   if (val is String) {
     value = val;
     label = val;
-  } else if (val is Map<String, String>) {
-    for (String k in val.keys) {
-      value = k;
-      label = val[k] as String;
+  } else if (val is Map<String, dynamic>) {
+    if (val['name'] != null && val['label'] != null) {
+      label = val['label'];
+      value = val['name'];
+      String? tt = val['tooltip'];
+      if (tt != null) tooltip = tt;
+    } else {
+      for (String k in val.keys) {
+        value = k;
+        if (val[k] is String) {
+          label = val[k] as String;
+        } else if (val[k] is List<String>) {
+          List<String> vals = val[k] as List<String>;
+          label = vals[0];
+          tooltip = vals[1];
+        }
+      }
     }
   }
   return PopupMenuItem<String>(
     value: value,
-    child: Text(label),
+    child: tooltipWidget(tooltip, Text(label)),
   );
 }
 
 class MenuAction {
   String label;
   void Function() action;
-  MenuAction(this.label, this.action);
+  String tooltip;
+  MenuAction(
+    this.label,
+    this.action, {
+    this.tooltip = "",
+  });
 }
 
 ///******************************************************************************/
@@ -289,16 +415,43 @@ Widget fieldSeparator() {
 ///                                                                             */
 ///******************************************************************************/
 
-Widget dropDown(List<String> items,
-    {String? value, Function(String?)? onChanged, textAlign = TextAlign.left}) {
+Widget dropDown(
+  List<String> items, {
+  String? value,
+  Function(String?)? onChanged,
+  TextAlign textAlign = TextAlign.left,
+  String tooltip = "",
+}) {
   value ??= items[0];
-  return DropdownButton<String>(
+  Widget w = DropdownButton<String>(
     value: value,
     onChanged: onChanged,
     items: items.map<DropdownMenuItem<String>>((String value) {
       return DropdownMenuItem<String>(
         value: value,
         child: Text(value, textAlign: textAlign),
+      );
+    }).toList(),
+  );
+  w = tooltipWidget(tooltip, w);
+  return w;
+}
+
+Widget dropDownMenu(
+  List<String> items, {
+  String? value,
+  Function(String?)? onChanged,
+  textAlign = TextAlign.left,
+}) {
+  value ??= items[0];
+  return DropdownMenu<String>(
+    initialSelection: value,
+    requestFocusOnTap: true,
+    onSelected: onChanged,
+    dropdownMenuEntries: items.map<DropdownMenuEntry<String>>((String value) {
+      return DropdownMenuEntry<String>(
+        value: value,
+        label: value,
       );
     }).toList(),
   );
@@ -339,9 +492,38 @@ Widget dropDownWidget<T>(List<T> items,
     value: value,
     onChanged: onChanged,
     items: itmlst,
+    isDense: true,
     decoration: getDecoration(label: label, hint: hint),
   );
   return fld;
+}
+
+///******************************************************************************/
+///                                                                             */
+///     Boolean buttons                                                         */
+///                                                                             */
+///******************************************************************************/
+
+Widget booleanField({
+  String? label,
+  bool value = false,
+  void Function(bool?)? onChanged,
+  String tooltip = "",
+}) {
+  label ??= "";
+  Widget w = Row(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: <Widget>[
+      Checkbox(
+        value: value,
+        onChanged: onChanged,
+      ),
+      Text(label),
+    ],
+  );
+  return tooltipWidget(tooltip, w);
 }
 
 ///******************************************************************************/
@@ -360,7 +542,6 @@ Future<void> gotoThen(BuildContext context, Widget w) async {
 }
 
 void gotoDirect(BuildContext context, Widget w) {
-  if (!context.mounted) return;
   MaterialPageRoute route = MaterialPageRoute(builder: (context) => w);
   Navigator.of(context).pushReplacement(route);
 }
@@ -369,6 +550,10 @@ void gotoReplace(BuildContext context, Widget w) {
   Navigator.of(context).popUntil((route) => false);
   MaterialPageRoute route = MaterialPageRoute(builder: (context) => w);
   Navigator.of(context).push(route);
+}
+
+dynamic gotoResult(BuildContext context, Widget w) async {
+  return goto(context, w);
 }
 
 ///******************************************************************************/
@@ -381,10 +566,13 @@ Widget listBox<T>(
   String what,
   List<T> data,
   Widget Function(T) itemBuilder,
-  void Function() add,
-) {
+  void Function() add, {
+  String tooltip = "",
+  String addToolTip = "",
+}) {
   List<Widget> widgets = data.map(itemBuilder).toList();
   Widget view = ListBody(children: widgets);
+  view = tooltipWidget(tooltip, view);
   // ListView view = ListView.builder(
   //     padding: const EdgeInsets.all(2),
   //     itemCount: data.length,
@@ -393,24 +581,28 @@ Widget listBox<T>(
   //     });
   String label = "${what}s";
   return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-          Text(label, style: getLabelStyle()),
-        ]),
-        view,
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
+    mainAxisAlignment: MainAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+        Text(label, style: getLabelStyle()),
+      ]),
+      view,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          tooltipWidget(
+            addToolTip,
             IconButton(
               icon: const Icon(Icons.add_box_outlined),
               tooltip: 'Add New $what',
               onPressed: add,
             ),
-          ],
-        ),
-      ]);
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 ///******************************************************************************/
@@ -577,11 +769,7 @@ class DurationFormField {
   late TextFormField _textField;
   final void Function(Duration)? onChanged;
 
-  DurationFormField(this.context,
-      {String? hint,
-      String? label,
-      Duration? initialDuration,
-      this.onChanged}) {
+  DurationFormField(this.context, {String? hint, String? label, Duration? initialDuration, this.onChanged}) {
     _editControl = TextEditingController();
     label ??= hint;
     hint ??= label;
@@ -666,6 +854,7 @@ Widget integerField({
   TextAlign textAlign = TextAlign.left,
   required String label,
   Function(dynamic)? onChanged,
+  String tooltip = "",
 }) {
   return numberField(
     min: min.toDouble(),
@@ -676,6 +865,7 @@ Widget integerField({
     onChanged: onChanged,
     decimals: 0,
     isInt: true,
+    tooltip: tooltip,
   );
 }
 
@@ -687,16 +877,19 @@ Widget doubleField({
   required String label,
   Function(dynamic)? onChanged,
   int decimals = 1,
+  String tooltip = "",
 }) {
   return numberField(
-      min: min,
-      max: max,
-      value: value,
-      textAlign: textAlign,
-      label: label,
-      onChanged: onChanged,
-      decimals: decimals,
-      isInt: false);
+    min: min,
+    max: max,
+    value: value,
+    textAlign: textAlign,
+    label: label,
+    onChanged: onChanged,
+    decimals: decimals,
+    isInt: false,
+    tooltip: tooltip,
+  );
 }
 
 Widget numberField({
@@ -708,6 +901,7 @@ Widget numberField({
   Function(dynamic)? onChanged,
   int decimals = 1,
   bool isInt = false,
+  String tooltip = "",
 }) {
   InputDecoration d = getDecoration(label: label);
   Widget w1 = SpinBox(
@@ -746,6 +940,8 @@ Widget numberField({
     ],
   );
 
+  w4 = tooltipWidget(tooltip, w4);
+
   return w4;
 }
 
@@ -756,7 +952,10 @@ Widget numberField({
 ///******************************************************************************/
 
 Future<void> displayDialog(
-    BuildContext context, String title, String description) async {
+  BuildContext context,
+  String title,
+  String description,
+) async {
   return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -801,65 +1000,73 @@ Future<bool> getValidation(BuildContext context, String title) async {
   return false;
 }
 
+PreferredSizeWidget appBar(String title) {
+  return AppBar(
+    title: Text(
+      title,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+    ),
+  );
+}
+
+Widget circularProgressIndicator() {
+  return const Center(
+    child: CircularProgressIndicator(),
+  );
+}
+
 ///******************************************************************************/
 ///                                                                             */
 ///     Top level pages                                                         */
 ///                                                                             */
 ///******************************************************************************/
 
-Widget sherpaPage(BuildContext context, Widget child) {
-  return sherpaPage1(context, child);
-}
-
-// Widget sherpaPage0(BuildContext context, Widget child) {
-//   return Container(
-//     decoration: BoxDecoration(
-//       border: Border.all(
-//         width: 8,
-//         color: const Color.fromARGB(128, 210, 180, 140),
-//       ),
-//       image: const DecorationImage(
-//         image: AssetImage("assets/images/sherpaimage.png"),
-//         fit: BoxFit.fitWidth,
-//         opacity: 0.05,
-//       ),
-//     ),
-//     child: Column(
-//       children: <Widget>[
-//         SingleChildScrollView(
-//           child: child,
-//         ),
-//       ],
-//     ),
-//   );
-// }
-
-Widget sherpaPage1(BuildContext context, Widget child) {
+Widget topLevelPage(
+  BuildContext context,
+  Widget child, [
+  bool scrollable = false,
+]) {
   return LayoutBuilder(
-    builder: (BuildContext context, BoxConstraints cnst) =>
-        _sherpaPageBuilder(context, cnst, child),
+    builder: (BuildContext context, BoxConstraints cnst) {
+      return _topLevelPageBuilder(context, cnst, child, scrollable);
+    },
   );
 }
 
-Widget _sherpaPageBuilder(
-    BuildContext context, BoxConstraints constraints, Widget child) {
+Widget _topLevelPageBuilder(
+  BuildContext context,
+  BoxConstraints constraints,
+  Widget child,
+  bool scrollable,
+) {
+  BoxConstraints bc = BoxConstraints(
+    minWidth: constraints.maxWidth,
+  );
+  if (scrollable) {
+    bc = BoxConstraints(
+      minWidth: constraints.maxWidth,
+      maxHeight: MediaQuery.of(context).size.height * 0.8,
+      // maxHeight: 400,
+    );
+  }
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
         width: 8,
-        color: const Color.fromARGB(128, 210, 180, 140),
+        color: laf.topLevelBackground,
       ),
       image: const DecorationImage(
-        image: AssetImage("assets/images/sherpaimage.png"),
+        image: AssetImage(laf.topLevelImage),
         fit: BoxFit.fitWidth,
         opacity: 0.05,
       ),
     ),
     child: SingleChildScrollView(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-            // minHeight: constraints.maxHeight,
-            ),
+        constraints: bc,
         child: child,
       ),
     ),
@@ -871,7 +1078,7 @@ Widget boxWidgets(List<Widget> wlist, {double width = 8}) {
     decoration: BoxDecoration(
       border: Border.all(
         width: width,
-        color: const Color.fromARGB(128, 210, 180, 140),
+        color: laf.topLevelBackground,
       ),
     ),
     child: Column(
@@ -882,15 +1089,15 @@ Widget boxWidgets(List<Widget> wlist, {double width = 8}) {
   );
 }
 
-Widget sherpaNSPage(BuildContext context, Widget child) {
+Widget topLevelNSPage(BuildContext context, Widget child) {
   return Container(
     decoration: BoxDecoration(
       border: Border.all(
         width: 8,
-        color: const Color.fromARGB(128, 210, 180, 140),
+        color: laf.topLevelBackground,
       ),
       image: const DecorationImage(
-        image: AssetImage("assets/images/sherpaimage.png"),
+        image: AssetImage(laf.topLevelImage),
         fit: BoxFit.fitWidth,
         opacity: 0.05,
       ),
@@ -908,7 +1115,7 @@ Widget sherpaNSPage(BuildContext context, Widget child) {
 ThemeData getTheme() {
   return ThemeData(
     colorScheme: ColorScheme.fromSeed(
-      seedColor: const Color.fromRGBO(121, 85, 72, 1),
+      seedColor: laf.themeSeedColor,
     ),
   );
 }
@@ -926,17 +1133,17 @@ InputDecoration getDecoration({
     hintText: hint,
     labelText: label,
     labelStyle: getLabelStyle(),
-    hoverColor: Colors.amber,
+    hoverColor: laf.decorationHoverColor,
     focusedBorder: const OutlineInputBorder(
       borderSide: BorderSide(
         width: 2,
-        color: Colors.yellow,
+        color: laf.decorationBorderColor,
       ),
     ),
     border: const OutlineInputBorder(
       borderSide: BorderSide(
         width: 2,
-        color: Colors.white,
+        color: laf.decorationInputColor,
       ),
     ),
     contentPadding: EdgeInsets.symmetric(
@@ -948,6 +1155,26 @@ InputDecoration getDecoration({
 
 TextStyle getLabelStyle() {
   return const TextStyle(
-      color: globals.labelColor, fontWeight: FontWeight.bold);
+    color: laf.labelColor,
+    fontWeight: FontWeight.bold,
+  );
 }
 
+Widget getPadding(double size) {
+  return Padding(padding: EdgeInsets.all(size));
+}
+
+Widget getTopLevelLogo(BuildContext context) {
+  return SizedBox(
+    width: MediaQuery.of(context).size.width * 0.3,
+    height: MediaQuery.of(context).size.height * 0.25,
+    child: Center(
+      child: Image.asset(
+        laf.topLevelImage,
+        fit: BoxFit.contain,
+      ),
+    ),
+  );
+}
+
+// end of widgets.dart
