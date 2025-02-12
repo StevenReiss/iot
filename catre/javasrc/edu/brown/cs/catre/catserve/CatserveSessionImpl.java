@@ -44,6 +44,8 @@ import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreUniverse;
 import edu.brown.cs.catre.catre.CatreUser;
 
+import edu.brown.cs.ivy.bower.BowerSession;
+
 import java.util.Map;
 
 import javax.annotation.Tainted;
@@ -53,7 +55,7 @@ import com.sun.net.httpserver.HttpExchange;
 import java.util.Date;
 import java.util.HashMap;
 
-class CatserveSessionImpl extends CatreSavableBase implements CatreSession, CatserveConstants
+class CatserveSessionImpl extends CatreSavableBase implements CatreSession, CatserveConstants, BowerSession
 {
 
 
@@ -68,6 +70,8 @@ private String		universe_id;
 private Date		last_used;
 private long		expires_at;
 private Map<String,String> value_map;
+private BowerSessionStore<CatserveSessionImpl> session_store;
+
 
 private static final long EXPIRE_DELTA = 1000*60*60*24*4;
 
@@ -80,7 +84,7 @@ private static final long EXPIRE_DELTA = 1000*60*60*24*4;
 /*										*/
 /********************************************************************************/
 
-CatserveSessionImpl()
+CatserveSessionImpl(BowerSessionStore<CatserveSessionImpl> ss)
 {
    super(SESSION_PREFIX);
 
@@ -89,12 +93,14 @@ CatserveSessionImpl()
    last_used = new Date();
    expires_at = 0;
    value_map = new HashMap<>();
+   session_store = ss;
 }
 
 
-CatserveSessionImpl(CatreStore store,Map<String,Object> data)
+CatserveSessionImpl(BowerSessionStore<CatserveSessionImpl> ss,CatreStore store,Map<String,Object> data)
 {
    super(store,data);
+   session_store = ss;
 }
 
 
@@ -146,6 +152,12 @@ public String getSessionId()
 }
 
 
+@Override 
+public void setupSession()
+{
+   setupSession(null);
+}
+
 
 @Override
 public void setupSession(CatreUser user)
@@ -157,6 +169,13 @@ public void setupSession(CatreUser user)
    expires_at = last_used.getTime() + EXPIRE_DELTA;
 
    CatreLog.logD("CATSERVE","Setup session " + user_id + " " + universe_id);
+}
+
+
+@Override 
+public BowerSessionStore<CatserveSessionImpl> getSessionStore()
+{
+   return session_store;
 }
 
 
@@ -237,12 +256,26 @@ void removeSession(CatreController cc)
 /*										*/
 /********************************************************************************/
 
+@Override public void setValue(String key,Object val)
+{
+   String sval = (val == null ? null : val.toString());
+   value_map.put(key,sval);
+}
+
+
 @Override public void setValue(String key,String val)
 {
    value_map.put(key,val);
 }
 
-@Override public @Tainted String getValue(String key)
+@Override public @Tainted Object getValue(String key) 
+{
+   return value_map.get(key);
+}
+
+
+
+@Override public @Tainted String getStringValue(String key)
 {
    return value_map.get(key);
 }

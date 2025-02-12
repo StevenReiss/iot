@@ -41,7 +41,6 @@ package edu.brown.cs.catre.catserve;
 public interface CatserveConstants
 {
 
-int	HTTP_PORT = 3334;
 int	HTTPS_PORT = 3334;
 
 String SESSION_COOKIE = "Catre.Session";

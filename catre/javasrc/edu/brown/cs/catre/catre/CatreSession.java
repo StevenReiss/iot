@@ -55,7 +55,7 @@ public interface CatreSession extends CatreSavable {
 
    void setValue(String key,String val);
 
-   String getValue(String key);
+   String getStringValue(String key);
 
    String jsonResponse(Object... val);
 

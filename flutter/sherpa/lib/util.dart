@@ -38,7 +38,8 @@ import 'package:day_picker/day_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:intl/intl.dart';
-import 'package:sherpa/globals.dart';
+import 'package:sherpa/globals.dart' as globals;
+import 'package:http/http.dart' as http;
 
 String hasher(String msg) {
   final bytes = convert.utf8.encode(msg);
@@ -70,7 +71,15 @@ Logger? _sherpaLog;
 void setupLogging() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    print('${record.level.name}: ${record.time}: ${record.message}');
+    Uri url = Uri.https(getServerURL(), "/logmessage");
+    String msg = '${record.level.name}: ${record.time}: ${record.message}';
+
+    var body = {
+      globals.catreSession: globals.sessionId,
+      'message': msg,
+    };
+    http.post(url, body: body);
+    //  print('${record.level.name}: ${record.time}: ${record.message}');
   });
   _sherpaLog = Logger('SHERPA');
 }
@@ -138,9 +147,9 @@ List<String> mapDays(List<String> days) {
 
 String getServerURL() {
   if (kDebugMode) {
-    return catreURL;
+    return globals.catreURL;
   }
-  return catreURL;
+  return globals.catreURL;
 }
 
 class RepeatOption {
@@ -191,4 +200,3 @@ double getDoubleValue(dynamic value, num dflt) {
   }
   return value.toDouble();
 }
-

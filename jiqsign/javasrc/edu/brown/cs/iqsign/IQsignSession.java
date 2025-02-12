@@ -37,9 +37,9 @@ package edu.brown.cs.iqsign;
 
 import org.json.JSONObject;
 
-import edu.brown.cs.ivy.bower.BowerSession;
+import edu.brown.cs.ivy.bower.BowerSessionBase;
 
-class IQsignSession extends BowerSession implements IQsignConstants
+class IQsignSession extends BowerSessionBase implements IQsignConstants
 {
 
 

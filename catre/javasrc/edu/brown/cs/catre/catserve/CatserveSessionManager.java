@@ -156,7 +156,7 @@ private static Map<String, HttpCookie> parseCookies(List<String> cookieHeaders){
 
 CatreSession beginSession(HttpExchange e)
 {
-   CatserveSessionImpl cs = new CatserveSessionImpl();
+   CatserveSessionImpl cs = new CatserveSessionImpl(null);
    String sid = cs.getDataUID();
    session_set.put(sid,cs);
    CatserveServer.setParameter(e,SESSION_PARAMETER,sid);

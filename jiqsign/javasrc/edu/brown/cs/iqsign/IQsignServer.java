@@ -143,7 +143,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("GET","/rest/login",iqsign_auth::handlePreLogin);
    br.addRoute("GET","/rest/register",iqsign_auth::handlePreLogin);
    br.addRoute("POST","/rest/login",new LoginAction());
-   br.addRoute("POST","/rest/register",new RegisterAction());
+   br.addRoute("POST","/rest/register",iqsign_auth::handleRegister);
    br.addRoute("ALL","/rest/logout",new LogoutAction());
    br.addRoute("ALL","/rest/authorize",new AuthorizeAction());
    br.addRoute("GET","/validate",iqsign_auth::handleValidationRequest);
@@ -218,8 +218,9 @@ private final class SessionStore implements BowerSessionStore<IQsignSession> {
       return bs;
     }
 
-   @Override public void removeSession(String sid) {
-      store_db.removeSession(sid);
+   @Override public void removeSession(IQsignSession bs) {
+      if (bs == null) return;
+      store_db.removeSession(bs.getSessionId());
     }
 
    void updateSession(String sid,Number user) {
@@ -279,14 +280,7 @@ private final class LoginAction implements BowerSessionHandler<IQsignSession> {
 
 
 
-private final class RegisterAction implements BowerSessionHandler<IQsignSession> {
 
-   @Override public String handle(HttpExchange e,IQsignSession session) {
-      String rslt = iqsign_auth.handleRegister(e,session);
-      return rslt;
-    }
-
-}	// end of inner class LoginAction
 
 
 private final class LogoutAction implements BowerSessionHandler<IQsignSession> {

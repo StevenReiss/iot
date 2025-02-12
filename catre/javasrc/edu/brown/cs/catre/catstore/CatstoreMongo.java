@@ -233,6 +233,7 @@ public CatstoreMongo(CatreController cc)
 {
    MongoCollection<Document> uc = catre_database.getCollection("CatreUsers");
    Document userdoc = new Document();
+   email = email.toLowerCase();
    
    ClientSession sess = mongo_client.startSession();
    try {

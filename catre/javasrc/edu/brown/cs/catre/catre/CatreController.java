@@ -77,7 +77,7 @@ CatreUniverse createUniverse(String name,CatreUser user);
 
 File findBaseDirectory();
 
-
+String getUrlPrefix();
 
 
 

@@ -51,11 +51,13 @@ import edu.brown.cs.catre.catmodel.CatmodelFactory;
 import edu.brown.cs.catre.catre.CatreBridge;
 import edu.brown.cs.catre.catre.CatreController;
 import edu.brown.cs.catre.catre.CatreLog;
+import edu.brown.cs.catre.catre.CatreServer;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreTable;
 import edu.brown.cs.catre.catre.CatreUniverse;
 import edu.brown.cs.catre.catre.CatreUser;
 import edu.brown.cs.catre.catserve.CatserveServer;
+import edu.brown.cs.catre.catserve.CatserveBowerServer;
 import edu.brown.cs.catre.catstore.CatstoreFactory;
 import edu.brown.cs.ivy.file.IvyLog.LogLevel;
 
@@ -85,10 +87,12 @@ public static void main(String [] args)
 /********************************************************************************/
 
 private ScheduledThreadPoolExecutor	thread_pool;
-private CatserveServer rest_server;
+private CatreServer rest_server;
 private CatreStore     data_store;
 private CatmodelFactory model_factory;
 private CatbridgeFactory bridge_factory;
+
+private static boolean use_bower = true;
 
 
 
@@ -102,7 +106,9 @@ private CatmainMain(String [] args)
 {
    CatreLog.setLogLevel(LogLevel.DEBUG);
    CatreLog.setupLogging("CATRE",true);
-   CatreLog.useStdErr(true);
+// CatreLog.useStdErr(true);
+   
+   scanArgs(args);
 
    thread_pool = new TimerThreadPool();
 
@@ -117,13 +123,68 @@ private CatmainMain(String [] args)
    
    CatreLog.logD("CATMAIN","Model factory setup done");
 
-   rest_server = new CatserveServer(this);
+   if (use_bower) {
+      rest_server = new CatserveBowerServer(this);
+    }
+   else {
+      rest_server = new CatserveServer(this); 
+    }
    
    CatreLog.logD("CATMAIN","Server setup done");
 
    bridge_factory = new CatbridgeFactory(this);
    
    CatreLog.logD("CATMAIN","Bridge Setup done");
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Argument scanning                                                       */
+/*                                                                              */
+/********************************************************************************/
+
+private void scanArgs(String [] args)
+{
+   for (int i = 0; i < args.length; ++i) {
+      if (args[i].startsWith("-")) {
+         if (args[i].startsWith("-s")) {                          // -server
+            // nothing needed
+          }
+	 else if (args[i].startsWith("-LD")) {                          // -LDebug
+	    CatreLog.setLogLevel(CatreLog.LogLevel.DEBUG);
+	  }
+	 else if (args[i].startsWith("-LI")) {                          // -LInfo
+	    CatreLog.setLogLevel(CatreLog.LogLevel.INFO);
+	  }
+	 else if (args[i].startsWith("-LW")) {                          // -LWarning
+	    CatreLog.setLogLevel(CatreLog.LogLevel.WARNING);
+	  }
+         else if (args[i].startsWith("-LE")) {                          // -LError
+	    CatreLog.setLogLevel(CatreLog.LogLevel.ERROR);
+	  }
+	 else if (args[i].startsWith("-L") && i+1 < args.length) {      // -Log <file>
+	    CatreLog.setLogFile(args[++i]);
+	  }
+	 else if (args[i].startsWith("-S")) {                           // -Stderr
+	    CatreLog.useStdErr(true);
+	  }
+	 else {
+	    badArgs();
+	  }
+       }
+      else {
+	 badArgs();
+       }
+    }
+}
+
+
+
+private void badArgs()
+{
+   CatreLog.logE("CATMAIN","Bad arguments");
 }
 
 
@@ -163,6 +224,11 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
    return bridge_factory.createBridge(name,cu);
 }
 
+
+@Override public String getUrlPrefix()
+{
+   return rest_server.getUrlPrefix();
+}
 
 
 

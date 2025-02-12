@@ -221,6 +221,9 @@ private void scanArgs(String [] args)
 	 else if (args[i].startsWith("-LW")) {                          // -LWarning
 	    IvyLog.setLogLevel(IvyLog.LogLevel.WARNING);
 	  }
+         else if (args[i].startsWith("-LE")) {                          // -LError
+	    IvyLog.setLogLevel(IvyLog.LogLevel.ERROR);
+	  }
 	 else if (args[i].startsWith("-L") && i+1 < args.length) {      // -Log <file>
 	    IvyLog.setLogFile(args[++i]);
 	  }

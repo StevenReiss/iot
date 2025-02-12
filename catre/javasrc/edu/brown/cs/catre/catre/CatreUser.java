@@ -77,6 +77,10 @@ boolean isTemporary();
 void setTemporary(boolean fg);
 void setTemporaryPassword(String  pwd);
 
+boolean validateUser(String code);
+String setupValidator();
+boolean isValidated();
+
 
 
 }	// end of interface CatreUser

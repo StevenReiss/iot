@@ -30,14 +30,16 @@
    <path id='spr.classpath'>
      <pathelement location='${CATRE}/java' />
      <pathelement location='${CATRE}/javasrc' />
-     <fileset dir='${CATRELIB}' includes='ivy.jar' />
-     <fileset dir='${CATRELIB}' includes='junit.jar' />
-     <fileset dir='${CATRELIB}' includes='json.jar' />
-     <fileset dir='${CATRELIB}' includes='nanohttpd.jar' />
+     <fileset dir='${IVYLIB}' includes='ivy.jar' />
+     <fileset dir='${IVYLIB}' includes='junit.jar' />
+     <fileset dir='${IVYLIB}' includes='json.jar' />
+     <fileset dir='${IVYLIB}' includes='jsoup.jar' />
      <fileset dir='${CATRELIB}' includes='mongojava.jar' />
-     <fileset dir='${CATRELIB}' includes='jsoup.jar' />
      <fileset dir='${CATRELIB}' includes='googleapi.jar' />
      <fileset dir='${CATRELIB}' includes='karma.jar' />
+     <fileset dir='${IVYLIB}' includes='jakarta.mail.jar' />
+     <fileset dir='${IVYLIB}' includes='jakarta.activation.jar' />
+     <fileset dir='${IVYLIB}' includes='slf4j-api.jar' />
   </path>
 
   <target name='all' depends='setup,compile,jar' />
@@ -54,14 +56,14 @@
 	   <attribute name='Main-Class' value='edu.brown.cs.catre.catmain.CatmainMain' />
 	</manifest>
 	<fileset dir='${CATRE}/java' includes='**/*.class' />
-	<zipfileset src='${CATRELIB}/ivy.jar' excludes='META-INF/*' />
-	<zipfileset src='${CATRELIB}/json.jar' excludes='META-INF/*' />
-	<zipfileset src='${CATRELIB}/junit.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/ivy.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/json.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/junit.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/jsoup.jar' excludes='META-INF/*' />
+	<zipfileset src='${IVYLIB}/slf4j-api.jar' excludes='META-INF/*' />
 	<zipfileset src='${CATRELIB}/googleapi.jar' excludes='META-INF/*' />
 	<zipfileset src='${CATRELIB}/mongojava.jar' excludes='META-INF/*' />
-	<zipfileset src='${CATRELIB}/nanohttpd.jar' excludes='META-INF/*' />
 	<zipfileset src='${CATRELIB}/karma.jar' excludes='META-INF/*' />
-	<zipfileset src='${CATRELIB}/jsoup.jar' excludes='META-INF/*' />
      </jar>
      <copy file='catre.jar' tofile='${CATRE}/../bin/catre.jar' />
    </target>

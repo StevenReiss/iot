@@ -70,6 +70,7 @@ private String          temp_password;
 private String		universe_id;
 private CatreUniverse	user_universe;
 private boolean         is_temporary;
+private String          email_verifier;
 private Map<String,CatreBridgeAuthorization> bridge_auths;
 
 private static Pattern AUTH_PATTERN = Pattern.compile("AUTH_(\\d+)_(\\w+)");
@@ -95,6 +96,7 @@ CatstoreUser(CatreStore cs,String name,String email,String pwd)
    universe_id = null;
    bridge_auths = new HashMap<>();
    is_temporary = false;
+   email_verifier = null;
 }
 
 
@@ -201,6 +203,30 @@ CatstoreUser(CatreStore store,Map<String,Object> doc)
 
 
 
+@Override public boolean validateUser(String code)
+{
+   if (code == null) return false;
+   if (!code.equals(email_verifier)) return false;
+   
+   email_verifier = null;
+   return true;
+}
+
+
+@Override public String setupValidator()
+{
+   email_verifier = CatreUtil.randomString(24);
+   return email_verifier;
+}
+
+
+@Override public boolean isValidated()
+{
+   return email_verifier == null;
+}
+
+
+ 
 /********************************************************************************/
 /*										*/
 /*	CatreStore methods							*/

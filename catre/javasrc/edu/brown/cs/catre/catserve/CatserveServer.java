@@ -44,6 +44,7 @@ import edu.brown.cs.catre.catre.CatreParameter;
 import edu.brown.cs.catre.catre.CatreProgram;
 import edu.brown.cs.catre.catre.CatreRule;
 import edu.brown.cs.catre.catre.CatreSavable;
+import edu.brown.cs.catre.catre.CatreServer;
 import edu.brown.cs.catre.catre.CatreSession;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreTable;
@@ -93,7 +94,7 @@ import java.net.URI;
 import java.security.KeyStore;
 
 
-public class CatserveServer implements CatserveConstants, CatreJson
+public class CatserveServer implements CatserveConstants, CatreJson, CatreServer
 {
 
 
@@ -107,9 +108,11 @@ private CatreController catre_control;
 private CatserveSessionManager session_manager;
 private CatserveAuth auth_manager;
 private HttpServer http_server;
-
 private ArrayList<Route> route_interceptors;
 private int preroute_index;
+
+private String url_prefix;
+
 
 
 
@@ -164,9 +167,11 @@ public CatserveServer(CatreController cc)
 	       params.setSSLParameters(sslContext.getDefaultSSLParameters());
 	     }
 	  });
+         url_prefix = "https://" + IvyExecQuery.getHostName() + ":" + HTTPS_PORT;
        }
       else {
 	 http_server = HttpServer.create(new InetSocketAddress(HTTPS_PORT), 0);
+         url_prefix = "http://localhost:" + HTTPS_PORT;
        }
     }
    catch (Exception e) {
@@ -187,6 +192,26 @@ public CatserveServer(CatreController cc)
 }
 
 
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+@Override public String getUrlPrefix()
+{
+   return url_prefix;
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Routing methods                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+
 private void setupRoutes()
 {
    addRoute("ALL","/ping",this::handlePing);
@@ -200,7 +225,9 @@ private void setupRoutes()
    addRoute("POST","/login",auth_manager::handleLogin);
    addRoute("POST","/register",auth_manager::handleRegister);
    addRoute("GET","/logout",this::handleLogout);
-   addRoute("POST","/forgotpassword",this::handleForgotPassword);
+   addRoute("POST","/forgotpassword",auth_manager::handleForgotPassword);
+   addRoute("GET","/validate",auth_manager::handleValidateUser);
+   addRoute("ALL","/logmessage",this::handleLogMessage);
 
    // might want to handle favicon
 
@@ -289,18 +316,31 @@ private String handleStatic(HttpExchange ex)
 }
 
 
+
+private String handleLogMessage(HttpExchange he)
+{
+   String msg = getParameter(he,"message");
+   CatreLog.logD("SHERPA",msg);
+   return "{ 'STATUS' : 'OK' }";
+}
+
+
+
+
 /********************************************************************************/
 /*										*/
 /*	Run methods								*/
 /*										*/
 /********************************************************************************/
 
+@Override 
 public void start() throws IOException
 {
    http_server.start();
 
    CatreLog.logI("CATSERVE","CATRE SERVER STARTED ON " + HTTPS_PORT);
 }
+
 
 
 /********************************************************************************/
@@ -422,14 +462,6 @@ private String handleRemoveUser(HttpExchange e,CatreSession cs)
 
    return handleLogout(e,cs);
 }
-
-
-private String handleForgotPassword(HttpExchange exchange,CatreSession cs)
-{
-   // should send email here if needed
-   return jsonResponse(cs,"unimplemented feature");
-}
-
 
 
 /********************************************************************************/
@@ -682,10 +714,6 @@ private String handleGetValue(HttpExchange e,CatreSession cs)
 
    return jsonResponse(obj);
 }
-
-
-
-
 
 
 
@@ -1300,6 +1328,9 @@ private final class ServerExecutor implements Executor {
 }	// end of inner class ServerExecutor
 
 
+
+
+
 /********************************************************************************/
 /*										*/
 /*	Table for storing sessions						*/
@@ -1317,7 +1348,7 @@ private static final class SessionTable implements CatreTable {
     }
 
    @Override public CatserveSessionImpl create(CatreStore store,Map<String,Object> data) {
-      return new CatserveSessionImpl(store,data);
+      return new CatserveSessionImpl(null,store,data);
     }
 
 }  // end of inner class SessionTable

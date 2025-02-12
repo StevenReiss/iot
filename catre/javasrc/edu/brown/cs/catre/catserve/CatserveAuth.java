@@ -95,17 +95,31 @@ public String handleRegister(HttpExchange e, CatreSession cs)
    String userid = CatserveServer.getParameter(e,"username");
    String email = CatserveServer.getParameter(e,"email");
    String pwd = CatserveServer.getParameter(e,"password");
-   pwd = pwd.replace(' ','+');
    String unm = CatserveServer.getParameter(e,"universe");
 
    CatreLog.logD("AUTH", "userid: " + userid + " email: " + email + " pwd: " + pwd + " unm: " + unm);
 
+   CatreUser cu = null;
+   boolean remove = false;
    try {
-      CatreUser cu = data_store.createUser(userid,email,pwd);
+      cu = data_store.createUser(userid,email,pwd);
+      remove = true;
 
       if (catre_control.createUniverse(unm,cu) == null) {
          return CatserveServer.jsonError(cs,"problem creating universe");
       }
+      String code = cu.setupValidator();
+      String msg = "Thank you for registering with Sherpa.\n\n";
+      msg += "To complete the reqistration process, please click on or paste the link:\n";
+      msg += "   " + catre_control.getUrlPrefix() + "/validate?"; 
+      msg += "email=" + CatreUtil.escape(email);
+      msg += "&code=" + code;
+      msg += "\n"; 
+      if (!CatreUtil.sendEmail(email,"Complete SHERPA registration",msg)) {
+         return CatserveServer.jsonError(cs,"problem sending email");
+       }
+      
+      remove = false;
       
       cs.setupSession(cu);
       cs.saveSession(catre_control);
@@ -115,6 +129,11 @@ public String handleRegister(HttpExchange e, CatreSession cs)
       String msg = err.getMessage();
       return CatserveServer.jsonError(cs,msg);
    }
+   finally {
+      if (remove && cu != null) {
+         data_store.removeObject(cu.getDataUID());
+       }
+    }
 }
 
 
@@ -181,6 +200,28 @@ public String handleForgotPassword(HttpExchange e,CatreSession cs)
 }
 
 
+public String handleValidateUser(HttpExchange e,CatreSession cs)
+{
+   CatreLog.logD("CATSERVE","Handle verify user");
+   
+   String email = CatserveServer.getParameter(e,"email");
+   String code = CatserveServer.getParameter(e,"code");
+   if (email == null || email.isEmpty() || code == null || code.isEmpty()) {
+      return CatserveServer.jsonError(cs,"Bad validation request");
+    }
+   email = email.toLowerCase();
+   CatreUser cu = catre_control.getDatabase().findUserByEmail(email);
+   if (cu == null) {
+      return CatserveServer.jsonError(cs,"Bad validation request");
+    }
+   if (!cu.validateUser(code)) {
+      return CatserveServer.jsonError(cs,"Bad validation request");
+    }
+   
+   return CatserveServer.jsonResponse(cs); 
+}
+
+
 
 
 /********************************************************************************/
@@ -198,9 +239,8 @@ public String handleLogin(HttpExchange e, CatreSession cs)
    if (username == null || pwd == null) {
       return CatserveServer.jsonError(cs,"Bad username or password");
     }
-   pwd = pwd.replace(' ','+');
    String salt = CatserveServer.getParameter(e,"SALT");
-   String salt1 = cs.getValue("SALT");
+   String salt1 = cs.getStringValue("SALT");
    CatreLog.logD("CATSERVE","LOGIN " + username + " " + pwd + " " + salt);
    
    if (username == null || pwd == null) {

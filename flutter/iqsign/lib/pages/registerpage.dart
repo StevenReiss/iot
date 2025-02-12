@@ -176,6 +176,7 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
         setState(() {
           _registerError = rslt;
         });
+        return;
       }
       _gotoLogin();
     }
