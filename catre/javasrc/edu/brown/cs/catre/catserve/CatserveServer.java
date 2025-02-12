@@ -129,7 +129,7 @@ public CatserveServer(CatreController cc)
 
       catre_control = cc;
       session_manager = new CatserveSessionManager(catre_control);
-      auth_manager = new CatserveAuth(catre_control, session_manager);
+      auth_manager = new CatserveAuth(catre_control);
 
       File f1 = cc.findBaseDirectory();
       File f2 = new File(f1,"secret");

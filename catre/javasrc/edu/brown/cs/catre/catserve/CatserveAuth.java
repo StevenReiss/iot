@@ -69,7 +69,7 @@ private CatreController catre_control;
 /*										*/
 /********************************************************************************/
 
-CatserveAuth(CatreController cc, CatserveSessionManager sm)
+CatserveAuth(CatreController cc)
 {
    catre_control = cc;
    data_store = cc.getDatabase();

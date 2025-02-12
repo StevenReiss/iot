@@ -109,6 +109,7 @@ public CatserveBowerServer(CatreController cc)
 {
    catre_control = cc;
    session_store = new SessionStore(catre_control);
+   auth_manager = new CatserveAuth(cc);
    
    File f1 = cc.findBaseDirectory();
    File f2 = new File(f1,"secret");
