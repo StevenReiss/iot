@@ -209,6 +209,6 @@ class Cedes {
   }
 
   rawData(dynamic data) {
-    _sendToCedes("data", data, "alds");
+    _sendToCedes("data", {"data": data}, "alds");
   }
 }

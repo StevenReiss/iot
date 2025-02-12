@@ -40,7 +40,6 @@ import edu.brown.cs.ivy.bower.BowerCORS;
 import edu.brown.cs.ivy.bower.BowerRouter;
 import edu.brown.cs.ivy.bower.BowerServer;
 import edu.brown.cs.ivy.bower.BowerConstants.BowerSessionStore;
-import edu.brown.cs.ivy.exec.IvyExecQuery;
 import edu.brown.cs.ivy.file.IvyFile;
 import edu.brown.cs.karma.KarmaUtils;
 
@@ -96,7 +95,6 @@ private CatreController catre_control;
 private CatserveAuth auth_manager;
 private SessionStore session_store;
 private BowerRouter<CatserveSessionImpl> bower_router;
-
 private String url_prefix;
 
 
@@ -124,9 +122,6 @@ public CatserveBowerServer(CatreController cc)
    catch (IOException e) { }
    String keystorepwd = p.getProperty("jkspwd");
    if (keystorepwd != null && keystorepwd.equals("XXX")) keystorepwd = null;
-   System.err.println("HOST: " + IvyExecQuery.getHostName());
-   if (IvyExecQuery.getHostName().contains("geode.local")) keystorepwd = null;
-   if (IvyExecQuery.getHostName().contains("Brown-")) keystorepwd = null;
    
    bower_router = setupRouter();
    http_server = new BowerServer<>(HTTPS_PORT,session_store);
@@ -143,7 +138,8 @@ public CatserveBowerServer(CatreController cc)
       System.exit(1);
     }
    
-   url_prefix = http_server.getUrlPrefix();
+   String pfx = p.getProperty("hostpfx");
+   url_prefix = fixUrlPrefix(pfx);
 }
 
 
@@ -156,6 +152,31 @@ public CatserveBowerServer(CatreController cc)
 @Override public String getUrlPrefix()
 {
    return url_prefix;
+}
+
+
+private String fixUrlPrefix(String pfx)
+{
+   if (pfx == null || pfx.isEmpty()) {
+      pfx = http_server.getUrlPrefix();
+    }
+   
+   // add https: if needed
+   int idx = pfx.indexOf(":");
+   if (idx < 0 || idx > 6) {
+      pfx = "https://" + pfx;
+      idx = pfx.indexOf(":");
+    }
+   
+   // add port number if needed
+   if (idx < 6) {
+      int idx1 = pfx.indexOf(":",idx+1);
+      if (idx1 < 0) {
+         pfx += ":" + HTTPS_PORT;
+       }
+    }
+   
+   return pfx;
 }
 
 
