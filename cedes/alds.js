@@ -84,8 +84,9 @@ function handleRawData(req,res)
     }
 
    let data = req.body.data;
-
+   
    if (data != null) {
+      data = JSON.stringify(data,null,2);
       data_stream.write(data + "\n");
     }
 
