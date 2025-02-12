@@ -84,8 +84,6 @@ db.CatreSessions.insertOne( { _id : sid, USER_ID : null,
 db.CatreSessions.createIndex( { "session_id" : 1 } )
 db.CatreSessions.find()
 
-
-
 db.createCollection('CatreUniverses', {
    validator: {
       $jsonSchema: {
