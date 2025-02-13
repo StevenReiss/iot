@@ -392,9 +392,9 @@ boolean sendEmail(String sendto,String subj,String body)
          props.getProperty("email.user"),
          props.getProperty("email.password"));
    mi.setReplyTo(props.getProperty("email.replyto"));
-   mi.send();
+   boolean fg = mi.send();
    
-   return false;
+   return fg;
 }
   
 

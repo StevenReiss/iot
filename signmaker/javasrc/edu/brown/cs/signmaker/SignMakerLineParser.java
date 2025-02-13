@@ -276,7 +276,10 @@ void parseImageLine(List<String> cnts) throws SignMakerException
       else img.setImage(image);
       result_sign.setImageRegion(rgn,img);
     }
-   if (rgn != 0) current_image = rgn+1;
+   if (rgn != 0) {
+      current_image = rgn;
+      if (image != null) ++current_image;
+    }
 }
 
 
@@ -405,12 +408,18 @@ void parseTextLine(List<String> cnts)
        }
     }
 
-   txt.popAll();
-   txt.setSizeLevel(size);
-   if (tab != 0) txt.setTabLevel(tab);
-   if (size == text_level) --text_level;
-   result_sign.setTextRegion(rgn,txt);
-   if (current_text == rgn) ++current_text;
+   if (!txt.isEmpty()) {
+      txt.popAll();
+      txt.setSizeLevel(size);
+      if (tab != 0) txt.setTabLevel(tab);
+      if (size == text_level) --text_level;
+      result_sign.setTextRegion(rgn,txt);
+    }
+   
+   if (rgn != 0) {
+      current_text = rgn;
+      if (!txt.isEmpty()) ++current_text;
+    }
 }
 
 
@@ -454,7 +463,7 @@ boolean parseLoadLine(List<String> cnts) throws SignMakerException
 private void useSavedImage(String name) throws SignMakerException
 {
    if (++load_depth > 4) return;
-   String usecnts = result_sign.useSavedImage(name);
+   String usecnts = result_sign.useSavedImage(name); 
    if (usecnts != null) {
       result_sign.clearContents();
       ByteArrayInputStream bas = new ByteArrayInputStream(usecnts.getBytes());

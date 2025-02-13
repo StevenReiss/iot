@@ -5,30 +5,30 @@
 /*	Constants for iQsign server						*/
 /*										*/
 /********************************************************************************/
-/*      Copyright 2025 Steven P. Reiss                                          */
+/*	Copyright 2025 Steven P. Reiss						*/
 /*********************************************************************************
- *  Copyright 2025, Steven P. Reiss, Rehoboth MA.                                *
- *                                                                               *
- *                        All Rights Reserved                                    *
- *                                                                               *
- *  Permission to use, copy, modify, and distribute this software and its        *
- *  documentation for any purpose other than its incorporation into a            *
- *  commercial product is hereby granted without fee, provided that the          *
- *  above copyright notice appear in all copies and that both that               *
- *  copyright notice and this permission notice appear in supporting             *
- *  documentation, and that the name of the holder or affiliations not be used   *
- *  in advertising or publicity pertaining to distribution of the software       *
- *  without specific, written prior permission.                                  *
- *                                                                               *
- *  THE COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS            *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL THE HOLDER            *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
- *  OF THIS SOFTWARE.                                                            *
- *                                                                               *
+ *  Copyright 2025, Steven P. Reiss, Rehoboth MA.				 *
+ *										 *
+ *			  All Rights Reserved					 *
+ *										 *
+ *  Permission to use, copy, modify, and distribute this software and its	 *
+ *  documentation for any purpose other than its incorporation into a		 *
+ *  commercial product is hereby granted without fee, provided that the 	 *
+ *  above copyright notice appear in all copies and that both that		 *
+ *  copyright notice and this permission notice appear in supporting		 *
+ *  documentation, and that the name of the holder or affiliations not be used	 *
+ *  in advertising or publicity pertaining to distribution of the software	 *
+ *  without specific, written prior permission. 				 *
+ *										 *
+ *  THE COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL THE HOLDER		 *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
+ *  OF THIS SOFTWARE.								 *
+ *										 *
  ********************************************************************************/
 
 
@@ -54,7 +54,7 @@ String SESSION_PARAMETER = "session";
 String SVG_URL_PREFIX = "/rest/svgimage/";
 String IMAGE_URL_PREFIX = "/rest/userimage/";
 
-String INITIAL_SIGN = "=InitialSign";
+String INITIAL_SIGN = "=Initial Sign";
 
 String IMAGE_DIRECTORY = "savedimages";
 
@@ -62,23 +62,23 @@ String IMAGE_DIRECTORY = "savedimages";
 
 
 /********************************************************************************/
-/*                                                                              */
-/*     JSON builders                                                            */
-/*                                                                              */
+/*										*/
+/*     JSON builders								*/
+/*										*/
 /********************************************************************************/
 
 default JSONObject buildJson(Object... val)
 {
    JSONObject rslt = new JSONObject();
-   
+
    if (val.length > 1) {
       for (int i = 0; i+1 < val.length; i += 2) {
-         String key = val[i].toString();
-         Object v = val[i+1];
-         rslt.put(key,v);
+	 String key = val[i].toString();
+	 Object v = val[i+1];
+	 rslt.put(key,v);
        }
     }
-   
+
    return rslt;
 }
 
@@ -88,13 +88,13 @@ default JSONArray buildJsonArray(Object... val)
    for (Object v : val) {
       rslt.put(v);
     }
-   
+
    return rslt;
 }
 
 
 
-   
+
 }	// end of interface IQsignConstants
 
 

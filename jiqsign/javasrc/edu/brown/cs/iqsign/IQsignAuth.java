@@ -352,9 +352,9 @@ private boolean sendRegistrationEmail(HttpExchange he,IQsignSession session,Stri
 
    IvyLog.logD("IQSIGN","SEND EMAIL to " + email + " " + msg);
    
-   iqsign_main.sendEmail(email,"Verify your Email for iQsign",msg); 
+   boolean sts = iqsign_main.sendEmail(email,"Verify your Email for iQsign",msg); 
 
-   return true;
+   return sts;
 }
 
 

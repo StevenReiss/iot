@@ -49,6 +49,7 @@ private Map<SignMakerComponent,Rectangle2D> item_positions;
 private Map<String,String>      key_values;
 private int                     user_id;
 private boolean                 do_counts;
+private Set<Integer>            used_ids;
 
 
 private static double [] SCALE_VALUES = {
@@ -90,6 +91,7 @@ SignMakerSign(int uid,boolean counts)
    key_values = new HashMap<>();
    user_id = uid;
    do_counts = counts;
+   used_ids = null;
 }
 
 
@@ -136,7 +138,7 @@ BufferedImage createSignImage(int w,int h)
       g.setFont(ft);
     }
    
-   for (int i = 0; i < text_regions.length; ++i) {
+   for (int i = 1; i < text_regions.length; ++i) {
       setup(pnl,text_regions[i]);
     }
    for (int i = 1; i < image_regions.length; ++i) {
@@ -275,7 +277,6 @@ void setProperty(String key,String value)
 
 
 
-
 String mapString(String s)
 {
    if (key_values.isEmpty()) return s;
@@ -284,45 +285,45 @@ String mapString(String s)
 }
 
 
+
 String useSavedImage(String name)
 {
    Connection sql = SignMaker.getSqlDatabase();
    if (sql == null || name == null || name.length() == 0) return null;
+   if (used_ids == null) used_ids = new HashSet<>();
    String cnts = null;
-   int defid = -1;
+   
    try {
-      String q = "SELECT * FROM iQsignDefines WHERE name = ? AND userid = ?";
-      PreparedStatement st = sql.prepareStatement(q);
-      st.setString(1,name);
-      st.setInt(2,user_id);
-      ResultSet rs = st.executeQuery();;
-      if (rs.next()) {
-         cnts = rs.getString("contents");
-         defid = rs.getInt("id");
-       }
-      st.close();
-       
-      if (cnts == null) {
-         String q1 = "SELECT * FROM iQsignDefines WHERE name = ? AND userid IS NULL";
-         PreparedStatement st1 = sql.prepareStatement(q1);
-         st1.setString(1,name);
-         ResultSet rs1 = st1.executeQuery();
-         if (rs1.next()) {
-            cnts = rs1.getString("contents");
-            defid = rs1.getInt("id");
-          }
-         st1.close();
-       }
-      if (cnts == null) {
-         IvyLog.logE("PROBLEM LOADING DEFINITION: " + name);
-         cnts = "# Bad Sign Image";
+      String q1 = "SELECT * FROM iQsignDefines WHERE name = ? AND ";
+      q1 += "( userid = ? OR userid IS NULL )";
+      PreparedStatement st1 = sql.prepareStatement(q1);
+      st1.setString(1,name);
+      st1.setInt(2,user_id);
+      ResultSet rs1 = st1.executeQuery();
+      
+      int bestid = 0;
+      int bestuid = 0;
+      while (rs1.next()) {
+         int did = rs1.getInt("id");
+         if (used_ids.contains(did)) continue;
+         int uid = rs1.getInt("userid");
+         if (uid > 0 && uid != user_id) continue;
+         if (uid <= 0 && bestuid > 0) continue;
+         cnts = rs1.getString("contents");
+         bestid = did;
+         bestuid = uid;
        }
       
-      if (defid > 0) {
+      if (bestid <= 0) {
+         IvyLog.logE("Problem loading definition: " + name);
+         cnts = "# Bad Sign Name";
+       }
+      else {
+         used_ids.add(bestid);
          if (do_counts) {
             String q3 = "SELECT * FROM iQsignUseCounts WHERE defineid = ? AND userid = ?";
             PreparedStatement st3 = sql.prepareStatement(q3);
-            st3.setInt(1,defid);
+            st3.setInt(1,bestid);
             st3.setInt(2,user_id);
             ResultSet rs3 = st3.executeQuery();
             if (rs3.next()) {
@@ -332,7 +333,7 @@ String useSavedImage(String name)
                      "WHERE defineid = ? AND userid = ?";
                PreparedStatement st4 = sql.prepareStatement(q4);
                st4.setInt(1,count+1);
-               st4.setInt(2,defid);
+               st4.setInt(2,bestid);
                st4.setInt(3,user_id);
                st4.execute();
              }
@@ -340,7 +341,7 @@ String useSavedImage(String name)
                String q5 = "INSERT INTO iQsignUseCounts(defineid,userid,count) " +
                   "VALUES (?,?,1)";
                PreparedStatement st5 = sql.prepareStatement(q5);
-               st5.setInt(1,defid);
+               st5.setInt(1,bestid);
                st5.setInt(2,user_id);
                st5.execute();
              }
@@ -381,6 +382,8 @@ private void setDimensions(double w,double h)
    SignMakerComponent c1 = text_regions[4];
    if (c1 == null) c1 = image_regions[5];
    
+   boolean haveborder = (image_regions[0] != null);
+   
    double [] rows = new double[5];
    rows[0] = getRelativeHeight(image_regions[3],c0,image_regions[4]);
    rows[1] = getRelativeHeight(text_regions[1]);
@@ -391,16 +394,27 @@ private void setDimensions(double w,double h)
    double tot = 0;
    for (int i = 0; i < rows.length; ++i) tot += rows[i];
    if (tot == 0) return;
+   
+   double h0 = h;
+   double y0 = 0;
+   double w0 = w;
+   double x0 = 0;
+   if (haveborder) {
+      h0 = h * 0.8;
+      y0 = h * 0.1;
+      w0 = w * 0.8;
+      x0 = w * 0.1;
+    }
    for (int i = 0; i < rows.length; ++i) {
-      rows[i] = rows[i] / tot * h;
+      rows[i] = y0 + rows[i] / tot * h0;
     }
    
    double ypos = 0;
-   ypos = setPositions(w,ypos,rows[0], image_regions[3],c0,image_regions[4]);
-   ypos = setPositions(w,ypos,rows[1],text_regions[1]);
-   ypos = setPositions(w,ypos,rows[2],text_regions[2]);
-   ypos = setPositions(w,ypos,rows[3],text_regions[3]);
-   ypos = setPositions(w,ypos,rows[4],image_regions[1],c1,image_regions[2]);
+   ypos = setPositions(x0,w0,ypos,rows[0], image_regions[3],c0,image_regions[4]);
+   ypos = setPositions(x0,w0,ypos,rows[1],text_regions[1]);
+   ypos = setPositions(w0,w0,ypos,rows[2],text_regions[2]);
+   ypos = setPositions(x0,w0,ypos,rows[3],text_regions[3]);
+   ypos = setPositions(x0,w0,ypos,rows[4],image_regions[1],c1,image_regions[2]);
 }
 
 
@@ -422,19 +436,23 @@ private double getRelativeHeight(SignMakerComponent ... cset)
 
 
 
-double setPositions(double w,double y,double h,SignMakerComponent c0,SignMakerComponent c1,SignMakerComponent c2)
+
+
+double setPositions(double x,double w,double y,double h,SignMakerComponent c0,SignMakerComponent c1,SignMakerComponent c2)
 {
+   // c0 and c2 are possible images, c1 is text or image
+   
    if (c0 == null && c2 == null) {
-      return setPositions(w,y,h,c1);
+      return setPositions(x,w,y,h,c1);
     }
    
    double w0 = h;
    if (c0 != null) {
-      Rectangle2D r = new Rectangle2D.Double(0,y,w0,h);
+      Rectangle2D r = new Rectangle2D.Double(x,y,w0,h);
       item_positions.put(c0,r);
     }
    if (c2 != null) {
-      Rectangle2D r = new Rectangle2D.Double(w-w0,y,w0,h);
+      Rectangle2D r = new Rectangle2D.Double(x+w-w0,y,w0,h);
       item_positions.put(c2,r); 
     }
    if (c1 != null && c1.isImage()) {
@@ -446,11 +464,11 @@ double setPositions(double w,double y,double h,SignMakerComponent c0,SignMakerCo
       else if (h > w1) {
          h = w1;
        }
-      Rectangle2D r = new Rectangle2D.Double(w0,y,w1,h);
+      Rectangle2D r = new Rectangle2D.Double(x+w0,y,w1,h);
       item_positions.put(c1,r);
     }
    else if (c1 != null) {
-      Rectangle2D r = new Rectangle2D.Double(w0,y,w-2*w0,h);
+      Rectangle2D r = new Rectangle2D.Double(x+w0,y,w-2*w0,h);
       item_positions.put(c1,r);
     }
    
@@ -458,10 +476,12 @@ double setPositions(double w,double y,double h,SignMakerComponent c0,SignMakerCo
 }
 
 
-double setPositions(double w,double y,double h,SignMakerComponent c0)
+double setPositions(double x,double w,double y,double h,SignMakerComponent c0)
 {
+   // c0 is text region
+   
    if (c0 != null) {
-      Rectangle2D r = new Rectangle2D.Double(0,y,w,h);
+      Rectangle2D r = new Rectangle2D.Double(x,y,w,h);
       item_positions.put(c0,r);
     }
    

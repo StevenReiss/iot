@@ -14,10 +14,6 @@ CREATE DATABASE $db $ENCODE;
 EOF
 
 
-ENUM SignDim "( '16by9', '4by3', '16by10', 'other' )"
-
-
-
 $run $host $db <<EOF
 
 $runcmd
@@ -65,9 +61,6 @@ $ENDTABLE;
 CREATE INDEX ValidUser ON iQsignValidator (userid);
 
 
-$DEF_SignDim;
-
-
 CREATE TABLE iQsignSigns (
    id $iddeftype NOT NULL PRIMARY KEY,
    userid $idtype NOT NULL,
@@ -75,7 +68,7 @@ CREATE TABLE iQsignSigns (
    namekey text NOT NULL,
    lastsign text DEFAULT NULL,
    lastupdate $datetime DEFAULT CURRENT_TIMESTAMP,
-   dimension $SignDim DEFAULT '16by9',
+   dimension text DEFAULT '16by9',
    width int DEFAULT 2048,
    height int DEFAULT 1152,
    interval int DEFAULT 60,
@@ -154,7 +147,7 @@ CREATE INDEX UseUsers on iQsignUseCounts(userid);
 CREATE TABLE iQsignRestful (
    session text NOT NULL PRIMARY KEY,
    userid $idtype,
-   code text,				
+   code text,			
    creation_time $datetime DEFAULT CURRENT_TIMESTAMP,
    last_used $datetime DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (userid) REFERENCES iQsignUsers(id) ON DELETE CASCADE

@@ -151,12 +151,14 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
                       validator: _validateSignName,
                     ),
                     widgets.errorField(_registerError),
+                    widgets.fieldSeparator(),
+                    const Text(
+                      "You will have to validate your email before logging in.",
+                    ),
+                    widgets.fieldSeparator(),
                     widgets.submitButton("Submit", _handleRegister),
                   ],
                 ),
-              ),
-              const Text(
-                "You will have to validate your email before logging in.",
               ),
               widgets.textButton("Already a user, login", _gotoLogin),
             ],

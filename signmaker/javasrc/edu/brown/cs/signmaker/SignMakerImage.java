@@ -458,14 +458,23 @@ class SvgComponent extends JSVGComponent {
          
       Dimension2D dsize = getSVGDocumentSize();
       
-      int dw = (int) dsize.getWidth();
-      int dh = (int) dsize.getHeight();
-      
+      double iw = dsize.getWidth();
+      double ih = dsize.getHeight();
+      int dw = (int) iw;
+      int dh = (int) ih;
       int w = target_bounds.width;
       int h = target_bounds.height;
-//    setSize(w,h);
+      if (iw == 0) return;
       
-      if (dsize.getWidth() == 0) return;
+      // adjust w/h to maintain ratio of original image
+      double ws = iw/w;
+      double hs = ih/h;
+      double scl = Math.max(ws,hs);
+      ws = ws/scl;
+      hs = hs/scl;
+      w = (int) (w*ws);
+      h = (int) (h*hs);
+      
       double margin = 0.05;
       double sizer = 1.0 - 2*margin;
       double dx = w*margin;
