@@ -412,7 +412,7 @@ private void setDimensions(double w,double h)
    double ypos = 0;
    ypos = setPositions(x0,w0,ypos,rows[0], image_regions[3],c0,image_regions[4]);
    ypos = setPositions(x0,w0,ypos,rows[1],text_regions[1]);
-   ypos = setPositions(w0,w0,ypos,rows[2],text_regions[2]);
+   ypos = setPositions(x0,w0,ypos,rows[2],text_regions[2]);
    ypos = setPositions(x0,w0,ypos,rows[3],text_regions[3]);
    ypos = setPositions(x0,w0,ypos,rows[4],image_regions[1],c1,image_regions[2]);
 }
