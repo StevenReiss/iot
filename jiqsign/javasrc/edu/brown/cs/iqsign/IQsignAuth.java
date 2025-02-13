@@ -308,7 +308,7 @@ String handleRegister(HttpExchange he,IQsignSession session)
       boolean ok1 = db.registerValidator(email,valid);
       boolean ok2 = sendRegistrationEmail(he,session,email,valid);
       if (sign == null || !ok1 || !ok2) {
-	 return errorResponse(session,"Problem registering new user");
+	 return errorResponse(session,"Problem registering new user (email not accepted)");
        }
       undoneeded = false;
     }
