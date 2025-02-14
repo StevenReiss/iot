@@ -148,9 +148,7 @@ private IQsignMain(String [] args)
    if (!web_directory.exists() || !web_directory.isDirectory()) {
       reportError("Bad web directory for iqsign");
     }
-   File f0 = new File(getWebDirectory(),"signs");
-   if (!f0.exists()) f0.mkdir();
-
+   
    if (default_signs == null) {
       default_signs = findDefaultSigns();
     }
@@ -466,8 +464,7 @@ private final class CleanupTask extends TimerTask {
       database_manager.deleteOutOfDateData();
       
       Set<String> currentsigns = database_manager.getAllSignNameKeys();
-      File f = new File(getWebDirectory(),"signs");
-   
+      File f = getWebDirectory();
       for (File file : f.listFiles()) {
          Matcher m1 = IMAGE_PATTERN.matcher(file.getName());
          Matcher m2 = HTML_PATTERN.matcher(file.getName());
@@ -578,7 +575,11 @@ private File findWebDirectory(String wd)
    try {
       String cnts = IvyFile.loadFile(f1);
       cnts = cnts.trim();
-      return new File(cnts);
+      File f2 = new File(cnts);
+      File f3 = new File(f2,"iqsigndata");
+      File f4 = new File(f3,"signs");
+      f4.mkdirs();
+      return f4;
     }
    catch (IOException e) { }
 

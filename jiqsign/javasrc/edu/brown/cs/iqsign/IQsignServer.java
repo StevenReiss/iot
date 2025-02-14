@@ -735,8 +735,7 @@ private final class SignImageAction implements BowerSessionHandler<IQsignSession
       int idx = filename.indexOf("?");
       if (idx > 0) filename = filename.substring(0,idx);
       File f = iqsign_main.getWebDirectory();
-      File f1 = new File(f,"signs");
-      File f2 = new File(f1,filename);
+      File f2 = new File(f,filename);
       if (!f2.exists()) {
          return BowerRouter.errorResponse(he,session,500,
                "sign " + f2 + " doesn't exist");
