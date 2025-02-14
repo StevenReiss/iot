@@ -315,10 +315,13 @@ String useSavedImage(String name)
        }
       
       if (bestid <= 0) {
-         IvyLog.logE("Problem loading definition: " + name);
+         IvyLog.logD("SIGNMAKER","Problem loading definition: `" + name + 
+               "' user=" + user_id);
          cnts = "# Bad Sign Name";
        }
       else {
+         IvyLog.logD("SIGNMAKER","Loaded sign " + name + " " + bestid + " " +
+               bestuid);
          used_ids.add(bestid);
          if (do_counts) {
             String q3 = "SELECT * FROM iQsignUseCounts WHERE defineid = ? AND userid = ?";

@@ -439,6 +439,7 @@ boolean parseLoadLine(List<String> cnts) throws SignMakerException
       if (what.equals("=")) {
 	 if (i+1 < cnts.size()) {
 	    String name = cnts.get(i+1);
+            name = name.trim();
 	    if (name.startsWith("=") || name.contains("=")) continue;
 	    ++i;
 	    useSavedImage(name);
@@ -446,6 +447,7 @@ boolean parseLoadLine(List<String> cnts) throws SignMakerException
        }
       else if (what.startsWith("=")) {
 	 String name = what.substring(1);
+         name = name.trim();
 	 useSavedImage(name);
        }
       else if (what.contains("=")) {
