@@ -149,8 +149,7 @@ String getNameKey()
 File getHtmlFile()
 {
    File f1 = iqsign_main.getWebDirectory();
-   File f2 = new File(f1,"signs");
-   File f3 = new File(f2,"sign" + getNameKey() + ".html");
+   File f3 = new File(f1,"sign" + getNameKey() + ".html");
    return f3;
 }
 
@@ -159,8 +158,7 @@ File getImageFile(boolean preview)
 {
    String p = (preview ? "PREVIEW" : "");
    File f1 = iqsign_main.getWebDirectory();
-   File f2 = new File(f1,"signs");
-   File f3 = new File(f2,"image" + p + getNameKey() + ".png");
+   File f3 = new File(f1,"image" + p + getNameKey() + ".png");
    return f3;
 }
 
