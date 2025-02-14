@@ -35,6 +35,7 @@
 package edu.brown.cs.iqsign;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -66,6 +67,7 @@ class IQsignDatabase implements IQsignConstants
 
 private IQsignMain iqsign_main;
 private Connection sql_database;
+private String     database_name;
 
 
 /********************************************************************************/
@@ -78,6 +80,7 @@ IQsignDatabase(IQsignMain main,String db)
 {
    iqsign_main = main;
    sql_database = null;
+   database_name = db;
 
    try {
       File f0 = iqsign_main.getBaseDirectory();
@@ -85,12 +88,29 @@ IQsignDatabase(IQsignMain main,String db)
       File dbf = new File(f1,"Database.props");
       IvyLog.logD("IQSIGN","Using database file " + dbf);
       IvyDatabase.setProperties(dbf);
-      sql_database = IvyDatabase.openDatabase(db);
     }
-   catch (Throwable t) {
+   catch (SQLException t) {
       IvyLog.logE("IQSIGN","Database connection problem",t);
       IQsignMain.reportError("Can't connect to database " + db);
     }
+   
+   checkDatabase();
+}
+
+
+
+private boolean checkDatabase()
+{
+   if (sql_database == null) {
+      try {
+         sql_database = IvyDatabase.openDatabase(database_name);
+       }
+      catch (Throwable t) {
+         IvyLog.logE("IQSIGN","Database connection problem",t);
+       }
+    }
+   
+   return sql_database != null;
 }
 
 
@@ -705,8 +725,7 @@ private int sqlUpdate(String query,Object... data)
    IvyLog.logD("IQSIGN","SQL: " + query + " " + getDataString(data));
 
    try {
-      PreparedStatement pst = setupStatement(query,data);
-      return pst.executeUpdate();
+      return executeUpdateStatement(query,data);
     }
    catch (SQLException e) {
       IvyLog.logE("IQSIGN","SQL problem",e);
@@ -723,8 +742,7 @@ private JSONObject sqlQuery1(String query,Object... data)
    JSONObject rslt = null;
 
    try {
-      PreparedStatement pst = setupStatement(query,data);
-      ResultSet rs = pst.executeQuery();
+      ResultSet rs = executeQueryStatement(query,data);
       if (rs.next()) {
 	 rslt = getJsonFromResultSet(rs);
        }
@@ -746,8 +764,7 @@ private List<JSONObject> sqlQueryN(String query,Object... data)
    List<JSONObject> rslt = new ArrayList<>();;
 
    try {
-      PreparedStatement pst = setupStatement(query,data);
-      ResultSet rs = pst.executeQuery();
+      ResultSet rs = executeQueryStatement(query,data);
       while (rs.next()) {
 	 JSONObject json = getJsonFromResultSet(rs);
 	 rslt.add(json);
@@ -758,6 +775,67 @@ private List<JSONObject> sqlQueryN(String query,Object... data)
     }
 
    return rslt;
+}
+
+
+private ResultSet executeQueryStatement(String q,Object... data) throws SQLException
+{
+   for ( ; ; ) {
+      waitForDatabase();
+      
+      PreparedStatement pst = setupStatement(q,data);
+     
+      try {
+         ResultSet rslt = pst.executeQuery();  
+         return rslt;
+       }
+      catch (SQLException e) {
+         if (checkDatabaseError(e)) throw e;
+       }
+    }
+}
+
+
+private int executeUpdateStatement(String q,Object... data) throws SQLException
+{
+   for ( ; ; ) {
+      waitForDatabase();
+      
+      PreparedStatement pst = setupStatement(q,data);
+      
+      try {
+         int rslt = pst.executeUpdate();  
+         return rslt;
+       }
+      catch (SQLException e) {
+         if (checkDatabaseError(e)) throw e;
+       }
+    }
+}
+
+
+private void waitForDatabase() 
+{
+   while (sql_database == null) {
+      try {
+         Thread.sleep(1000);
+       }
+      catch (InterruptedException e) { }
+      checkDatabase();
+    }
+}
+
+
+private boolean checkDatabaseError(SQLException e) 
+{
+   String msg = e.getMessage();
+   if (msg.contains("FATAL")) sql_database = null;
+   Throwable ex = e.getCause();
+   if (ex instanceof IOException) sql_database = null;
+   if (sql_database == null) {
+      IvyLog.logE("IQSIGN","Database lost connection",e);
+    }
+   return sql_database != null;
 }
 
 

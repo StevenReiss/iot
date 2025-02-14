@@ -95,11 +95,25 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
           fit: BoxFit.contain,
         ),
         actions: [
-          widgets.topMenu(_handleCommand, [
-            {'AddSign': 'Create New Sign'},
-            {'RemoveUser': 'Unenroll from iQsign'},
-            {'Logout': "Log Out"},
-          ]),
+          widgets.topMenuAction(
+            <widgets.MenuAction>[
+              widgets.MenuAction(
+                "Create New Sign",
+                _gotoCreateSign,
+                "Create a separate sign for a different location",
+              ),
+              widgets.MenuAction(
+                  "Unenroll from iQsign",
+                  _removeUserAction,
+                  "Delete you iQsign account and all associated information.  "
+                      "This cannot be undone"),
+              widgets.MenuAction(
+                "Log Out",
+                _logoutAction,
+                "Log out from iQsign",
+              ),
+            ],
+          ),
         ],
       ),
       body: widgets.topLevelPage(context, _signListWidget(), true),
@@ -146,18 +160,12 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
     );
   }
 
-  void _handleCommand(String cmd) {
-    switch (cmd) {
-      case "AddSign":
-        _goToCreateSign();
-        break;
-      case "Logout":
-        _handleLogout().then(_gotoLogin);
-        break;
-      case "RemoveUser":
-        _handleRemoveUser().then(_gotoLogin);
-        break;
-    }
+  Future<void> _removeUserAction() async {
+    await _handleRemoveUser().then(_gotoLogin);
+  }
+
+  Future<void> _logoutAction() async {
+    await _handleLogout().then(_gotoLogin);
   }
 
   void _gotoSignPage(SignData sd) async {
@@ -181,8 +189,8 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
     return true;
   }
 
-  dynamic _goToCreateSign() {
-    Navigator.push(
+  dynamic _gotoCreateSign() async {
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()),
     );

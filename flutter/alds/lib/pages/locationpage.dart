@@ -86,8 +86,16 @@ class _AldsLocationPageState extends State<AldsLocationPage> {
         title: Text(ttl),
         actions: [
           widgets.topMenuAction([
-            widgets.MenuAction("Save Changes", _updateLocations),
-            widgets.MenuAction("Add Location", _addLocation),
+            widgets.MenuAction(
+              "Save Changes",
+              _updateLocations,
+              "Save the location changes you've made",
+            ),
+            widgets.MenuAction(
+              "Add Location",
+              _addLocation,
+              "Add a new abstract location to your set of locations",
+            ),
           ])
         ],
       ),

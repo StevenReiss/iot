@@ -334,14 +334,17 @@ List<PopupMenuItem<String>> _topMenuBuilder(List labels) {
   return labels.map<PopupMenuItem<String>>(_menuItem).toList();
 }
 
-Widget topMenuAction(List labels) {
+Widget topMenuAction(List<MenuAction> labels) {
   return PopupMenuButton(
-      icon: const Icon(Icons.menu_sharp),
-      itemBuilder: (context) => _topMenuActionBuilder(labels),
-      onSelected: (dynamic act) => act.action());
+    icon: const Icon(Icons.menu_sharp),
+    itemBuilder: (context) => _topMenuActionBuilder(labels),
+    onSelected: (dynamic act) async => await act.action(),
+  );
 }
 
-List<PopupMenuItem<MenuAction>> _topMenuActionBuilder(List labels) {
+List<PopupMenuItem<MenuAction>> _topMenuActionBuilder(
+  List<MenuAction> labels,
+) {
   return labels
       .map<PopupMenuItem<MenuAction>>(
         _menuItemAction,
@@ -394,9 +397,9 @@ class MenuAction {
   String tooltip;
   MenuAction(
     this.label,
-    this.action, {
+    this.action, [
     this.tooltip = "",
-  });
+  ]);
 }
 
 ///******************************************************************************/

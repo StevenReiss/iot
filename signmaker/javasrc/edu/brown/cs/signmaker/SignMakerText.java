@@ -13,7 +13,6 @@ package edu.brown.cs.signmaker;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.util.Stack;
 

@@ -119,19 +119,40 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
               color: Colors.black,
             )),
         actions: [
-          widgets.topMenu(_handleCommand, [
-            {
-              'Help': [
+          widgets.topMenuAction(
+            <widgets.MenuAction>[
+              widgets.MenuAction(
                 "Sign Instructions",
+                _helpAction,
                 "Show instructions for creating a sign",
-              ],
-            },
-            {'SVGImages': "Add Image From Image Library"},
-            {'MyImages': "Add Image From My Images"},
-            {'BorderImages': "Add Border Image"},
-            {'AddImage': "Upload New Image to Image Library"},
-            {"About": "About iQSign"},
-          ]),
+              ),
+              widgets.MenuAction(
+                "Add Image From Image Library",
+                _addSvgImage,
+                "Browse image library to find an image for your sign",
+              ),
+              widgets.MenuAction(
+                "Add Image From My Images",
+                _addMyImage,
+                "Browse uploaded images to find image for your sign",
+              ),
+              widgets.MenuAction(
+                "Add Border Image",
+                _addBorderImage,
+                "Browse border images for your sign",
+              ),
+              widgets.MenuAction(
+                "Upload New Image to Image Library",
+                _imageUploadAction,
+                "Choose new images to upload to your image library",
+              ),
+              widgets.MenuAction(
+                "About iQsign",
+                _aboutAction,
+                "Get information about your sign",
+              ),
+            ],
+          ),
         ],
       ),
       body: widgets.topLevelPage(
@@ -193,33 +214,31 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     );
   }
 
-  void _handleCommand(String cmd) async {
-    switch (cmd) {
-      case "Help":
-        _gotoDisplay("Instructions", "/rest/instructions");
-        break;
-      case "About":
-        _gotoDisplay("About Page", "/rest/about");
-        break;
-      case "MyImages":
-        ImageData? id = await gotoImagePage(false, false);
-        insertImage(id);
-        break;
-      case "BorderImages":
-        ImageData? id = await gotoImagePage(true, false);
-        insertImage(id);
-        break;
-      case "FAImages":
-        //    await _launchURL("https://fontawesome.com/search?m=free&s=solid");
-        break;
-      case "SVGImages":
-        ImageData? id = await gotoImagePage(false, true);
-        insertImage(id);
-        break;
-      case "AddImage":
-        await _gotoUploadImagePage();
-        break;
-    }
+  void _addSvgImage() async {
+    ImageData? id = await gotoImagePage(false, true);
+    insertImage(id);
+  }
+
+  void _addMyImage() async {
+    ImageData? id = await gotoImagePage(false, false);
+    insertImage(id);
+  }
+
+  void _addBorderImage() async {
+    ImageData? id = await gotoImagePage(true, false);
+    insertImage(id);
+  }
+
+  void _imageUploadAction() async {
+    await _gotoUploadImagePage();
+  }
+
+  void _helpAction() async {
+    await _gotoDisplay("Instructions", "/rest/instructions");
+  }
+
+  void _aboutAction() async {
+    await _gotoDisplay("About Page", "/rest/about");
   }
 
   Future<ImageData?> gotoImagePage(bool border, bool svg) async {

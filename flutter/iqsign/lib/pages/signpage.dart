@@ -108,14 +108,39 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
               color: Colors.black,
             )),
         actions: [
-          widgets.topMenu(_handleCommand, [
-            {'EditSign': "Create or Edit Saved Sign"},
-            {'EditSize': "Change Sign Size"},
-            {'ChangeName': "Change Sign Name"},
-            {'GenerateKey': "Generate Login Key For Sherpa"},
-            {'RemoveSign': "Delete this Sign"},
-            {'Logout': "Log Out"},
-          ]),
+          widgets.topMenuAction(
+            <widgets.MenuAction>[
+              widgets.MenuAction(
+                "Create of Edit Saved Sign",
+                _gotoEdit,
+                "Create a new basic sign or edit this one",
+              ),
+              widgets.MenuAction(
+                "Change Sign Size",
+                _changeSignSize,
+                "Change the size or shape of this sign",
+              ),
+              widgets.MenuAction(
+                "Change Sign Name",
+                _changeSignName,
+                "Rename this sign",
+              ),
+              widgets.MenuAction(
+                "Generate Login Key for Sherpa",
+                _generateLoginKey,
+                "Create a login key so that your sign can be set from Sherpa",
+              ),
+              widgets.MenuAction(
+                "Delete this Sign",
+                _deleteSign,
+                "Remove this sign.  This can't be undone",
+              ),
+              widgets.MenuAction(
+                "Log Out",
+                _logoutAction,
+              ),
+            ],
+          ),
         ],
       ),
       body: widgets.topLevelPage(
@@ -217,29 +242,26 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                 )));
   }
 
-  void _handleCommand(String cmd) async {
-    switch (cmd) {
-      case "EditSign":
-        _gotoEdit();
-        break;
-      case "Logout":
-        _handleLogout().then(_gotoLogin);
-        break;
-      case "EditSize":
-        final result = await setsize.showSizeDialog(context, _signData);
-        if (result == "OK") await _updateAction();
-        break;
-      case "ChangeName":
-        final result = await setname.setNameDialog(context, _signData);
-        if (result == "OK") await _updateAction();
-        break;
-      case "GenerateKey":
-        await loginkey.loginKeyDialog(context, _signData);
-        break;
-      case "RemoveSign":
-        _removeSignAction().then(_gotoHome);
-        break;
-    }
+  void _changeSignSize() async {
+    final result = await setsize.showSizeDialog(context, _signData);
+    if (result == "OK") await _updateAction();
+  }
+
+  void _changeSignName() async {
+    final result = await setname.setNameDialog(context, _signData);
+    if (result == "OK") await _updateAction();
+  }
+
+  void _generateLoginKey() async {
+    await loginkey.loginKeyDialog(context, _signData);
+  }
+
+  void _deleteSign() async {
+    _removeSignAction().then(_gotoHome);
+  }
+
+  void _logoutAction() async {
+    _handleLogout().then(_gotoLogin);
   }
 
   void _analyzeSign() {

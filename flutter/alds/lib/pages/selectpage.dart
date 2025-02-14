@@ -71,24 +71,25 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
       appBar: AppBar(
         title: const Text("Check Location"),
         actions: [
-          widgets.topMenu(_handleCommand, [
-            {
-              'ShowLoginData': [
-                'Show/Edit Login Data',
-                'Specify the user name and password for use with Sherpa',
-              ],
-            },
-            {
-              'name': 'EditLocations',
-              'label': 'Edit Locations',
-              'tooltip': 'Add or remove abstract locations from the set of available locations',
-            },
-            {
-              'name': 'ClearData',
-              'label': 'Clear Location Data',
-              'tooltip': 'Clear old location information; learn new locations.',
-            }
-          ]),
+          widgets.topMenuAction(
+            <widgets.MenuAction>[
+              widgets.MenuAction(
+                "Show/Edit Login Data",
+                _showLoginDataAction,
+                "Specify the user name and password for use with Sherpa",
+              ),
+              widgets.MenuAction(
+                "Edit Locations",
+                _editLocationAction,
+                "Add or remove abstract locations from the set of available locations",
+              ),
+              widgets.MenuAction(
+                "Clear Location Data",
+                _clearDataAction,
+                'Clear old location information; learn new locations.',
+              ),
+            ],
+          ),
         ],
       ),
       body: widgets.topLevelPage(
@@ -156,25 +157,23 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
     });
   }
 
-  void _handleCommand(String cmd) async {
-    switch (cmd) {
-      case "ShowLoginData":
-        await showLoginDialog(context);
-        break;
-      case 'EditLocations':
-        await widgets.gotoThen(context, const AldsLocationPage());
-        setState(() {});
-        break;
-      case 'ClearData':
-        bool fg = await widgets.getValidation(
-          context,
-          'Do you really want to clear location data?',
-        );
-        if (!fg) return;
-        Locator loc = Locator();
-        await loc.clear();
-        break;
-    }
+  void _showLoginDataAction() async {
+    await showLoginDialog(context);
+  }
+
+  void _editLocationAction() async {
+    await widgets.gotoThen(context, const AldsLocationPage());
+    setState(() {});
+  }
+
+  void _clearDataAction() async {
+    bool fg = await widgets.getValidation(
+      context,
+      'Do you really want to clear location data?',
+    );
+    if (!fg) return;
+    Locator loc = Locator();
+    await loc.clear();
   }
 
   void _handleValidate() async {

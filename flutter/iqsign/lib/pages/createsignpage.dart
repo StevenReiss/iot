@@ -137,7 +137,11 @@ class _IQSignSignCreatePageState extends State<IQSignSignCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create New Sign", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+        title: const Text("Create New Sign",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            )),
       ),
       body: widgets.topLevelPage(
         context,
