@@ -272,9 +272,8 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     if (id == null) return;
     String txt = id.getImageString();
     if (!_controller.text.endsWith("\n")) txt = "\n$txt";
-    setState(() {
-      _controller.text += txt;
-    });
+    _controller.text += txt;
+    _signUpdated();
   }
 
   Widget _createNameSelector({String? val}) {
@@ -334,7 +333,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     await _previewAction();
   }
 
-  void _signUpdated(String txt) async {
+  void _signUpdated([String txt]) async {
     if (_controller.text.isEmpty) {
       bool repl = _knownNames.contains(_nameController.text);
       if (!repl) _nameController.text = "";

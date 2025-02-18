@@ -118,7 +118,7 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Choose Image For Sign",
+        title: const Text("Choose Image to Add to Sign",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.black,
@@ -147,19 +147,28 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
               onChanged: _filterImages,
             ),
             widgets.fieldSeparator(),
-            ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 400,
-                maxHeight: 300,
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 4,
+                  color: Colors.blueAccent,
+                ),
               ),
-              child: _imageData.isNotEmpty
-                  ? ListView.builder(
-                      padding: const EdgeInsets.all(5.0),
-                      itemCount: _filteredData.length,
-                      itemBuilder: _getTile,
-                    )
-                  : widgets.circularProgressIndicator(),
-            )
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.8,
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                child: _imageData.isNotEmpty
+                    ? ListView.builder(
+                        padding: const EdgeInsets.all(5.0),
+                        itemCount: _filteredData.length,
+                        itemBuilder: _getTile,
+                      )
+                    : widgets.circularProgressIndicator(),
+              ),
+            ),
+            const Text("Long push to select item"),
           ],
         ),
       ),

@@ -54,7 +54,7 @@ String SESSION_PARAMETER = "session";
 String SVG_URL_PREFIX = "/rest/svgimage/";
 String IMAGE_URL_PREFIX = "/rest/userimage/";
 
-String INITIAL_SIGN = "=Initial Sign";
+String INITIAL_SIGN = "= Initial Sign";
 
 String IMAGE_DIRECTORY = "savedimages";
 

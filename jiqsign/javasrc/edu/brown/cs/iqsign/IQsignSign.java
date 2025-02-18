@@ -104,10 +104,14 @@ static IQsignSign setupSign(IQsignMain main,String name,String email,String cont
    if (sign == null) {
       return null;
     }
+   if (!sign.setupWebPage()) {
+      db.removeSign(uid,sign.getId());
+      return null;
+    }
+   
    String dname = sign.computeDisplayName();
    db.addDefineName(uid,dname,contents,false);
 
-   sign.setupWebPage();
    sign.updateSign(next,false,false);
 
    return sign;
@@ -235,7 +239,7 @@ void updateSign(Consumer<Boolean> next,boolean counts,boolean preview)
 /*										*/
 /********************************************************************************/
 
-private void setupWebPage()
+private boolean setupWebPage()
 {
    String cnts = iqsign_main.loadResource("iqsigntemplate.html",this);
    if (cnts != null) {
@@ -244,6 +248,7 @@ private void setupWebPage()
        }
       catch (IOException e) {
          IvyLog.logE("IQSIGN","Problem copying to initial html page",e);
+         return false;
        }
     }
    
@@ -255,12 +260,19 @@ private void setupWebPage()
       File f7 = getImageFile(false);
       try {
          IvyFile.copyFile(f6,f7);
+         return true;
        }
       catch (IOException e) {
          IvyLog.logE("IQSIGN","Problem setting up image file for sign",e);
        }
     }
    
+   File f1 = getHtmlFile();
+   f1.delete();
+   File f2 = getImageFile(false);
+   f2.delete();
+   
+   return false;
 }
 
 
