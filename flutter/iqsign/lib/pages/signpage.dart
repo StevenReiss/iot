@@ -204,7 +204,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
         decoration: BoxDecoration(
           border: Border.all(
             width: 3,
-            color: Colors.black,
+            color: (_preview ? Colors.black : Colors.blue),
           ),
         ),
         child: Image.network(

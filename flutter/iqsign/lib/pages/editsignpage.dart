@@ -333,7 +333,7 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     await _previewAction();
   }
 
-  void _signUpdated([String txt]) async {
+  void _signUpdated([String? txt]) async {
     if (_controller.text.isEmpty) {
       bool repl = _knownNames.contains(_nameController.text);
       if (!repl) _nameController.text = "";
