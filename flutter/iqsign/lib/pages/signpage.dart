@@ -180,7 +180,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                     widgets.submitButton(
                       "Reset",
                       _resetAction,
-                      enabled: !_preview,
+                      enabled: _preview,
                     ),
                     widgets.submitButton(
                       "Update",
@@ -204,7 +204,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
         decoration: BoxDecoration(
           border: Border.all(
             width: 3,
-            color: (_preview ? Colors.black : Colors.blue),
+            color: (_preview ? Colors.blue : Colors.black),
           ),
         ),
         child: Image.network(
