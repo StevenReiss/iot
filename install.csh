@@ -44,6 +44,8 @@ popd
 
 pushd devices
 ant
+pwd
+echo trying to do a popd
 popd													 B
 
 pushd catre
