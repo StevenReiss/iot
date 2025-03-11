@@ -76,7 +76,7 @@ IQsignSession(BowerSessionStore<IQsignSession> bss)
 }
 
 
-IQsignSession(BowerSessionStore<IQsignSession> bss,JSONObject data)
+IQsignSession(BowerSessionStore<IQsignSession> bss,String sid,JSONObject data)
 {
    session_store = bss;
    session_user = null;
@@ -84,6 +84,7 @@ IQsignSession(BowerSessionStore<IQsignSession> bss,JSONObject data)
    last_time = data.optLong("last_time");
    session_code = data.optString("code",null);
    create_time = data.optLong("creation_time");
+   setSessionId(sid);   
 }
 
 
