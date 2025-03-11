@@ -90,27 +90,3 @@ pushd flutter/iqsign
 buildweb.csh >&! buildweb.out
 popd
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -81,35 +81,35 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
   Widget build1(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-	title: const Text("Choose Image For Sign",
-	    style: TextStyle(
-	      fontWeight: FontWeight.bold,
-	      color: Colors.black,
-	    )),
+        title: const Text("Choose Image For Sign",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            )),
       ),
       body: widgets.topLevelPage(
-	context,
-	Column(
-	  mainAxisAlignment: MainAxisAlignment.start,
-	  children: <Widget>[
-	    widgets.textFormField(
-	      context: context,
-	      hint: "Filter Images",
-	      label: "Filter",
-	      controller: _filterControl,
-	      onChanged: _filterImages,
-	    ),
-	    widgets.fieldSeparator(),
-	    _imageData.isNotEmpty
-		? ListView.builder(
-		    padding: const EdgeInsets.all(5.0),
-		    itemCount: _filteredData.length,
-		    itemBuilder: _getTile,
-		  )
-		: widgets.circularProgressIndicator(),
-	  ],
-	),
-	true,
+        context,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            widgets.textFormField(
+              context: context,
+              hint: "Filter Images",
+              label: "Filter",
+              controller: _filterControl,
+              onChanged: _filterImages,
+            ),
+            widgets.fieldSeparator(),
+            _imageData.isNotEmpty
+                ? ListView.builder(
+                    padding: const EdgeInsets.all(5.0),
+                    itemCount: _filteredData.length,
+                    itemBuilder: _getTile,
+                  )
+                : widgets.circularProgressIndicator(),
+          ],
+        ),
+        true,
       ),
     );
   }
@@ -118,59 +118,59 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-	title: const Text("Choose Image to Add to Sign",
-	    style: TextStyle(
-	      fontWeight: FontWeight.bold,
-	      color: Colors.black,
-	    )),
+        title: const Text("Choose Image to Add to Sign",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            )),
       ),
       body: Container(
-	decoration: BoxDecoration(
-	  border: Border.all(
-	    width: 8,
-	    color: const Color.fromARGB(128, 140, 180, 210),
-	  ),
-	  image: const DecorationImage(
-	    image: AssetImage("assets/images/iqsignstlogo.png"),
-	    fit: BoxFit.fitWidth,
-	    opacity: 0.05,
-	  ),
-	),
-	child: Column(
-	  mainAxisAlignment: MainAxisAlignment.start,
-	  children: <Widget>[
-	    widgets.textFormField(
-	      context: context,
-	      hint: "Filter Images",
-	      label: "Filter",
-	      controller: _filterControl,
-	      onChanged: _filterImages,
-	    ),
-	    widgets.fieldSeparator(),
-	    Container(
-	      decoration: BoxDecoration(
-		border: Border.all(
-		  width: 4,
-		  color: Colors.blueAccent,
-		),
-	      ),
-	      child: ConstrainedBox(
-		constraints: BoxConstraints(
-		  maxWidth: MediaQuery.of(context).size.width * 0.8,
-		  maxHeight: MediaQuery.of(context).size.height * 0.8,
-		),
-		child: _imageData.isNotEmpty
-		    ? ListView.builder(
-			padding: const EdgeInsets.all(5.0),
-			itemCount: _filteredData.length,
-			itemBuilder: _getTile,
-		      )
-		    : widgets.circularProgressIndicator(),
-	      ),
-	    ),
-	    const Text("Long push to select item"),
-	  ],
-	),
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 8,
+            color: const Color.fromARGB(128, 140, 180, 210),
+          ),
+          image: const DecorationImage(
+            image: AssetImage("assets/images/iqsignstlogo.png"),
+            fit: BoxFit.fitWidth,
+            opacity: 0.05,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            widgets.textFormField(
+              context: context,
+              hint: "Filter Images",
+              label: "Filter",
+              controller: _filterControl,
+              onChanged: _filterImages,
+            ),
+            widgets.fieldSeparator(),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 4,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.8,
+                  maxHeight: MediaQuery.of(context).size.height * 0.8,
+                ),
+                child: _imageData.isNotEmpty
+                    ? ListView.builder(
+                        padding: const EdgeInsets.all(5.0),
+                        itemCount: _filteredData.length,
+                        itemBuilder: _getTile,
+                      )
+                    : widgets.circularProgressIndicator(),
+              ),
+            ),
+            const Text("Long push to select item"),
+          ],
+        ),
       ),
     );
   }
@@ -187,21 +187,21 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
     ImageData id = _filteredData[i];
     return ListTile(
       title: Text(
-	id.getName(),
-	style: const TextStyle(
-	  fontSize: 20,
-	  fontWeight: FontWeight.bold,
-	),
+        id.getName(),
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       subtitle: Text(
-	id.getDisplayName(),
-	style: const TextStyle(fontSize: 14),
+        id.getDisplayName(),
+        style: const TextStyle(fontSize: 14),
       ),
       trailing: Container(
-	decoration: BoxDecoration(
-	  border: Border.all(width: 5),
-	),
-	child: id.getImage(),
+        decoration: BoxDecoration(
+          border: Border.all(width: 5),
+        ),
+        child: id.getImage(),
       ),
       onLongPress: () => {selectImage(id)},
     );
@@ -213,7 +213,8 @@ class _IQSignImagesPageState extends State<IQSignImagesPage> {
   }
 
   void _filterImages(String filter) {
-    List<ImageData> lid = _imageData.where((ImageData id) => id.filter(filter)).toList();
+    List<ImageData> lid =
+        _imageData.where((ImageData id) => id.filter(filter)).toList();
     setState(() {
       _filteredData = lid;
     });
@@ -235,5 +236,5 @@ Future<List<ImageData>> loadImageData(bool border, bool svg) async {
     ImageData id = ImageData(id1);
     rslt.add(id);
   }
-  return rslt;												T)
+  return rslt;
 }
