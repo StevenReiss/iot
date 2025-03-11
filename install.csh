@@ -44,7 +44,9 @@ popd
 
 pushd devices
 ant
+
 pwd
+dirs
 echo trying to do a popd
 popd													 B
 
