@@ -65,11 +65,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   SignData _signData = SignData.unknown();
   List<String> _signNames = [];
   late Future<List<String>> _signNamesFuture;
-  _IQSignSignPageState();
   final TextEditingController _extraControl = TextEditingController();
   bool _preview = false;
   String? _baseSign;
   SignData _originalSign = SignData.unknown();
+
+  _IQSignSignPageState();
 
   @override
   void initState() {
@@ -111,7 +112,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
           widgets.topMenuAction(
             <widgets.MenuAction>[
               widgets.MenuAction(
-                "Create of Edit Saved Sign",
+                "Create or Edit Saved Sign",
                 _gotoEdit,
                 "Create a new basic sign or edit this one",
               ),
@@ -160,10 +161,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                 children: <Widget>[
                   widgets.fieldSeparator(),
                   getSignWidget(context, url),
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                    const Text("Set Sign to "),
-                    _createNameSelector(),
-                  ]),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text("Set Sign to "),
+                        _createNameSelector(),
+                      ]),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
                     hint: "Additional text for the sign",
@@ -176,18 +179,20 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                         "for example, the time you will be back.",
                   ),
                   widgets.fieldSeparator(),
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-                    widgets.submitButton(
-                      "Reset",
-                      _resetAction,
-                      enabled: _preview,
-                    ),
-                    widgets.submitButton(
-                      "Update",
-                      _updateAction,
-                      enabled: _isSignValid(),
-                    ),
-                  ])
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        widgets.submitButton(
+                          "Reset",
+                          _resetAction,
+                          enabled: _preview,
+                        ),
+                        widgets.submitButton(
+                          "Update",
+                          _updateAction,
+                          enabled: _isSignValid(),
+                        ),
+                      ])
                 ],
               );
             }
@@ -218,7 +223,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
 
   dynamic _gotoLogin(bool fg) {
     if (!fg) return;
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   dynamic _gotoHome(dynamic fg) {

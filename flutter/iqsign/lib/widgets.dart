@@ -460,14 +460,17 @@ Widget dropDownMenu(
   );
 }
 
-Widget dropDownWidget<T>(List<T> items,
-    {String Function(T)? labeler,
-    T? value,
-    void Function(T?)? onChanged,
-    textAlign = TextAlign.left,
-    String? nullValue,
-    String? label,
-    String? hint}) {
+Widget dropDownWidget<T>(
+  List<T> items, {
+  String Function(T)? labeler,
+  T? value,
+  void Function(T?)? onChanged,
+  textAlign = TextAlign.left,
+  String? nullValue,
+  String? label,
+  String? hint,
+  String tooltip = "",
+}) {
   String Function(T) lbl = (x) => x.toString();
   if (labeler != null) lbl = labeler;
   List<DropdownMenuItem<T?>> itmlst = [];
@@ -498,7 +501,7 @@ Widget dropDownWidget<T>(List<T> items,
     isDense: true,
     decoration: getDecoration(label: label, hint: hint),
   );
-  return fld;
+  return tooltipWidget(tooltip, fld);
 }
 
 ///******************************************************************************/
@@ -772,7 +775,8 @@ class DurationFormField {
   late TextFormField _textField;
   final void Function(Duration)? onChanged;
 
-  DurationFormField(this.context, {String? hint, String? label, Duration? initialDuration, this.onChanged}) {
+  DurationFormField(this.context,
+      {String? hint, String? label, Duration? initialDuration, this.onChanged}) {
     _editControl = TextEditingController();
     label ??= hint;
     hint ??= label;

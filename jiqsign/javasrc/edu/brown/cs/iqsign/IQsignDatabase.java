@@ -302,7 +302,7 @@ void updatePassword(Number uid,String pwd,String apwd)
 void setTemporaryPassword(Number uid,String tpwd)
 {
    String q1 = "UPDATE iQsignUsers SET temppassword = $1 " +
-      "WHERE id = $3";
+      "WHERE id = $2";
    sqlUpdate(q1,tpwd,uid);
 }
 
@@ -913,10 +913,6 @@ private JSONObject getJsonFromResultSet(ResultSet rs)
 
    return rslt;
 }
-
-
-
-
 
 
 

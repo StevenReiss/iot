@@ -222,9 +222,10 @@ private final class SessionStore implements BowerSessionStore<IQsignSession> {
       if (bs == null) return;
       store_db.removeSession(bs.getSessionId());
     }
-
-   void updateSession(String sid,Number user) {
-      store_db.updateSession(sid,user);
+   
+   @Override public void updateSession(IQsignSession bs) {
+      if (bs == null) return;
+      store_db.updateSession(bs.getSessionId(),bs.getUserId());
     }
 
 }	// end of inner class Session Store
@@ -270,7 +271,7 @@ private final class LoginAction implements BowerSessionHandler<IQsignSession> {
       String rslt = iqsign_auth.handleLogin(e,session);
       Number userid = session.getUserId();
       if (userid != null) {
-         session_store.updateSession(session.getSessionId(),userid);
+         session_store.updateSession(session);
        }
    
       return rslt;
@@ -287,7 +288,7 @@ private final class LogoutAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange e,IQsignSession session) {
       session.setUser(null);
-      session_store.updateSession(session.getSessionId(),null);
+      session_store.updateSession(session);
    
       return BowerRouter.jsonOKResponse(session);
     }
@@ -307,7 +308,7 @@ private final class AuthorizeAction implements BowerSessionHandler<IQsignSession
        }
       Number uid = tokinfo.getUserId();
       session.setUserId(uid);
-      session_store.updateSession(session.getSessionId(),uid);
+      session_store.updateSession(session);
    
       return BowerRouter.jsonOKResponse(session,
             "userid",tokinfo.getUserId(),
@@ -331,23 +332,27 @@ private final class Authenticator implements BowerSessionHandler<IQsignSession> 
       if (tok != null && !tok.equals(session.getCode())) {
          return BowerRouter.errorResponse(he,session,402,"Bad authorization code");
        }
-   
+      
       Number uid = session.getUserId();
       if (uid == null) {
          return BowerRouter.errorResponse(he,session,402,"Unauthorized");
        }
-      session_store.updateSession(session.getSessionId(),uid);
       IQsignUser user = iqsign_database.findUser(uid);
-      if (user == null) {
-         session_store.updateSession(session.getSessionId(),null);
+      session.setUser(user);
+      if (user != null) {
+         user.clearPasswords();
        }
       else {
-         user.clearPasswords();
-         session.setUser(user);
+         uid = null;
        }
-   
+      session_store.updateSession(session);
+      
+      if (user == null) {
+         return BowerRouter.errorResponse(he,session,402,"Unauthorized");
+       }
+      
       IvyLog.logD("IQSIGN","REST DONE AUTHENTICATION");
-   
+      
       return null;
     }
 

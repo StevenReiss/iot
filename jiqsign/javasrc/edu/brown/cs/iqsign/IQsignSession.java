@@ -90,7 +90,7 @@ IQsignSession(BowerSessionStore<IQsignSession> bss,JSONObject data)
 
 /********************************************************************************/
 /*                                                                              */
-/*      Access Methodsm                                                         */
+/*      Access Methods                                                          */
 /*                                                                              */
 /********************************************************************************/
 
