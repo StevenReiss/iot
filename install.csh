@@ -42,13 +42,11 @@ pushd secret
 update.csh
 popd
 
-pushd devices
+cd devices
 ant
-
 pwd
-dirs
-echo trying to do a popd
-popd													 B
+cd ..
+pwd
 
 pushd catre
 ant
