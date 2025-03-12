@@ -35,12 +35,6 @@
 package edu.brown.cs.iqsign;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -50,8 +44,8 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
+import edu.brown.cs.ivy.bower.BowerDatabasePool;
 import edu.brown.cs.ivy.bower.BowerConstants.BowerSessionStore;
-import edu.brown.cs.ivy.file.IvyDatabase;
 import edu.brown.cs.ivy.file.IvyLog;
 
 
@@ -66,7 +60,7 @@ class IQsignDatabase implements IQsignConstants
 /********************************************************************************/
 
 private IQsignMain iqsign_main;
-private Connection sql_database;
+private BowerDatabasePool sql_database;
 private String     database_name;
 
 
@@ -87,31 +81,15 @@ IQsignDatabase(IQsignMain main,String db)
       File f1 = new File(f0,"secret");
       File dbf = new File(f1,"Database.props");
       IvyLog.logD("IQSIGN","Using database file " + dbf);
-      IvyDatabase.setProperties(dbf);
+      sql_database = new BowerDatabasePool(dbf,database_name); 
+//    IvyDatabase.setProperties(dbf);
     }
    catch (SQLException t) {
       IvyLog.logE("IQSIGN","Database connection problem",t);
       IQsignMain.reportError("Can't connect to database " + db);
     }
-   
-   checkDatabase();
 }
 
-
-
-private boolean checkDatabase()
-{
-   if (sql_database == null) {
-      try {
-         sql_database = IvyDatabase.openDatabase(database_name);
-       }
-      catch (Throwable t) {
-         IvyLog.logE("IQSIGN","Database connection problem",t);
-       }
-    }
-   
-   return sql_database != null;
-}
 
 
 
@@ -125,9 +103,8 @@ void deleteOutOfDateData()
 {
    String q1 = "DELETE FROM iQsignRestful WHERE last_used + interval '4 days' < CURRENT_TIMESTAMP";
    String q2 = "DELETE FROM iQsignValidator WHERE timeout + interval '4 days' < CURRENT_TIMESTAMP";
-   sqlUpdate(q1);
-   sqlUpdate(q2);
-   
+   sql_database.sqlUpdate(q1);
+   sql_database.sqlUpdate(q2);
 }
 
 
@@ -135,7 +112,7 @@ void updateSession(String sid,Number user)
 {
    String q = "UPDATE iQsignRestful SET userid = $1, last_used = CURRENT_TIMESTAMP " +
       "WHERE session = $2";
-   sqlUpdate(q,user,sid);
+   sql_database.sqlUpdate(q,user,sid);
 }
 
 
@@ -143,7 +120,7 @@ void updateSession(String sid,Number user)
 void removeSession(String sid)
 {
    String q = "DELETE FROM iQsignRestful WHERE session = $1";
-   sqlUpdate(q,sid);
+   sql_database.sqlUpdate(q,sid);
 }
 
 
@@ -152,7 +129,7 @@ void removeSession(String sid)
 void startSession(String sid,String code)
 {
    String q = "INSERT INTO iQsignRestful (session, code) VALUES ( $1, $2 )";
-   sqlUpdate(q,sid,code);
+   sql_database.sqlUpdate(q,sid,code);
 }
 
 
@@ -160,7 +137,7 @@ IQsignSession checkSession(BowerSessionStore<IQsignSession> bss,String sid)
 {
    String q = "SELECT * FROM iQsignRestful WHERE session = $1";
 
-   JSONObject json = sqlQuery1(q,sid);
+   JSONObject json = sql_database.sqlQuery1(q,sid);
    if (json != null) {
       long now = System.currentTimeMillis();
       long lupt = json.getLong("last_used");
@@ -187,7 +164,7 @@ Set<String> getAllSignNameKeys()
    String q = "SELECT namekey FROM iQsignSigns";
    Set<String> rslt = new HashSet<>();
 
-   List<JSONObject> qrslt = sqlQueryN(q);
+   List<JSONObject> qrslt = sql_database.sqlQueryN(q);
    for (JSONObject jo : qrslt) {
       rslt.add(jo.getString("namekey"));
     }
@@ -207,7 +184,7 @@ IQsignUser findUser(String name)
    if (name == null) return null;
 
    String q1 = "SELECT * FROM iQsignUsers WHERE email = $1 OR username = $2 AND valid";
-   JSONObject json = sqlQuery1(q1,name,name);
+   JSONObject json = sql_database.sqlQuery1(q1,name,name);
    if (json != null) {
       return new IQsignUser(json);
     }
@@ -221,7 +198,7 @@ IQsignUser findUser(Number uid)
    if (uid == null) return null;
 
    String q1 = "SELECT * FROM iQsignUsers WHERE id = $1 AND valid";
-   JSONObject json = sqlQuery1(q1,uid);
+   JSONObject json = sql_database.sqlQuery1(q1,uid);
    if (json != null) {
       return new IQsignUser(json);
     }
@@ -233,7 +210,7 @@ String checkNoUser(String uid,String email)
 {
    String q1 = "SELECT * FROM iQsignUsers WHERE username = $1 OR email = $2";
 
-   List<JSONObject> qr = sqlQueryN(q1,uid,email);
+   List<JSONObject> qr = sql_database.sqlQueryN(q1,uid,email);
    String rslt = null;
    if (!qr.isEmpty()) {
       JSONObject jo = qr.get(0);
@@ -255,7 +232,7 @@ boolean registerUser(String email,String user,String pwd,String apwd,boolean val
    String q1 = "INSERT INTO iQsignUsers " +
       "( id, email, username, password, altpassword, valid )" +
       "VALUES ( DEFAULT, $1, $2, $3, $4, $5 )";
-   int ct = sqlUpdate(q1,email,user,pwd,apwd,valid);
+   int ct = sql_database.sqlUpdate(q1,email,user,pwd,apwd,valid);
    return ct > 0;
 }
 
@@ -265,7 +242,7 @@ boolean registerValidator(String email,String code)
    String q1 = "INSERT INTO iQsignValidator ( userid, validator, timeout ) " +
       "VALUES ( ( SELECT id FROM iQsignUsers WHERE email = $1 ), $2, " +
       "( CURRENT_TIMESTAMP + INTERVAL '2 DAYS' ) )";
-   int ct = sqlUpdate(q1,email,code);
+   int ct = sql_database.sqlUpdate(q1,email,code);
    return ct > 0;
 }
 
@@ -279,12 +256,12 @@ boolean validateUser(String email,String code)
    String q2 = "DELETE FROM iQsignValidator WHERE userid = $1 AND validator = $2";
    String q3 = "UPDATE iQsignUsers SET valid = TRUE WHERE id = $1";
    
-   JSONObject rslt = sqlQuery1(q1,email,code);
+   JSONObject rslt = sql_database.sqlQuery1(q1,email,code);
    if (rslt == null) return false;
    
    Number uid = rslt.getNumber("userid");
-   sqlUpdate(q2,uid,code);
-   sqlUpdate(q3,uid);
+   sql_database.sqlUpdate(q2,uid,code);
+   sql_database.sqlUpdate(q3,uid);
    
    return true;
 }
@@ -295,7 +272,7 @@ void updatePassword(Number uid,String pwd,String apwd)
    String q1 = "UPDATE iQsignUsers SET password = $1, altpassword = $2, " +
       " temppassword = NULL " +
       "WHERE id = $3";
-   sqlUpdate(q1,pwd,apwd,uid);
+   sql_database.sqlUpdate(q1,pwd,apwd,uid);
 }
 
 
@@ -303,7 +280,7 @@ void setTemporaryPassword(Number uid,String tpwd)
 {
    String q1 = "UPDATE iQsignUsers SET temppassword = $1 " +
       "WHERE id = $2";
-   sqlUpdate(q1,tpwd,uid);
+   sql_database.sqlUpdate(q1,tpwd,uid);
 }
 
 
@@ -317,10 +294,10 @@ IQsignLoginCode checkAccessToken(String token,Number uid,String code)
 
    JSONObject rslt = null;
    if (code == null) {
-      rslt = sqlQuery1(q1,token);
+      rslt = sql_database.sqlQuery1(q1,token);
     }
    else if (uid != null) {
-      List<JSONObject> rslts = sqlQueryN(q3,uid);
+      List<JSONObject> rslts = sql_database.sqlQueryN(q3,uid);
       for (JSONObject r : rslts) {
          IQsignLoginCode lc = new IQsignLoginCode(r);
          String c1 = IQsignMain.secureHash(lc.getCode());
@@ -333,7 +310,7 @@ IQsignLoginCode checkAccessToken(String token,Number uid,String code)
     }
    
    if (rslt !=	null) {
-      sqlUpdate(q2,token);
+      sql_database.sqlUpdate(q2,token);
     }
 
    IQsignLoginCode lcrslt = null;
@@ -348,7 +325,7 @@ String addLoginCode(Number uid,Number sid)
    String code = IQsignMain.randomString(24);
    String q1 = "INSERT INTO iQsignLoginCodes ( code, userid, signid ) " +
       "VALUES ( $1, $2, $3 )";
-   sqlUpdate(q1,code,uid,sid);
+   sql_database.sqlUpdate(q1,code,uid,sid);
    return code;
 }
 
@@ -362,9 +339,9 @@ void unregisterUser(String email)
    IQsignUser user = findUser(email);
    if (user == null) return;
    Number uid = user.getUserId();
-   sqlUpdate(q2,uid);
-   sqlUpdate(q3,uid);
-   sqlUpdate(q4,uid);
+   sql_database.sqlUpdate(q2,uid);
+   sql_database.sqlUpdate(q3,uid);
+   sql_database.sqlUpdate(q4,uid);
 }
 
 
@@ -380,16 +357,16 @@ void removeUser(Number uid)
    String q8 = "DELETE FROM iQsignSigns WHERE userid = $1";
    String q9 = "DELETE FROM iQsignValidator WHERE userid = $1";
    String q10 = "DELETE FROM iQsignUsers WHERE id = $1";
-   sqlUpdate(q1,uid);
-   sqlUpdate(q2,uid);
-   sqlUpdate(q3,uid);
-   sqlUpdate(q4,uid);
-   sqlUpdate(q5,uid);
-   sqlUpdate(q6,uid);
-   sqlUpdate(q7,uid);
-   sqlUpdate(q8,uid);
-   sqlUpdate(q9,uid);
-   sqlUpdate(q10,uid);
+   sql_database.sqlUpdate(q1,uid);
+   sql_database.sqlUpdate(q2,uid);
+   sql_database.sqlUpdate(q3,uid);
+   sql_database.sqlUpdate(q4,uid);
+   sql_database.sqlUpdate(q5,uid);
+   sql_database.sqlUpdate(q6,uid);
+   sql_database.sqlUpdate(q7,uid);
+   sql_database.sqlUpdate(q8,uid);
+   sql_database.sqlUpdate(q9,uid);
+   sql_database.sqlUpdate(q10,uid);
 }
 
 
@@ -405,11 +382,11 @@ Number removeSign(Number uid,Number sid)
    if (sign == null) return null;
    if (!sign.getUserId().equals(uid)) return null;
    
-   sqlUpdate(q2,sid);
-   sqlUpdate(q3,sid);
-   sqlUpdate(q4,sid);
-   sqlUpdate(q5,sid);
-   sqlUpdate(q6,sid);
+   sql_database.sqlUpdate(q2,sid);
+   sql_database.sqlUpdate(q3,sid);
+   sql_database.sqlUpdate(q4,sid);
+   sql_database.sqlUpdate(q5,sid);
+   sql_database.sqlUpdate(q6,sid);
    
    return sid;
 }
@@ -425,7 +402,7 @@ IQsignSign createSign(Number uid,String name,String key,String cnts)
 {
    String q1 = "INSERT INTO iQsignSigns ( id, userid, name, namekey, lastsign ) " +
       "VALUES ( DEFAULT, $1, $2, $3, $4 )";
-   sqlUpdate(q1,uid,name,key,cnts);
+   sql_database.sqlUpdate(q1,uid,name,key,cnts);
    return findSignByKey(key);
 }
 
@@ -433,7 +410,7 @@ IQsignSign createSign(Number uid,String name,String key,String cnts)
 IQsignSign findSignByKey(String key)
 {
    String q1 = "SELECT * FROM iQsignSigns WHERE namekey = $1";
-   JSONObject rslt = sqlQuery1(q1,key);
+   JSONObject rslt = sql_database.sqlQuery1(q1,key);
    if (rslt == null) return null;
    return new IQsignSign(iqsign_main,rslt);
 }
@@ -442,7 +419,7 @@ IQsignSign findSignById(Number sid)
 {
    if (sid == null) return null;
    String q1 = "SELECT * FROM iQsignSigns WHERE id = $1";
-   JSONObject rslt = sqlQuery1(q1,sid);
+   JSONObject rslt = sql_database.sqlQuery1(q1,sid);
    if (rslt == null) return null;
    return new IQsignSign(iqsign_main,rslt);
 }
@@ -451,7 +428,7 @@ IQsignSign findSignById(Number sid)
 IQsignSign findSign(Number id,Number uid,String namekey)
 {
    String q1 = "SELECT * FROM iQsignSigns WHERE id = $1 AND userid = $2 AND namekey = $3";
-   JSONObject rslt = sqlQuery1(q1,id,uid,namekey);
+   JSONObject rslt = sql_database.sqlQuery1(q1,id,uid,namekey);
    if (rslt == null) return null;
    return new IQsignSign(iqsign_main,rslt);
 }
@@ -462,9 +439,9 @@ String getDefineName(String contents,Number uid)
    String q1 = "SELECT * FROM iQsignDefines WHERE contents = $1 AND userid = $2";
    String q2 = "SELECT * FROM iQsignDefines WHERE contents = $1 AND userid IS NULL";
    
-   List<JSONObject> dnms = sqlQueryN(q1,contents,uid);
+   List<JSONObject> dnms = sql_database.sqlQueryN(q1,contents,uid);
    if (dnms.isEmpty()) {
-      dnms = sqlQueryN(q2,contents);
+      dnms = sql_database.sqlQueryN(q2,contents);
     }
    if (!dnms.isEmpty()) {
       IQsignDefinedImage di = new IQsignDefinedImage(dnms.get(0));
@@ -478,7 +455,7 @@ String getDefineName(String contents,Number uid)
 boolean updateDisplayName(Number id,String name)
 {
    String q1 = "UPDATE iQsignSigns SET displayname = $1 WHERE id = $2";
-   int ct = sqlUpdate(q1,name,id);
+   int ct = sql_database.sqlUpdate(q1,name,id);
    return ct > 0;
 }
 
@@ -493,21 +470,21 @@ void addDefineName(Number uid,String dname,String contents,boolean useronly)
    String q5 = "INSERT INTO iqSignUseCounts (defineid,userid) VALUES ($1,$2)";
 
    boolean user = true;
-   JSONObject json = sqlQuery1(q1,uid,dname);
+   JSONObject json = sql_database.sqlQuery1(q1,uid,dname);
    if (json == null && !useronly) {
       user = false;
-      json = sqlQuery1(q2,dname);
+      json = sql_database.sqlQuery1(q2,dname);
     }
    if (json == null) {
       // no previous definition
-      sqlUpdate(q3,uid,dname,contents);
+      sql_database.sqlUpdate(q3,uid,dname,contents);
       IQsignDefinedImage di = getDefineData(null,dname,uid);
-      sqlUpdate(q5,di.getId(),uid);
+      sql_database.sqlUpdate(q5,di.getId(),uid);
     }
    else {
       IQsignDefinedImage di = new IQsignDefinedImage(json);
       if (!di.getContents().equals(contents) && user) {
-	 sqlUpdate(q4,contents,di.getId());
+	 sql_database.sqlUpdate(q4,contents,di.getId());
        }
     }
 }
@@ -521,15 +498,15 @@ IQsignDefinedImage getDefineData(Number id,String name,Number userid)
 
    List<JSONObject> rslt;
    if (id != null) {
-      rslt = sqlQueryN(q1,id);
+      rslt = sql_database.sqlQueryN(q1,id);
     }
    else if (userid == null) {
-      rslt = sqlQueryN(q3,name);
+      rslt = sql_database.sqlQueryN(q3,name);
     }
    else {
-      rslt = sqlQueryN(q2,userid,name);
+      rslt = sql_database.sqlQueryN(q2,userid,name);
       if (rslt.isEmpty()) {
-	 rslt = sqlQueryN(q3,name);
+	 rslt = sql_database.sqlQueryN(q3,name);
        }
     }
    if (rslt.isEmpty()) return null;
@@ -545,15 +522,15 @@ void removeDefineData(String name,Number userid)
    IQsignDefinedImage defdata = getDefineData(null,name,userid);
    if (defdata == null) return;
    if (userid.equals(defdata.getUserId())) {
-      sqlUpdate(q1,defdata.getId());
+      sql_database.sqlUpdate(q1,defdata.getId());
     }
-   sqlUpdate(q2,name,userid);
+   sql_database.sqlUpdate(q2,name,userid);
 }
 
 List<IQsignSign> getAllSignsForUser(Number uid)
 {
    String q1 = "SELECT * FROM iQsignSigns WHERE userid = $1";
-   List<JSONObject> qr = sqlQueryN(q1,uid);
+   List<JSONObject> qr = sql_database.sqlQueryN(q1,uid);
    List<IQsignSign> rslt = new ArrayList<>();
    for (JSONObject jo : qr) {
       IQsignSign sign = new IQsignSign(iqsign_main,jo);
@@ -570,7 +547,7 @@ void changeSign(Number sid,String cnts)
    String q1 = "UPDATE iQsignSigns SET lastsign = $1, displayname = NULL " +
 	 "WHERE id = $2";
 
-   sqlUpdate(q1,cnts,sid);
+   sql_database.sqlUpdate(q1,cnts,sid);
 }
 
 
@@ -588,15 +565,15 @@ void saveOrUpdateImage(String name,String file,String url,String desc,boolean bo
    String q3 = "INSERT INTO iQsignImages ( userid, name, url, file, is_border, description ) " + 
           "VALUES ( NULL, $1, $2, $3, $4, $5 )";
    
-   JSONObject imgjs = sqlQuery1(q1,name);
+   JSONObject imgjs = sql_database.sqlQuery1(q1,name);
    if (imgjs != null) {
       IQsignImage img = new IQsignImage(imgjs); 
       String rf = img.getFile();
       String ru = img.getUrl();
       if (file.equals(rf) || file.equals(ru)) return;
-      sqlUpdate(q2,name);
+      sql_database.sqlUpdate(q2,name);
     }
-   sqlUpdate(q3,name,url,file,border,desc);
+   sql_database.sqlUpdate(q3,name,url,file,border,desc);
 }
 
 
@@ -607,10 +584,10 @@ void saveOrUpdateUserImage(Number uid,String name,String file,String url,String 
    String q3 = "INSERT INTO iQsignImages ( userid, name, url, file, is_border, description ) " + 
          "VALUES ( $1, $2, $3, $4, $5, $6 )";
    
-   JSONObject imgjs = sqlQuery1(q1,uid,name);
+   JSONObject imgjs = sql_database.sqlQuery1(q1,uid,name);
    if (imgjs != null) {
       IQsignImage img = new IQsignImage(imgjs);
-      sqlUpdate(q2,uid,name);
+      sql_database.sqlUpdate(q2,uid,name);
       String rf = img.getFile();
       if (rf != null && !rf.isEmpty()) {
          File rff = new File(rf);
@@ -621,7 +598,7 @@ void saveOrUpdateUserImage(Number uid,String name,String file,String url,String 
          rff.delete();
        }
     }
-   sqlUpdate(q3,uid,name,url,file,border,desc);
+   sql_database.sqlUpdate(q3,uid,name,url,file,border,desc);
 }
 
 
@@ -630,7 +607,7 @@ List<IQsignImage> findImages(Number uid,boolean border)
 {
    String q1 = "SELECT * FROM iQsignImages WHERE (userid IS NULL OR userid = $1) AND " +
       "is_border = $2";
-   List<JSONObject> imgs = sqlQueryN(q1,uid,border);
+   List<JSONObject> imgs = sql_database.sqlQueryN(q1,uid,border);
    
    List<IQsignImage> rslt = new ArrayList<>();
    for (JSONObject jo : imgs) {
@@ -646,7 +623,7 @@ Set<String> getAllImageFiles()
    String q1 = "SELECT file FROM iQsignImages WHERE file IS NOT NULL";
    
    Set<String> rslt = new HashSet<>();
-   List<JSONObject> fils = sqlQueryN(q1);
+   List<JSONObject> fils = sql_database.sqlQueryN(q1);
    for (JSONObject js : fils) {
       String fn = js.optString("file",null);
       if (fn != null) rslt.add(fn);
@@ -671,15 +648,15 @@ void saveOrUpdateSign(String name,String cnts,long dlmtime)
 
    Timestamp dlm = new Timestamp(dlmtime);
 
-   JSONObject jo = sqlQuery1(q1,name);
+   JSONObject jo = sql_database.sqlQuery1(q1,name);
    if (jo != null) {
       IQsignDefinedImage di = new IQsignDefinedImage(jo);
       if (di.getLastUpdate() < dlmtime) return;
       if (di.getContents().equals(cnts)) return;
-      sqlUpdate(q2,cnts,dlm,di.getId());
+      sql_database.sqlUpdate(q2,cnts,dlm,di.getId());
     }
    else {
-      sqlUpdate(q3,name,cnts,dlm);
+      sql_database.sqlUpdate(q3,name,cnts,dlm);
     }
 }
 
@@ -690,7 +667,7 @@ void updateSignProperties(IQsignSign sign)
       "lastupdate = CURRENT_TIMESTAMP, dimension = $2, " +
       "width = $3, height = $4, displayname = NULL " +
       "WHERE id = $5";
-   sqlUpdate(q1,sign.getSignName(),
+   sql_database.sqlUpdate(q1,sign.getSignName(),
 	 sign.getDimension(),sign.getWidth(),sign.getHeight(),
 	 sign.getId());
 }
@@ -703,212 +680,10 @@ List<IQsignDefinedImage> getSavedSigns(Number uid)
       "LEFT OUTER JOIN iQsignUseCounts C ON D.id = C.defineid " +
       "WHERE D.userid = $1 OR D.userid IS NULL " +
       "ORDER BY C.count DESC, C.last_used DESC, D.id";
-   List<JSONObject> qrslt = sqlQueryN(q1,uid);
+   List<JSONObject> qrslt = sql_database.sqlQueryN(q1,uid);
    List<IQsignDefinedImage> rslt = new ArrayList<>();
    for (JSONObject jo : qrslt) {
       rslt.add(new IQsignDefinedImage(jo));
-    }
-
-   return rslt;
-}
-
-
-
-/********************************************************************************/
-/*										*/
-/*	Utility methods 							*/
-/*										*/
-/********************************************************************************/
-
-private int sqlUpdate(String query,Object... data)
-{
-   IvyLog.logD("IQSIGN","SQL: " + query + " " + getDataString(data));
-
-   try {
-      return executeUpdateStatement(query,data);
-    }
-   catch (SQLException e) {
-      IvyLog.logE("IQSIGN","SQL problem",e);
-    }
-
-   return 0;
-}
-
-
-private JSONObject sqlQuery1(String query,Object... data)
-{
-   IvyLog.logD("IQSIGN","SQL: " + query + " " + getDataString(data));
-
-   JSONObject rslt = null;
-
-   try {
-      ResultSet rs = executeQueryStatement(query,data);
-      if (rs.next()) {
-	 rslt = getJsonFromResultSet(rs);
-       }
-      if (rs.next()) rslt = null;
-    }
-   catch (SQLException e) {
-      IvyLog.logE("IQSIGN","SQL problem",e);
-    }
-
-   return rslt;
-}
-
-
-
-private List<JSONObject> sqlQueryN(String query,Object... data)
-{
-   IvyLog.logD("IQSIGN","SQL: " + query + " " + getDataString(data));
-
-   List<JSONObject> rslt = new ArrayList<>();;
-
-   try {
-      ResultSet rs = executeQueryStatement(query,data);
-      while (rs.next()) {
-	 JSONObject json = getJsonFromResultSet(rs);
-	 rslt.add(json);
-       }
-    }
-   catch (SQLException e) {
-      IvyLog.logE("IQSIGN","SQL problem",e);
-    }
-
-   return rslt;
-}
-
-
-private ResultSet executeQueryStatement(String q,Object... data) throws SQLException
-{
-   for ( ; ; ) {
-      waitForDatabase();
-      
-      PreparedStatement pst = setupStatement(q,data);
-     
-      try {
-         ResultSet rslt = pst.executeQuery();  
-         return rslt;
-       }
-      catch (SQLException e) {
-         if (checkDatabaseError(e)) throw e;
-       }
-    }
-}
-
-
-private int executeUpdateStatement(String q,Object... data) throws SQLException
-{
-   for ( ; ; ) {
-      waitForDatabase();
-      
-      PreparedStatement pst = setupStatement(q,data);
-      
-      try {
-         int rslt = pst.executeUpdate();  
-         return rslt;
-       }
-      catch (SQLException e) {
-         if (checkDatabaseError(e)) throw e;
-       }
-    }
-}
-
-
-private void waitForDatabase() 
-{
-   while (sql_database == null) {
-      try {
-         Thread.sleep(1000);
-       }
-      catch (InterruptedException e) { }
-      checkDatabase();
-    }
-}
-
-
-private boolean checkDatabaseError(SQLException e) 
-{
-   String msg = e.getMessage();
-   if (msg.contains("FATAL")) sql_database = null;
-   Throwable ex = e.getCause();
-   if (ex instanceof IOException) sql_database = null;
-   if (sql_database == null) {
-      IvyLog.logE("IQSIGN","Database lost connection",e);
-    }
-   return sql_database != null;
-}
-
-
-
-private PreparedStatement setupStatement(String query,Object... data) throws SQLException
-{
-   query = query.replaceAll("\\$[0-9]+","?");
-   PreparedStatement pst = sql_database.prepareStatement(query);
-   for (int i = 0; i < data.length; ++i) {
-      Object v = data[i];
-      if (v instanceof String) {
-	 pst.setString(i+1,(String) v);
-       }
-      else if (v instanceof Integer) {
-	 pst.setInt(i+1,(Integer) v);
-       }
-      else if (v instanceof Long) {
-	 pst.setLong(i+1,(Long) v);
-       }
-      else if (v instanceof Date) {
-	 pst.setDate(i+1,(Date) v);
-       }
-      else if (v instanceof Timestamp) {
-	 pst.setTimestamp(i+1,(Timestamp) v);
-       }
-      else if (v instanceof Boolean) {
-	 pst.setBoolean(i+1,(Boolean) v);
-       }
-      else {
-	 pst.setObject(i+1,v);
-       }
-    }
-   return pst;
-}
-
-
-private String getDataString(Object... data)
-{
-   if (data.length == 0) return "";
-
-   StringBuffer buf = new StringBuffer();
-   for (int i = 0; i < data.length; ++i) {
-      if (i == 0) buf.append("[");
-      else buf.append(",");
-      buf.append(String.valueOf(data[i]));
-    }
-   buf.append("]");
-
-   return buf.toString();
-}
-
-
-private JSONObject getJsonFromResultSet(ResultSet rs)
-{
-   JSONObject rslt = new JSONObject();
-   try {
-      ResultSetMetaData meta = rs.getMetaData();
-      for (int i = 1; i <= meta.getColumnCount(); ++i) {
-	 String nm = meta.getColumnName(i);
-	 Object v = rs.getObject(i);
-	 if (v instanceof Date) {
-	    Date d = (Date) v;
-	    v = d.getTime();
-	  }
-	 else if (v instanceof Timestamp) {
-	    Timestamp ts = (Timestamp) v;
-	    v = ts.getTime();
-	  }
-	 if (v != null) rslt.put(nm,v);
-       }
-    }
-   catch (SQLException e) {
-      IvyLog.logE("IQSIGN","Database problem decoding result set ",e);
     }
 
    return rslt;
