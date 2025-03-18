@@ -40,7 +40,6 @@ final Color toolTipRightColor = Colors.yellow.shade200;
 const double toolTipHeight = 50;
 const double toolTipFontSize = 18;
 
-const Color submitBackgroundColor = Colors.yellow;
 const Color submitForegroundColor = Colors.black;
 const double buttonFontSize = 14;
 
@@ -54,6 +53,8 @@ const Color decorationInputColor = Colors.white;
 
 const Color topLevelBackground = Color.fromARGB(128, 140, 180, 210);
 const String topLevelImage = "assets/images/iqsignstlogo.png";
+
+const Color submitBackgroundColor = Color.fromARGB(255, 204, 224, 249);
 
 const Color themeSeedColor = Color.fromRGBO(72, 85, 121, 1);
 const Color borderColor = Colors.lightBlue;

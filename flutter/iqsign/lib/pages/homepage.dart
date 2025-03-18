@@ -39,6 +39,7 @@ import '../globals.dart' as globals;
 import 'signpage.dart';
 import 'package:flutter/material.dart';
 import 'loginpage.dart';
+import 'changepassworddialog.dart';
 
 class IQSignHomeWidget extends StatelessWidget {
   final bool _initial;
@@ -107,6 +108,11 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
                   _removeUserAction,
                   "Delete you iQsign account and all associated information.  "
                       "This cannot be undone"),
+              widgets.MenuAction(
+                "Change password",
+                _changePasswordAction,
+                "Change your login password",
+              ),
               widgets.MenuAction(
                 "Log Out",
                 _logoutAction,
@@ -192,13 +198,16 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
   dynamic _gotoCreateSign() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const IQSignSignCreatePage()),
+      MaterialPageRoute(
+          builder: (context) => const IQSignSignCreatePage()),
     );
   }
 
   Future<bool> _handleRemoveUser() async {
-    String msg = "Thank you for trying iQsign. We are sorry to see you go.\n";
-    msg += "If you really meant to leave, then click YES.  If this was a ";
+    String msg =
+        "Thank you for trying iQsign. We are sorry to see you go.\n";
+    msg +=
+        "If you really meant to leave, then click YES.  If this was a ";
     msg += "mistake then click NO";
 
     bool fg = await widgets.getValidation(context, msg);
@@ -214,6 +223,10 @@ class _IQSignHomePageState extends State<IQSignHomePage> {
       fg = false;
     }
     return fg;
+  }
+
+  Future _changePasswordAction() async {
+    await changePasswordDialog(context);
   }
 }
 

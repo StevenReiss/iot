@@ -43,7 +43,8 @@ class IQSignSignEditWidget extends StatelessWidget {
   final SignData _signData;
   final List<String> _signNames;
 
-  const IQSignSignEditWidget(this._signData, this._signNames, {super.key});
+  const IQSignSignEditWidget(this._signData, this._signNames,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,8 @@ class IQSignSignEditPage extends StatefulWidget {
   final SignData _signData;
   final List<String> _signNames;
 
-  const IQSignSignEditPage(this._signData, this._signNames, {super.key});
+  const IQSignSignEditPage(this._signData, this._signNames,
+      {super.key});
 
   @override
   State<IQSignSignEditPage> createState() => _IQSignSignEditPageState();
@@ -101,13 +103,22 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     Widget namefield = widgets.textField(
       label: "SignName",
       controller: _nameController,
+      tooltip:
+          "Enter a name for your saved sign.  This defaults to the "
+          "original name of the sign.  Note that you can overwrite an existing "
+          "sign, but if it is a system sign, this will be saved only for you.  You "
+          "should avoid creating a sign that refers to itself (but refering to the "
+          "system sign with the same name is okay.)",
       onChanged: _nameChanged,
     );
     Widget cntsfield = widgets.textField(
       controller: _controller,
-      maxLines: 8,
+      maxLines: 6,
       showCursor: true,
       onChanged: _signUpdated,
+      tooltip:
+          "Edit the contents of the sign here.  See the instructions "
+          "(available from hamburger menu) for details.",
     );
 
     String imageurl = _signData.getLocalImageUrl(_preview);
@@ -194,13 +205,16 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
             widgets.fieldSeparator(),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.8,
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                const Text("Saved Name:    "),
-                Expanded(child: namefield),
-              ]),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Text("Saved Name:    "),
+                    Expanded(child: namefield),
+                  ]),
             ),
             Container(
-              constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
+              constraints:
+                  const BoxConstraints(minWidth: 150, maxWidth: 350),
               width: MediaQuery.of(context).size.width * 0.4,
               child: widgets.submitButton(
                 btnname,
@@ -242,7 +256,8 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
   }
 
   Future<ImageData?> gotoImagePage(bool border, bool svg) async {
-    dynamic rslt = await Navigator.push(context, MaterialPageRoute<ImageData?>(
+    dynamic rslt =
+        await Navigator.push(context, MaterialPageRoute<ImageData?>(
       builder: (BuildContext context) {
         return IQSignImagesPage(border, svg);
       },
@@ -282,6 +297,10 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     return widgets.dropDownMenu(
       base,
       value: val,
+      tooltip:
+          "Choose an existing saved sign as a starting point.  This "
+          "will use the definition of the sign rather than a reference to it. "
+          "You can then change and save your own version of this saved sign.",
       onChanged: (String? val) async {
         if (val != null) await _setSignToSaved(val);
       },
@@ -316,6 +335,11 @@ class _IQSignSignEditPageState extends State<IQSignSignEditPage> {
     return widgets.dropDownMenu(
       base,
       value: val,
+      tooltip:
+          "Select a starting saved sign as a basis.  The current sign "
+          "will refer to that sign rather than copying it.  This means that "
+          "changes to the base sign will be reflected here.  You can add to or "
+          "modify the base sign by typing additional text in the box below.",
       onChanged: (String? val) async {
         if (val != null) await _setSignToReference(val);
       },

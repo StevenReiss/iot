@@ -164,7 +164,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        const Text("Set Sign to "),
+                        widgets.largeText("Set Sign to:  ",
+                            scaler: 1.5),
                         _createNameSelector(),
                       ]),
                   widgets.fieldSeparator(),
@@ -175,7 +176,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                     maxLines: 3,
                     onChanged: _handleOtherText,
                     enabled: _canHaveOtherText(),
-                    tooltip: "Enter additional text to display on the sign, "
+                    tooltip:
+                        "Enter additional text to display on the sign, "
                         "for example, the time you will be back.",
                   ),
                   widgets.fieldSeparator(),
@@ -223,8 +225,8 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
 
   dynamic _gotoLogin(bool fg) {
     if (!fg) return;
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   dynamic _gotoHome(dynamic fg) {

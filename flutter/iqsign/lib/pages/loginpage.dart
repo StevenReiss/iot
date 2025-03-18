@@ -109,11 +109,17 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
   }
 
   void _gotoRegister() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignRegister()));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const IQSignRegister()));
   }
 
   void _gotoForgotPassword() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignPasswordWidget()));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const IQSignPasswordWidget()));
   }
 
   void _gotoChangePassword() {
@@ -158,9 +164,11 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
                     ),
                     widgets.errorField(_loginError),
                     Container(
-                      constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
+                      constraints: const BoxConstraints(
+                          minWidth: 150, maxWidth: 350),
                       width: MediaQuery.of(context).size.width * 0.4,
-                      child: widgets.submitButton("Login", _handleLogin),
+                      child:
+                          widgets.submitButton("LOGIN", _handleLogin),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -178,8 +186,10 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
                 ),
               ),
               widgets.getPadding(16),
-              widgets.textButton("Not a user? Register Here.", _gotoRegister),
-              widgets.textButton("Forgot Password?", _gotoForgotPassword),
+              widgets.textButton(
+                  "Not a user? Register Here.", _gotoRegister),
+              widgets.textButton(
+                  "Forgot Password?", _gotoForgotPassword),
             ],
           ),
         ),
@@ -194,7 +204,8 @@ class _IQSignLoginWidgetState extends State<IQSignLoginWidget> {
     });
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      _HandleLogin login = _HandleLogin(_curUser as String, _curPassword as String);
+      _HandleLogin login =
+          _HandleLogin(_curUser as String, _curPassword as String);
       String? rslt = await login.authUser();
       if (rslt == 'TEMPORARY') {
         _loginValid = true;

@@ -1,34 +1,19 @@
-/*
- *        widgets.dart  
- * 
- *    Common code for creating widgets
- * 
- */
-/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
-/// *******************************************************************************
-///  Copyright 2023, Brown University, Providence, RI.                           *
-///                                                                              *
-///                       All Rights Reserved                                    *
-///                                                                              *
-///  Permission to use, copy, modify, and distribute this software and its       *
-///  documentation for any purpose other than its incorporation into a           *
-///  commercial product is hereby granted without fee, provided that the         *
-///  above copyright notice appear in all copies and that both that              *
-///  copyright notice and this permission notice appear in supporting            *
-///  documentation, and that the name of Brown University not be used in         *
-///  advertising or publicity pertaining to distribution of the software         *
-///  without specific, written prior permission.                                 *
-///                                                                              *
-///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS               *
-///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND           *
-///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY     *
-///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY         *
-///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,             *
-///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS              *
-///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
-///  OF THIS SOFTWARE.                                                           *
-///                                                                              *
-///******************************************************************************
+/********************************************************************************/
+/*                                                                              */
+/*              widgets.dart                                                    */
+/*                                                                              */
+/*      Widget definitions                                                      */
+/*                                                                              */
+/********************************************************************************/
+/*      Copyright 2025 Brown University -- Steven P. Reiss                      */
+/********************************************************************************/
+/*********************************************************************************
+ *                                                                               *
+ *  This work is licensed under Creative Commons Attribution-NonCommercial 4.0   *
+ *  International.  To view a copy of this license, visit                        *
+ *      https://creativecommons.org/licenses/by-nc/4.0/                          *
+ *                                                                               *
+ ********************************************************************************/
 
 import 'package:flutter/material.dart';
 import 'lookandfeel.dart' as laf;
@@ -36,11 +21,11 @@ import 'package:intl/intl.dart' as intl;
 import 'package:duration_picker/duration_picker.dart';
 import 'package:flutter_spinbox/material.dart';
 
-///******************************************************************************/
-///                                                                             */
-///     Text widgets                                                            */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*    Text widgets                                                              */
+/*                                                                              */
+/********************************************************************************/
 
 Widget textFormField({
   String? hint,
@@ -50,6 +35,7 @@ Widget textFormField({
   VoidCallback? onEditingComplete,
   ValueChanged<String>? onSubmitted,
   String? Function(String?)? onSaved,
+  TextInputAction? textInputAction,
   GestureTapCallback? onTap,
   String? Function(String?)? validator,
   bool? showCursor,
@@ -60,6 +46,7 @@ Widget textFormField({
   BuildContext? context,
   bool? enabled,
   String tooltip = "",
+  Widget? suffixIcon,
 }) {
   label ??= hint;
   hint ??= label;
@@ -74,6 +61,7 @@ Widget textFormField({
       hint: hint,
       label: label,
       vPadding: vpadding,
+      suffixIcon: suffixIcon,
     ),
     validator: validator,
     controller: controller,
@@ -82,6 +70,7 @@ Widget textFormField({
     onFieldSubmitted: onSubmitted,
     onSaved: onSaved,
     onTap: onTap,
+    textInputAction: textInputAction,
     showCursor: showCursor,
     maxLines: maxLines,
     obscureText: obscureText,
@@ -95,9 +84,10 @@ Widget textFormField({
       maxw = 350;
     }
     w = Container(
-        constraints: BoxConstraints(minWidth: minw, maxWidth: maxw),
-        width: MediaQuery.of(context).size.width * fraction,
-        child: w);
+      constraints: BoxConstraints(minWidth: minw, maxWidth: maxw),
+      width: MediaQuery.of(context).size.width * fraction,
+      child: w,
+    );
   }
   w = tooltipWidget(tooltip, w);
 
@@ -118,11 +108,26 @@ Widget textField({
   bool? enabled,
   String tooltip = "",
   bool readOnly = false,
+  double? height,
+  bool collapse = false,
 }) {
   label ??= hint;
   hint ??= label;
-  maxLines ??= 1;
-  keyboardType ??= (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
+  if (maxLines == 0) {
+    maxLines = null;
+  } else {
+    maxLines ??= 1;
+  }
+  keyboardType ??=
+      (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
+
+  InputDecoration deco = getDecoration(hint: hint, label: label);
+  if (collapse) {
+    deco = InputDecoration.collapsed(
+      hintText: hint,
+      border: const OutlineInputBorder(),
+    );
+  }
 
   Widget w = TextField(
     controller: controller,
@@ -135,12 +140,11 @@ Widget textField({
     textInputAction: textInputAction,
     enabled: enabled,
     readOnly: readOnly,
-    decoration: getDecoration(
-      hint: hint,
-      label: label,
-    ),
+    decoration: deco,
   );
-
+  if (height != null) {
+    w = SizedBox(height: height, child: w);
+  }
   w = tooltipWidget(tooltip, w);
 
   return w;
@@ -151,9 +155,7 @@ Widget errorField(String? text) {
   return Text(
     t1,
     style: const TextStyle(
-      color: laf.errorColor,
-      fontSize: laf.errorFontSize,
-    ),
+        color: laf.errorColor, fontSize: laf.errorFontSize),
   );
 }
 
@@ -168,6 +170,7 @@ Widget loginTextField(
   bool obscureText = false,
   double fraction = 0,
   String tooltip = "",
+  TextInputAction textInputAction = TextInputAction.next,
 }) {
   Widget form = textFormField(
     hint: hint,
@@ -179,12 +182,10 @@ Widget loginTextField(
     fraction: fraction,
     obscureText: obscureText,
     keyboardType: keyboardType,
+    textInputAction: textInputAction,
   );
   Widget w = Container(
-    constraints: const BoxConstraints(
-      minWidth: 100,
-      maxWidth: 600,
-    ),
+    constraints: const BoxConstraints(minWidth: 100, maxWidth: 600),
     width: MediaQuery.of(context).size.width * 0.8,
     child: form,
   );
@@ -208,12 +209,7 @@ Widget itemWithMenu<T>(
   );
   Widget w = Row(
     mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      btn,
-      Expanded(
-        child: Text(lbl),
-      ),
-    ],
+    children: <Widget>[btn, Expanded(child: Text(lbl))],
   );
   if (onTap == null && onDoubleTap == null) return w;
   onLongPress ??= onDoubleTap;
@@ -229,7 +225,8 @@ Widget itemWithMenu<T>(
   return w1;
 }
 
-List<PopupMenuItem<MenuAction>> _itemMenuBuilder(List<MenuAction> acts) {
+List<PopupMenuItem<MenuAction>> _itemMenuBuilder(
+    List<MenuAction> acts) {
   return acts.map<PopupMenuItem<MenuAction>>(_menuItemAction).toList();
 }
 
@@ -245,17 +242,14 @@ Widget tooltipWidget(String tooltip, Widget w) {
     message: tooltip,
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
-      gradient: LinearGradient(colors: <Color>[
-        laf.toolTipLeftColor,
-        laf.toolTipRightColor,
-      ]),
+      gradient: LinearGradient(
+        colors: <Color>[laf.toolTipLeftColor, laf.toolTipRightColor],
+      ),
     ),
     height: laf.toolTipHeight,
     padding: const EdgeInsets.all(8.0),
     preferBelow: true,
-    textStyle: const TextStyle(
-      fontSize: laf.toolTipFontSize,
-    ),
+    textStyle: const TextStyle(fontSize: laf.toolTipFontSize),
     showDuration: const Duration(seconds: 2),
     waitDuration: const Duration(seconds: 1),
     child: w,
@@ -263,11 +257,11 @@ Widget tooltipWidget(String tooltip, Widget w) {
   return tt;
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Buttons                                                                 */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*    Buttons                                                                   */
+/*                                                                              */
+/********************************************************************************/
 
 Widget submitButton(
   String name,
@@ -278,6 +272,7 @@ Widget submitButton(
   ButtonStyle style = ElevatedButton.styleFrom(
     backgroundColor: laf.submitBackgroundColor,
     foregroundColor: laf.submitForegroundColor,
+    textStyle: const TextStyle(fontWeight: FontWeight.bold),
     //  overlayColor: Colors.brown,
   );
   if (!enabled) action = null;
@@ -287,10 +282,8 @@ Widget submitButton(
     child: Text(name),
   );
   Widget w = Padding(
-    padding: const EdgeInsets.symmetric(
-      vertical: 16.0,
-      horizontal: 6.0,
-    ),
+    padding:
+        const EdgeInsets.symmetric(vertical: 16.0, horizontal: 6.0),
     child: eb,
   );
   w = tooltipWidget(tooltip, w);
@@ -316,11 +309,11 @@ Widget textButton(
   return w;
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Top menus                                                               */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Top menus                                                               */
+/*                                                                              */
+/********************************************************************************/
 
 Widget topMenu(void Function(String)? handler, List labels) {
   return PopupMenuButton(
@@ -343,12 +336,9 @@ Widget topMenuAction(List<MenuAction> labels) {
 }
 
 List<PopupMenuItem<MenuAction>> _topMenuActionBuilder(
-  List<MenuAction> labels,
-) {
+    List<MenuAction> labels) {
   return labels
-      .map<PopupMenuItem<MenuAction>>(
-        _menuItemAction,
-      )
+      .map<PopupMenuItem<MenuAction>>(_menuItemAction)
       .toList();
 }
 
@@ -395,28 +385,71 @@ class MenuAction {
   String label;
   void Function() action;
   String tooltip;
-  MenuAction(
-    this.label,
-    this.action, [
-    this.tooltip = "",
-  ]);
+  MenuAction(this.label, this.action, [this.tooltip = ""]);
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Field separator                                                         */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Field separator                                                         */
+/*                                                                              */
+/********************************************************************************/
 
-Widget fieldSeparator() {
-  return const SizedBox(height: 8);
+Widget fieldSeparator([double ht = 8]) {
+  return SizedBox(height: ht);
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Drop down selectors                                                     */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Text fields                                                             */
+/*                                                                              */
+/********************************************************************************/
+
+Widget largeText(
+  String data, {
+  TextStyle? style,
+  TextAlign? textAlign,
+  int? maxLines,
+  Color? selectionColor,
+  double scaler = 1.75,
+}) {
+  return Text(
+    data,
+    textScaler: TextScaler.linear(scaler),
+    style: style,
+    textAlign: textAlign,
+    maxLines: maxLines,
+    selectionColor: selectionColor,
+  );
+}
+
+Widget largeBoldText(
+  String data, {
+  TextAlign? textAlign,
+  int? maxLines,
+  Color? selectionColor,
+  Color? color,
+  Color? backgroundColor,
+  double scaler = 1.75,
+}) {
+  TextStyle style = TextStyle(
+    color: color,
+    backgroundColor: backgroundColor,
+    fontWeight: FontWeight.bold,
+  );
+  return largeText(
+    data,
+    style: style,
+    textAlign: textAlign,
+    maxLines: maxLines,
+    selectionColor: selectionColor,
+  );
+}
+
+/********************************************************************************/
+/*                                                                              */
+/*      Drop down selectors                                                     */
+/*                                                                              */
+/********************************************************************************/
 
 Widget dropDown(
   List<String> items, {
@@ -445,19 +478,20 @@ Widget dropDownMenu(
   String? value,
   Function(String?)? onChanged,
   textAlign = TextAlign.left,
+  String tooltip = "",
 }) {
   value ??= items[0];
-  return DropdownMenu<String>(
+  Widget w = DropdownMenu<String>(
     initialSelection: value,
     requestFocusOnTap: true,
     onSelected: onChanged,
-    dropdownMenuEntries: items.map<DropdownMenuEntry<String>>((String value) {
-      return DropdownMenuEntry<String>(
-        value: value,
-        label: value,
-      );
+    dropdownMenuEntries:
+        items.map<DropdownMenuEntry<String>>((String value) {
+      return DropdownMenuEntry<String>(value: value, label: value);
     }).toList(),
   );
+  w = tooltipWidget(tooltip, w);
+  return w;
 }
 
 Widget dropDownWidget<T>(
@@ -475,24 +509,22 @@ Widget dropDownWidget<T>(
   if (labeler != null) lbl = labeler;
   List<DropdownMenuItem<T?>> itmlst = [];
   if (nullValue != null) {
-    itmlst.add(DropdownMenuItem<T?>(
-      value: null,
-      child: Text(
-        nullValue,
-        textAlign: textAlign,
+    itmlst.add(
+      DropdownMenuItem<T?>(
+        value: null,
+        child: Text(nullValue, textAlign: textAlign),
       ),
-    ));
+    );
   } else {
     value ??= items[0];
   }
 
-  itmlst.addAll(items.map<DropdownMenuItem<T>>((T v) {
-    return DropdownMenuItem<T>(
-      value: v,
-      enabled: true,
-      child: Text(lbl(v)),
-    );
-  }).toList());
+  itmlst.addAll(
+    items.map<DropdownMenuItem<T>>((T v) {
+      return DropdownMenuItem<T>(
+          value: v, enabled: true, child: Text(lbl(v)));
+    }).toList(),
+  );
 
   DropdownButtonFormField<T?> fld = DropdownButtonFormField<T?>(
     value: value,
@@ -504,11 +536,11 @@ Widget dropDownWidget<T>(
   return tooltipWidget(tooltip, fld);
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Boolean buttons                                                         */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Boolean buttons                                                         */
+/*                                                                              */
+/********************************************************************************/
 
 Widget booleanField({
   String? label,
@@ -522,29 +554,28 @@ Widget booleanField({
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: <Widget>[
-      Checkbox(
-        value: value,
-        onChanged: onChanged,
-      ),
+      Checkbox(value: value, onChanged: onChanged),
       Text(label),
     ],
   );
   return tooltipWidget(tooltip, w);
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Page navigation assistance                                              */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Page navigation assistance                                              */
+/*                                                                              */
+/********************************************************************************/
 
 void goto(BuildContext context, Widget w) {
   // if (!context.mounted) return;
-  Navigator.of(context).push(MaterialPageRoute(builder: (context) => w));
+  Navigator.of(context)
+      .push(MaterialPageRoute(builder: (context) => w));
 }
 
-Future<void> gotoThen(BuildContext context, Widget w) async {
-  await Navigator.of(context).push(MaterialPageRoute(builder: (context) => w));
+Future<dynamic> gotoThen(BuildContext context, Widget w) async {
+  await Navigator.of(context)
+      .push(MaterialPageRoute(builder: (context) => w));
 }
 
 void gotoDirect(BuildContext context, Widget w) {
@@ -562,11 +593,11 @@ dynamic gotoResult(BuildContext context, Widget w) async {
   return goto(context, w);
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Lists and list boxes                                                    */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Lists and list boxes                                                    */
+/*                                                                              */
+/********************************************************************************/
 
 Widget listBox<T>(
   String what,
@@ -590,9 +621,10 @@ Widget listBox<T>(
     mainAxisAlignment: MainAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: <Widget>[
-      Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-        Text(label, style: getLabelStyle()),
-      ]),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[Text(label, style: getLabelStyle())],
+      ),
       view,
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -611,11 +643,11 @@ Widget listBox<T>(
   );
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Date and time fields                                                    */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Date and time fields                                                    */
+/*                                                                              */
+/********************************************************************************/
 
 class DateFormField {
   late final BuildContext context;
@@ -718,7 +750,9 @@ class TimeFormField {
     label ??= hint;
     hint ??= label;
     _helpText = label;
-    if (current != null) initialTime ??= TimeOfDay.fromDateTime(current);
+    if (current != null) {
+      initialTime ??= TimeOfDay.fromDateTime(current);
+    }
     initialTime ??= TimeOfDay.now();
     _editControl.text = _formatTime(initialTime);
 
@@ -775,8 +809,13 @@ class DurationFormField {
   late TextFormField _textField;
   final void Function(Duration)? onChanged;
 
-  DurationFormField(this.context,
-      {String? hint, String? label, Duration? initialDuration, this.onChanged}) {
+  DurationFormField(
+    this.context, {
+    String? hint,
+    String? label,
+    Duration? initialDuration,
+    this.onChanged,
+  }) {
     _editControl = TextEditingController();
     label ??= hint;
     hint ??= label;
@@ -848,11 +887,11 @@ class DurationFormField {
   }
 } // end of DurationFormField
 
-///******************************************************************************/
-///                                                                             */
-///     Numeric fields                                                          */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Numeric fields                                                          */
+/*                                                                              */
+/********************************************************************************/
 
 Widget integerField({
   required int min,
@@ -931,15 +970,10 @@ Widget numberField({
     primaryColor: const Color.fromARGB(185, 121, 85, 72),
     primaryColorDark: Colors.brown,
     primaryColorLight: const Color.fromARGB(73, 121, 85, 72),
-    valueIndicatorTextStyle: const TextStyle(
-      color: Colors.white,
-    ),
+    valueIndicatorTextStyle: const TextStyle(color: Colors.white),
   );
   sd = sd.copyWith(showValueIndicator: ShowValueIndicator.always);
-  Widget w3 = SliderTheme(
-    data: sd,
-    child: w2,
-  );
+  Widget w3 = SliderTheme(data: sd, child: w2);
   Widget w4 = Row(
     children: <Widget>[
       Expanded(flex: 3, child: w1),
@@ -952,11 +986,11 @@ Widget numberField({
   return w4;
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Dialog setup                                                            */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Dialog setup                                                            */
+/*                                                                              */
+/********************************************************************************/
 
 Future<void> displayDialog(
   BuildContext context,
@@ -964,23 +998,61 @@ Future<void> displayDialog(
   String description,
 ) async {
   return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(description, maxLines: 10),
-          actions: <Widget>[
-            TextButton(
-                child: const Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-          ],
-        );
-      });
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: description.isNotEmpty
+            ? Text(description, maxLines: 10)
+            : null,
+        actions: <Widget>[
+          TextButton(
+            child: const Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
 
-Future<bool> getValidation(BuildContext context, String title) async {
+Future<bool> getValidation(
+  BuildContext context,
+  String title, [
+  String description = "",
+]) async {
+  bool? sts = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: description.isNotEmpty
+            ? Text(description, maxLines: 10)
+            : null,
+        actions: <Widget>[
+          TextButton(
+            child: const Text("YES"),
+            onPressed: () {
+              Navigator.pop(context, true);
+            },
+          ),
+          TextButton(
+            child: const Text("NO"),
+            onPressed: () {
+              Navigator.pop(context, false);
+            },
+          ),
+        ],
+      );
+    },
+  );
+  return (sts ?? false);
+}
+
+Future<bool> getValidationOld(
+    BuildContext context, String title) async {
   bool? sts = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
@@ -1012,24 +1084,20 @@ PreferredSizeWidget appBar(String title) {
     title: Text(
       title,
       style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      ),
+          fontWeight: FontWeight.bold, color: Colors.black),
     ),
   );
 }
 
 Widget circularProgressIndicator() {
-  return const Center(
-    child: CircularProgressIndicator(),
-  );
+  return const Center(child: CircularProgressIndicator());
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Top level pages                                                         */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Top level pages                                                         */
+/*                                                                              */
+/********************************************************************************/
 
 Widget topLevelPage(
   BuildContext context,
@@ -1049,9 +1117,7 @@ Widget _topLevelPageBuilder(
   Widget child,
   bool scrollable,
 ) {
-  BoxConstraints bc = BoxConstraints(
-    minWidth: constraints.maxWidth,
-  );
+  BoxConstraints bc = BoxConstraints(minWidth: constraints.maxWidth);
   if (scrollable) {
     bc = BoxConstraints(
       minWidth: constraints.maxWidth,
@@ -1061,10 +1127,7 @@ Widget _topLevelPageBuilder(
   }
   return Container(
     decoration: BoxDecoration(
-      border: Border.all(
-        width: 8,
-        color: laf.topLevelBackground,
-      ),
+      border: Border.all(width: 8, color: laf.topLevelBackground),
       image: const DecorationImage(
         image: AssetImage(laf.topLevelImage),
         fit: BoxFit.fitWidth,
@@ -1072,10 +1135,7 @@ Widget _topLevelPageBuilder(
       ),
     ),
     child: SingleChildScrollView(
-      child: ConstrainedBox(
-        constraints: bc,
-        child: child,
-      ),
+      child: ConstrainedBox(constraints: bc, child: child),
     ),
   );
 }
@@ -1083,10 +1143,7 @@ Widget _topLevelPageBuilder(
 Widget boxWidgets(List<Widget> wlist, {double width = 8}) {
   return Container(
     decoration: BoxDecoration(
-      border: Border.all(
-        width: width,
-        color: laf.topLevelBackground,
-      ),
+      border: Border.all(width: width, color: laf.topLevelBackground),
     ),
     child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -1099,10 +1156,7 @@ Widget boxWidgets(List<Widget> wlist, {double width = 8}) {
 Widget topLevelNSPage(BuildContext context, Widget child) {
   return Container(
     decoration: BoxDecoration(
-      border: Border.all(
-        width: 8,
-        color: laf.topLevelBackground,
-      ),
+      border: Border.all(width: 8, color: laf.topLevelBackground),
       image: const DecorationImage(
         image: AssetImage(laf.topLevelImage),
         fit: BoxFit.fitWidth,
@@ -1113,26 +1167,25 @@ Widget topLevelNSPage(BuildContext context, Widget child) {
   );
 }
 
-///******************************************************************************/
-///                                                                             */
-///     Utility methods                                                         */
-///                                                                             */
-///******************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*      Utility methods                                                         */
+/*                                                                              */
+/********************************************************************************/
 
 ThemeData getTheme() {
   return ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: laf.themeSeedColor,
-    ),
+    colorScheme: ColorScheme.fromSeed(seedColor: laf.themeSeedColor),
   );
 }
 
 InputDecoration getDecoration({
   String? hint,
   String? label,
-  double vPadding = 0,
+  double vPadding = 0.0,
   double hPadding = 4.0,
   String? error,
+  Widget? suffixIcon,
 }) {
   hint ??= label;
   label ??= hint;
@@ -1142,29 +1195,23 @@ InputDecoration getDecoration({
     labelStyle: getLabelStyle(),
     hoverColor: laf.decorationHoverColor,
     focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(
-        width: 2,
-        color: laf.decorationBorderColor,
-      ),
+      borderSide:
+          BorderSide(width: 2, color: laf.decorationBorderColor),
     ),
     border: const OutlineInputBorder(
-      borderSide: BorderSide(
-        width: 2,
-        color: laf.decorationInputColor,
-      ),
+      borderSide: BorderSide(width: 2, color: laf.decorationInputColor),
     ),
     contentPadding: EdgeInsets.symmetric(
       horizontal: hPadding,
       vertical: vPadding,
     ),
+    suffixIcon: suffixIcon,
   );
 }
 
 TextStyle getLabelStyle() {
   return const TextStyle(
-    color: laf.labelColor,
-    fontWeight: FontWeight.bold,
-  );
+      color: laf.labelColor, fontWeight: FontWeight.bold);
 }
 
 Widget getPadding(double size) {
@@ -1176,11 +1223,7 @@ Widget getTopLevelLogo(BuildContext context) {
     width: MediaQuery.of(context).size.width * 0.3,
     height: MediaQuery.of(context).size.height * 0.25,
     child: Center(
-      child: Image.asset(
-        laf.topLevelImage,
-        fit: BoxFit.contain,
-      ),
-    ),
+        child: Image.asset(laf.topLevelImage, fit: BoxFit.contain)),
   );
 }
 

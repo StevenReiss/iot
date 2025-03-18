@@ -33,9 +33,8 @@
 import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 import 'package:flutter/material.dart';
-import '../signdata.dart';
 
-Future changePasswordDialog(BuildContext context, SignData sd) async {
+Future changePasswordDialog(BuildContext context) async {
   TextEditingController p1controller = TextEditingController();
   TextEditingController p2controller = TextEditingController();
   BuildContext dcontext = context;
@@ -108,7 +107,11 @@ Future changePasswordDialog(BuildContext context, SignData sd) async {
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [cancelBtn, const SizedBox(width: 15), acceptBtn],
+              children: [
+                cancelBtn,
+                const SizedBox(width: 15),
+                acceptBtn
+              ],
             )
           ],
         ),

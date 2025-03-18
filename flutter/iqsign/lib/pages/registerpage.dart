@@ -49,7 +49,8 @@ class IQSignRegisterWidget extends StatefulWidget {
   const IQSignRegisterWidget({super.key});
 
   @override
-  State<IQSignRegisterWidget> createState() => _IQSignRegisterWidgetState();
+  State<IQSignRegisterWidget> createState() =>
+      _IQSignRegisterWidgetState();
 }
 
 class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
@@ -156,7 +157,7 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
                       "You will have to validate your email before logging in.",
                     ),
                     widgets.fieldSeparator(),
-                    widgets.submitButton("Submit", _handleRegister),
+                    widgets.submitButton("REGISTER", _handleRegister),
                   ],
                 ),
               ),
@@ -185,7 +186,8 @@ class _IQSignRegisterWidgetState extends State<IQSignRegisterWidget> {
   }
 
   void _gotoLogin() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const IQSignLogin()));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   String? _validateSignName(String? value) {
