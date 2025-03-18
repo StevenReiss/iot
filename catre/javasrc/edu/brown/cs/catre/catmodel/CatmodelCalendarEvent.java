@@ -287,10 +287,19 @@ public void addExcludedDate(Calendar date)
    
    Calendar cal = Calendar.getInstance();
    cal.setTimeInMillis(when);
-   if (cal.after(to_datetime)) return false;
-   if (cal.before(from_datetime)) return false;
+   if (cal.after(to_datetime)) {
+      CatreLog.logD("CATMODEL","After end date");
+      return false;
+    }
+   if (cal.before(from_datetime)) {
+      CatreLog.logD("CATMODEL","Before start date");
+      return false;
+    }
    Calendar day = CatreTimeSlotEvent.startOfDay(cal);
-   if (!isDayRelevant(day)) return false;
+   if (!isDayRelevant(day)) {
+      CatreLog.logD("CATMODEL","Day not relevant");
+      return false;
+    }
    Calendar dstart = CatreTimeSlotEvent.startOfDay(day);
    Calendar dend = CatreTimeSlotEvent.startOfNextDay(day);
    
@@ -310,13 +319,22 @@ public void addExcludedDate(Calendar date)
       if (endt.before(dend)) dend = endt;
     }
    
-   CatreLog.logD("CATMODEL","Check times " + dend + " " +
-         dstart + " " + cal + " " + usetimes + " " + usefromtime +
+   CatreLog.logD("CATMODEL","Check times " + dend.toInstant() + " " +
+         dstart.toInstant() + " " + cal + " " + usetimes + " " + usefromtime +
          " " + usetotime);
    
-   if (dend.compareTo(dstart) <= 0) return false;
-   if (cal.before(dstart)) return false;
-   if (cal.after(dend)) return false;
+   if (dend.compareTo(dstart) <= 0) {
+      CatreLog.logD("CATMODEL","End time before start time");
+      return false;
+    }
+   if (cal.before(dstart)) {
+      CatreLog.logD("CATMODEL","Current time before start time");
+      return false;
+    }
+   if (cal.after(dend)) {
+      CatreLog.logD("CATMODEL","Current time after end time");
+      return false;
+    }
    
    return true;
 }

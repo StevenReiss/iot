@@ -1,34 +1,36 @@
-/*
- *        catreprogram.dart
- *
- *    Dart representation of a CATRE program w/ conditions and actions
- *
- **/
+/********************************************************************************/
+/*                                                                              */
+/*              catreprogram.dart                                               */
+/*                                                                              */
+/*      Dart representation of a CATRE program with conditions and actions      */
+/*                                                                              */
+/********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
-/// *******************************************************************************
-///  Copyright 2023, Brown University, Providence, RI.                           *
-///                                                                              *
-///                       All Rights Reserved                                    *
-///                                                                              *
-///  Permission to use, copy, modify, and distribute this software and its       *
-///  documentation for any purpose other than its incorporation into a           *
-///  commercial product is hereby granted without fee, provided that the         *
-///  above copyright notice appear in all copies and that both that              *
-///  copyright notice and this permission notice appear in supporting            *
-///  documentation, and that the name of Brown University not be used in         *
-///  advertising or publicity pertaining to distribution of the software         *
-///  without specific, written prior permission.                                 *
-///                                                                              *
-///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS               *
-///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND           *
-///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY     *
-///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY         *
-///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,             *
-///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS              *
-///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
-///  OF THIS SOFTWARE.                                                           *
-///                                                                              *
-///*******************************************************************************/
+/*********************************************************************************
+ *  Copyright 2023, Brown University, Providence, RI.                            *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of Brown University not be used in          *
+ *  advertising or publicity pertaining to distribution of the software          *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
+ ********************************************************************************/
+
 
 import 'catredata.dart';
 import 'catreuniverse.dart';
@@ -39,9 +41,12 @@ import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/levels.dart';
 import 'package:flutter/material.dart';
 
-/// *****
-///      CatreProgram : the current user program
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreProgram :: the current user program                                */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreProgram extends CatreData {
   late List<CatreRule> _theRules;
@@ -131,9 +136,12 @@ class CatreProgram extends CatreData {
   }
 } // end of CatreProgram
 
-/// *****
-///      CatreRule : description of a single rule
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreRule : description of a single rule                                */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreRule extends CatreData {
   late List<CatreCondition> _conditions;
@@ -275,9 +283,11 @@ class CatreRule extends CatreData {
   }
 }
 
-/// *****
-///      CatreCondition : description of condition of a rule
-/// *****
+/********************************************************************************/
+/*                                                                              */
+/*      CatreCondition: description of a condition for a rule                   */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreCondition extends CatreData {
   CatreParamRef? _paramRef;
@@ -645,6 +655,13 @@ class CatreCondition extends CatreData {
   }
 }
 
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatrConditionType -- types of conditions and their properties           */
+/*                                                                              */
+/********************************************************************************/
+
 class CatreConditionType {
   final String label;
   final String _catreType;
@@ -689,9 +706,12 @@ const List<CatreConditionType> triggerConditionTypes = [
   CatreConditionType("Trigger on Parameter Stable", "Debounce", true),
 ];
 
-/// *****
-///      CatreAction : description of action of a rule
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreAction: description of an action for a rule                        */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreAction extends CatreData {
   late CatreTransitionRef _transition;
@@ -757,9 +777,12 @@ class CatreAction extends CatreData {
   }
 }
 
-/// *****
-///      CatreParamRef : description of reference to a parameter
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreParamRef: reference to a parameter for action or condition         */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreParamRef extends CatreData {
   CatreParamRef.build(CatreUniverse cu, dynamic data)
@@ -799,9 +822,12 @@ class CatreParamRef extends CatreData {
   }
 }
 
-/// *****
-///      CatreTransitionRef : reference to a transition
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreTransitionRef: reference to a transition for a rule                */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreTransitionRef extends CatreData {
   CatreTransitionRef.build(CatreUniverse cu, dynamic data)
@@ -827,9 +853,12 @@ class CatreTransitionRef extends CatreData {
   }
 }
 
-/// *****
-///      CatreTimeSlot :: desription of a time slot for a condition
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreTimeSlot: description of a time slot for a condition               */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreTimeSlot extends CatreData {
   late DateTime _fromDateTime;
@@ -940,9 +969,12 @@ class CatreTimeSlot extends CatreData {
   }
 }
 
-/// *****
-///      CatreCalendarMatch -- description of a field match for calendar
-/// *****
+
+/********************************************************************************/
+/*                                                                              */
+/*      CatreCalendarMatch: description of a field match for calendar event     */
+/*                                                                              */
+/********************************************************************************/
 
 class CatreCalendarMatch extends CatreData {
   CatreCalendarMatch.build(CatreUniverse cu, dynamic data)

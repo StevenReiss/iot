@@ -1,33 +1,36 @@
-/*
- * Login Page
- *
- *      Page to let the user login to sherpa
- */
+/********************************************************************************/
+/*                                                                              */
+/*              loginpage.dart                                                  */
+/*                                                                              */
+/*      Page to let the user login to sherpa/catre                              */
+/*                                                                              */
+/********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
-/// *******************************************************************************
-///  Copyright 2023, Brown University, Providence, RI.                           *
-///                                                                              *
-///                       All Rights Reserved                                    *
-///                                                                              *
-///  Permission to use, copy, modify, and distribute this software and its       *
-///  documentation for any purpose other than its incorporation into a           *
-///  commercial product is hereby granted without fee, provided that the         *
-///  above copyright notice appear in all copies and that both that              *
-///  copyright notice and this permission notice appear in supporting            *
-///  documentation, and that the name of Brown University not be used in         *
-///  advertising or publicity pertaining to distribution of the software         *
-///  without specific, written prior permission.                                 *
-///                                                                              *
-///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS               *
-///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND           *
-///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY     *
-///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY         *
-///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,             *
-///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS              *
-///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
-///  OF THIS SOFTWARE.                                                           *
-///                                                                              *
-///*******************************************************************************/
+/*********************************************************************************
+ *  Copyright 2023, Brown University, Providence, RI.                            *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of Brown University not be used in          *
+ *  advertising or publicity pertaining to distribution of the software          *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
+ ********************************************************************************/
+
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -42,14 +45,21 @@ import 'splashpage.dart';
 import 'changepasswordpage.dart';
 import 'package:sherpa/models/catremodel.dart';
 
-//
-//    Private Variables
-//
+/********************************************************************************/
+/*                                                                              */
+/*      Private variables                                                       */
+/*                                                                              */
+/********************************************************************************/
+
 bool _loginValid = false;
 
-//
-//    Check login using preferences or prior login
-//
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Check login using preferences or prior login                            */
+/*                                                                              */
+/********************************************************************************/
 
 Future<bool> testLogin() async {
   if (_loginValid) return true;
@@ -67,9 +77,12 @@ Future<bool> testLogin() async {
   return false;
 }
 
-//
-//    Login widget
-//
+
+/********************************************************************************/
+/*                                                                              */
+/*      Login widget                                                            */
+/*                                                                              */
+/********************************************************************************/
 
 class SherpaLogin extends StatelessWidget {
   const SherpaLogin({super.key});
@@ -279,9 +292,11 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
   }
 }
 
-//
-//    Class to actually handle loggin in
-//
+/********************************************************************************/
+/*                                                                              */
+/*      Class to actually handle logging in                                     */
+/*                                                                              */
+/********************************************************************************/
 
 class _HandleLogin {
   String? _curPadding;

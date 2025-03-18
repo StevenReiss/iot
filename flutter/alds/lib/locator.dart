@@ -1,34 +1,35 @@
-/*
- *      locator.dart
- * 
- *    Code to store/update current location information
- * 
- */
+/********************************************************************************/
+/*                                                                              */
+/*              locator.dart                                                    */
+/*                                                                              */
+/*      Store and update current location information                           */
+/*                                                                              */
+/********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
-/// *******************************************************************************
-///  Copyright 2023, Brown University, Providence, RI.                           *
-///                                                                              *
-///                       All Rights Reserved                                    *
-///                                                                              *
-///  Permission to use, copy, modify, and distribute this software and its       *
-///  documentation for any purpose other than its incorporation into a           *
-///  commercial product is hereby granted without fee, provided that the         *
-///  above copyright notice appear in all copies and that both that              *
-///  copyright notice and this permission notice appear in supporting            *
-///  documentation, and that the name of Brown University not be used in         *
-///  advertising or publicity pertaining to distribution of the software         *
-///  without specific, written prior permission.                                 *
-///                                                                              *
-///  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS               *
-///  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND           *
-///  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY     *
-///  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY         *
-///  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,             *
-///  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS              *
-///  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE         *
-///  OF THIS SOFTWARE.                                                           *
-///                                                                              *
-///******************************************************************************
+/*********************************************************************************
+ *  Copyright 2023, Brown University, Providence, RI.                            *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of Brown University not be used in          *
+ *  advertising or publicity pertaining to distribution of the software          *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
+ ********************************************************************************/
 
 import 'package:geolocator/geolocator.dart';
 import 'util.dart' as util;
@@ -41,7 +42,7 @@ import "device.dart" as device;
 const btFraction = 0.7;
 const locFraction = 0.15;
 const altFraction = 0.15;
-const useThreshold = 0.75;
+const useThreshold = 0.50;
 const stableCount = 3;
 
 class Locator {
@@ -71,7 +72,8 @@ class Locator {
     }
   }
 
-  LocationData updateLocation(Position? pos, List<BluetoothData> btdata) {
+  LocationData updateLocation(
+      Position? pos, List<BluetoothData> btdata) {
     LocationData nloc = LocationData(pos, btdata);
     LocationData? cloc = _curLocationData;
     if (cloc != null) {
@@ -141,6 +143,7 @@ class Locator {
   }
 
   Future<void> _changeLocation(String? loc) async {
+    util.log("Change location to $loc");
     if (lastLocation == loc || loc == null) return;
     lastLocation = loc;
     device.Cedes().updateLocation(loc);
@@ -210,11 +213,14 @@ class LocationData {
         if (d4 > pos.speedAccuracy / 2) return null;
       }
       npos = Position(
-        latitude: (gpos.latitude * _count + pos.latitude) / (_count + 1),
-        longitude: (gpos.longitude * _count + pos.longitude) / (_count + 1),
+        latitude:
+            (gpos.latitude * _count + pos.latitude) / (_count + 1),
+        longitude:
+            (gpos.longitude * _count + pos.longitude) / (_count + 1),
         accuracy: max(gpos.accuracy, pos.accuracy),
         timestamp: gpos.timestamp,
-        altitude: (gpos.altitude * _count + pos.altitude) / (_count + 1),
+        altitude:
+            (gpos.altitude * _count + pos.altitude) / (_count + 1),
         altitudeAccuracy: max(
           gpos.altitudeAccuracy,
           pos.altitudeAccuracy,
@@ -282,7 +288,8 @@ class KnownLocation {
     _position = ldata._gpsPosition;
     Map<String, double> bmap = {};
     double totsq = 0;
-    for (MapEntry<String, BluetoothData> ent in ldata._bluetoothData.entries) {
+    for (MapEntry<String, BluetoothData> ent
+        in ldata._bluetoothData.entries) {
       double v = ent.value._rssi.toDouble();
       v = (v + 128) / 100;
       if (v < 0) continue;
