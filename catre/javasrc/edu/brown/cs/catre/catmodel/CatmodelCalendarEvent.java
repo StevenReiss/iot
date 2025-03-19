@@ -300,7 +300,7 @@ public void addExcludedDate(Calendar date)
       CatreLog.logD("CATMODEL","Day not relevant");
       return false;
     }
-   Calendar dstart = CatreTimeSlotEvent.startOfDay(day);
+   Calendar dstart = day;
    Calendar dend = CatreTimeSlotEvent.startOfNextDay(day);
    
    boolean usetimes = false;
@@ -316,12 +316,18 @@ public void addExcludedDate(Calendar date)
    if (isNextDay(day,to_datetime)) usetotime = true;
    if (usetotime) {
       Calendar endt = setDateAndTime(day,to_datetime);
-      if (endt.before(dend)) dend = endt;
+      if (endt.before(dstart)) {
+         endt.add(Calendar.DAY_OF_YEAR,1);
+         dend = endt;
+       }
+      else if (endt.before(dend)) dend = endt;
     }
    
    CatreLog.logD("CATMODEL","Check times " + dend.toInstant() + " " +
-         dstart.toInstant() + " " + cal + " " + usetimes + " " + usefromtime +
-         " " + usetotime);
+         dstart.toInstant() + " " + cal.toInstant() + " " +
+         from_datetime.toInstant() + " " +
+         to_datetime.toInstant() + " " + 
+         usetimes + " " + usefromtime + " " + usetotime);
    
    if (dend.compareTo(dstart) <= 0) {
       CatreLog.logD("CATMODEL","End time before start time");

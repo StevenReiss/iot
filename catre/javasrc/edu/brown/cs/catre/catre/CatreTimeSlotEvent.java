@@ -76,6 +76,7 @@ static Calendar startOfDay(Calendar c)
    c1.set(Calendar.MINUTE,0);
    c1.set(Calendar.SECOND,0);
    c1.set(Calendar.MILLISECOND,0);
+   
    return c1;
 }
 
