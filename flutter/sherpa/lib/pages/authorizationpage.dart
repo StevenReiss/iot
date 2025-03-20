@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/models/catremodel.dart';
@@ -61,9 +60,7 @@ class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Configure Device Bridges"),
-      ),
+      appBar: AppBar(title: const Text("Configure Device Bridges")),
       body: widgets.topLevelPage(
         context,
         Center(
@@ -138,7 +135,7 @@ class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
     return rslt;
   }
 
-  List<Widget> _getBridgeFields({int index = -1}) {
+  List<Widget> _getBridgeFields({int index = 0}) {
     List<Widget> rslt = [];
     if (_bridgeData != null) {
       List<CatreBridgeField> flds = _bridgeData!.getFields();
@@ -154,14 +151,16 @@ class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
           onChanged: (nv) => _setBridgeFieldValue(fld, index, nv),
           showCursor: true,
         );
-        rslt.add(Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Flexible(flex: 1, child: Text("${fld.getLabel()}: ")),
-            const Spacer(),
-            Flexible(flex: 10, child: w1),
-          ],
-        ));
+        rslt.add(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Flexible(flex: 1, child: Text("${fld.getLabel()}: ")),
+              const Spacer(),
+              Flexible(flex: 10, child: w1),
+            ],
+          ),
+        );
       }
     }
     return rslt;

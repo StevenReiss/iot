@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'catredata.dart';
 import 'catreuniverse.dart';
 
@@ -92,6 +91,7 @@ class CatreBridgeField extends CatreData {
   }
 
   void setValue(int index, String v) {
+    if (index < 0) index = 0;
     List<String> vl = stringOrStringList("VALUE");
     while (index >= vl.length) {
       vl.add("");

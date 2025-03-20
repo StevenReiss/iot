@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
@@ -42,7 +41,6 @@ import 'package:sherpa/pages/authorizationpage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
 import 'package:sherpa/lookandfeel.dart' as laf;
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -139,11 +137,10 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     );
   }
 
-  void _reloadProgram() {
-    setState(() async {
-      CatreModel cm = CatreModel();
-      await cm.loadUniverse();
-    });
+  void _reloadProgram() async {
+    CatreModel cm = CatreModel();
+    await cm.loadUniverse();
+    setState(() {});
   }
 
   void _handleAuthorizations() {
@@ -250,7 +247,10 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     int ct = 0;
     List<String> rules = [];
     for (CatreRule cr in pgm.getRules()) {
-      if (cr.getPriority() < lvl.lowPriority || cr.getPriority() >= lvl.highPriority) continue;
+      if (cr.getPriority() < lvl.lowPriority ||
+          cr.getPriority() >= lvl.highPriority) {
+        continue;
+      }
       CatreDevice? cd = cr.getDevice();
       if (_forDevice != null && cd != _forDevice) continue;
       ++ct;

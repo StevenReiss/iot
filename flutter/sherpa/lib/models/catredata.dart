@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'catreuniverse.dart';
 import 'dart:convert' as convert;
 import 'package:flutter/foundation.dart';
@@ -182,21 +181,28 @@ class CatreData {
   }
 
   @protected
-  int? optInt(String id) {
+  int? optInt(
+    String id, [
+    int? dflt,
+  ]) {
     int? v = catreData[id] as int?;
     if (v == null) {
-      return null;
+      return dflt;
     } else if (!v.isFinite) {
-      return null;
+      return dflt;
     } else if (v.isNaN) {
-      return null;
+      return dflt;
     }
     return v;
   }
 
   @protected
   List<String> getStringList(String id) {
-    return catreData[id] as List<String>;
+    List<String> rslt = [];
+    for (var x in catreData[id]) {
+      rslt.add(x.toString());
+    }
+    return rslt;
   }
 
   @protected
@@ -208,6 +214,12 @@ class CatreData {
     }
     if (v!.runtimeType == List<String>) {
       return v as List<String>;
+    } else if (v!.runtimeType == List) {
+      List<String> rslt = [];
+      for (var x in v) {
+        rslt.add(x.toString());
+      }
+      return rslt;
     }
     return [v.toString()];
   }
@@ -314,10 +326,7 @@ class CatreData {
     return hc;
   }
 
-  Future<Map<String, dynamic>?> issueCommand(
-    String cmd,
-    String argname,
-  ) async {
+  Future<Map<String, dynamic>?> issueCommand(String cmd, String argname) async {
     var url = Uri.https(util.getServerURL(), cmd);
     var body = {
       globals.catreSession: globals.sessionId,
@@ -333,11 +342,16 @@ class CatreData {
     Map<String, dynamic> args,
   ) async {
     var url = Uri.https(util.getServerURL(), cmd);
-    var body = {
-      globals.catreSession: globals.sessionId,
-    };
+    var body = {globals.catreSession: globals.sessionId};
     for (String key in args.keys) {
-      body[key] = convert.jsonEncode(args[key]);
+      dynamic val = args[key];
+      String? sval;
+      if (val.runtimeType == List || val.runtimeType == String) {
+        sval = convert.jsonEncode(val);
+      } else {
+        sval = val?.toString();
+      }
+      body[key] = sval;
     }
     var resp = await http.post(url, body: body);
     if (resp.statusCode >= 400) return null;
