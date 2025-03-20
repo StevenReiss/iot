@@ -241,8 +241,8 @@ public void addExcludedDate(Calendar date)
    
    boolean usetimes = false;
    if (day_set != null && !day_set.isEmpty()) usetimes = true;
-   if (repeat_interval > 0) usetimes = true;
-   if (exclude_dates != null) usetimes = true;
+   else if (repeat_interval > 0) usetimes = true;
+   else if (exclude_dates != null) usetimes = true;
    
    for (Calendar day = fday; day.before(tday); day.add(Calendar.DAY_OF_YEAR,1)) {
       if (!isDayRelevant(day)) continue;
@@ -255,12 +255,14 @@ public void addExcludedDate(Calendar date)
       if (sameDay(from,day)) start = setDateAndTime(day,from);
       else start = CatreTimeSlotEvent.startOfDay(day);
       if (sameDay(to,day)) end = setDateAndTime(day,to);
-      else end = CatreTimeSlotEvent.startOfNextDay(day);
+      else {
+         end = CatreTimeSlotEvent.startOfNextDay(day);
+       }
       
       boolean usefromtime = usetimes;
       if (sameDay(from_datetime,day)) usefromtime = true;
+      Calendar estart = setDateAndTime(day,from_datetime);
       if (usefromtime) {
-         Calendar estart = setDateAndTime(day,from_datetime);
          if (estart.after(start)) start = estart;
        }
       
@@ -268,10 +270,17 @@ public void addExcludedDate(Calendar date)
       if (isNextDay(day,to_datetime)) usetotime = true;
       if (usetotime) {
          Calendar endt = setDateAndTime(day,to_datetime);
-         if (endt.before(end)) end = endt;
+         if (endt.before(estart)) {
+            endt.add(Calendar.DAY_OF_YEAR,1);
+            end = endt;
+          }
+         else if (endt.before(end)) end = endt;
        }
       
-      if (end.compareTo(start) <= 0) continue;
+      if (end.compareTo(start) <= 0) {
+         CatreLog.logD("CATMODEL","End time " + end.toInstant() + "before " + start.toInstant());
+         continue;
+       }
       rslt.add(start);
       rslt.add(end);
     }
