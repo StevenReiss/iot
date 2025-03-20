@@ -47,6 +47,7 @@ import com.sun.net.httpserver.Headers;
 import edu.brown.cs.catre.catre.CatreController;
 import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatreSession;
+import edu.brown.cs.ivy.bower.BowerRouter;
 
 class CatserveSessionManager implements CatserveConstants
 {
@@ -109,7 +110,7 @@ String setupSession(HttpExchange e)
        }
    }
    else {
-      CatserveServer.setParameter(e,SESSION_PARAMETER,sessionid);
+      BowerRouter.setParameter(e,SESSION_PARAMETER,sessionid);
    }
 
    CatreSession cs = null;
@@ -154,16 +155,16 @@ private static Map<String, HttpCookie> parseCookies(List<String> cookieHeaders){
 /*										*/
 /********************************************************************************/
 
-CatreSession beginSession(HttpExchange e)
+CatreSession beginSession(HttpExchange he)
 {
    CatserveSessionImpl cs = new CatserveSessionImpl(null);
    String sid = cs.getDataUID();
    session_set.put(sid,cs);
-   CatserveServer.setParameter(e,SESSION_PARAMETER,sid);
+   BowerRouter.setParameter(he,SESSION_PARAMETER,sid);
 
    int maxAge = 31536000; // Set the cookie to expire in one year
    String cookie = String.format("%s=%s; Path=%s; Max-Age=%d", SESSION_COOKIE, sid, "/", maxAge);
-   e.getResponseHeaders().add("Set-Cookie", cookie);
+   he.getResponseHeaders().add("Set-Cookie", cookie);
 
    cs.saveSession(catre_control);
 
@@ -187,9 +188,9 @@ void endSession(String sid)
 
 
 
-CatreSession findSession(HttpExchange e)
+CatreSession findSession(HttpExchange he)
 {
-   String sid = CatserveServer.getParameter(e,SESSION_PARAMETER);
+   String sid = BowerRouter.getParameter(he,SESSION_PARAMETER);
    if (sid == null) return null;
 
    return findSession(sid);

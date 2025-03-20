@@ -56,7 +56,6 @@ import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreTable;
 import edu.brown.cs.catre.catre.CatreUniverse;
 import edu.brown.cs.catre.catre.CatreUser;
-import edu.brown.cs.catre.catserve.CatserveServer;
 import edu.brown.cs.catre.catserve.CatserveBowerServer;
 import edu.brown.cs.catre.catstore.CatstoreFactory;
 import edu.brown.cs.ivy.file.IvyLog.LogLevel;
@@ -92,8 +91,6 @@ private CatreStore     data_store;
 private CatmodelFactory model_factory;
 private CatbridgeFactory bridge_factory;
 
-private static boolean use_bower = true;
-
 
 
 /********************************************************************************/
@@ -123,12 +120,7 @@ private CatmainMain(String [] args)
    
    CatreLog.logD("CATMAIN","Model factory setup done");
 
-   if (use_bower) {
-      rest_server = new CatserveBowerServer(this);
-    }
-   else {
-      rest_server = new CatserveServer(this); 
-    }
+   rest_server = new CatserveBowerServer(this);
    
    CatreLog.logD("CATMAIN","Server setup done");
 

@@ -216,7 +216,7 @@ private BowerRouter<CatserveSessionImpl> setupRouter()
    br.addRoute("ALL","/static",this::handleStatic);
    
    br.addRoute("GET","/login",this::handlePrelogin);
-   br.addRoute("POST","/login",auth_manager::handleLogin);
+   br.addRoute("POST","/login",auth_manager::handleLogin); 
    br.addRoute("POST","/register",auth_manager::handleRegister);
    br.addRoute("GET","/logout",this::handleLogout);
    br.addRoute("POST","/forgotpassword",auth_manager::handleForgotPassword);

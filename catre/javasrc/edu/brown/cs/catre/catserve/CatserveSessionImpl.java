@@ -43,7 +43,7 @@ import edu.brown.cs.catre.catre.CatreSession;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreUniverse;
 import edu.brown.cs.catre.catre.CatreUser;
-
+import edu.brown.cs.ivy.bower.BowerRouter;
 import edu.brown.cs.ivy.bower.BowerSession;
 
 import java.util.Map;
@@ -189,13 +189,13 @@ public BowerSessionStore<CatserveSessionImpl> getSessionStore()
 
 @Override public String jsonResponse(Object... val)
 {
-   return CatserveServer.jsonResponse(this,val);
+   return BowerRouter.jsonOKResponse(this,val);
 }
 
 
 @Override public String getParameter(HttpExchange e,String id)
 {
-   return CatserveServer.getParameter(e,id);
+   return BowerRouter.getParameter(e,id);
 }
 
 

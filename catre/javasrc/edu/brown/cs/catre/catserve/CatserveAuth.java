@@ -39,10 +39,10 @@ package edu.brown.cs.catre.catserve;
 import edu.brown.cs.catre.catre.CatreController;
 import edu.brown.cs.catre.catre.CatreException;
 import edu.brown.cs.catre.catre.CatreLog;
-import edu.brown.cs.catre.catre.CatreSession;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreUser;
 import edu.brown.cs.catre.catre.CatreUtil;
+import edu.brown.cs.ivy.bower.BowerRouter;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -83,19 +83,23 @@ CatserveAuth(CatreController cc)
 /*										*/
 /********************************************************************************/
 
-public String handleRegister(HttpExchange e, CatreSession cs) 
+public String handleRegister(HttpExchange he, CatserveSessionImpl session) 
 {
    CatreLog.logT("CATSERVE","Handle register entered");
    
-   if (cs == null) return CatserveServer.jsonError(cs,"Bad session");
-   if (cs.getUser(catre_control) != null) {
-      return CatserveServer.jsonError(cs,"Can't register while logged in");
+   if (session == null) {
+      return BowerRouter.errorResponse(he,session,402,
+            "Bad session");
+    }
+   if (session.getUser(catre_control) != null) {
+      return BowerRouter.errorResponse(he,session,400,
+            "Can't register while logged in");
    }
 
-   String userid = CatserveServer.getParameter(e,"username");
-   String email = CatserveServer.getParameter(e,"email");
-   String pwd = CatserveServer.getParameter(e,"password");
-   String unm = CatserveServer.getParameter(e,"universe");
+   String userid = BowerRouter.getParameter(he,"username");
+   String email = BowerRouter.getParameter(he,"email");
+   String pwd = BowerRouter.getParameter(he,"password");
+   String unm = BowerRouter.getParameter(he,"universe");
 
    CatreLog.logD("AUTH", "userid: " + userid + " email: " + email + " pwd: " + pwd + " unm: " + unm);
 
@@ -106,7 +110,8 @@ public String handleRegister(HttpExchange e, CatreSession cs)
       remove = true;
 
       if (catre_control.createUniverse(unm,cu) == null) {
-         return CatserveServer.jsonError(cs,"problem creating universe");
+         return BowerRouter.errorResponse(he,session,500,
+               "problem creating universe");
       }
       String code = cu.setupValidator();
       String msg = "Thank you for registering with Sherpa.\n\n";
@@ -116,18 +121,19 @@ public String handleRegister(HttpExchange e, CatreSession cs)
       msg += "&code=" + code;
       msg += "\n"; 
       if (!CatreUtil.sendEmail(email,"Complete SHERPA registration",msg)) {
-         return CatserveServer.jsonError(cs,"problem sending email");
+         return BowerRouter.errorResponse(he,session,500,
+               "problem sending email");
        }
       
       remove = false;
       
-      cs.setupSession(cu);
-      cs.saveSession(catre_control);
-      return CatserveServer.jsonResponse(cs);
+      session.setupSession(cu);
+      session.saveSession(catre_control);
+      return BowerRouter.jsonOKResponse(session);
    }
    catch (CatreException err) {
       String msg = err.getMessage();
-      return CatserveServer.jsonError(cs,msg);
+      return BowerRouter.errorResponse(he,session,500,msg);
    }
    finally {
       if (remove && cu != null) {
@@ -144,23 +150,25 @@ public String handleRegister(HttpExchange e, CatreSession cs)
 /*                                                                              */
 /********************************************************************************/
 
-public String handleChangePassword(HttpExchange e,CatreSession cs) 
+public String handleChangePassword(HttpExchange he,CatserveSessionImpl session) 
 {
    CatreLog.logD("CATSERVE","handleChangePasswrd entered");
    
-   String npwd = CatserveServer.getParameter(e,"password");
+   String npwd = BowerRouter.getParameter(he,"password");
    if (npwd == null || npwd.isEmpty()) {
-      return CatserveServer.jsonError(cs,"Bad password");
+      return BowerRouter.errorResponse(he,session,400,
+            "Bad password");
     }
    
-   CatreUser cu = cs.getUser(catre_control);
+   CatreUser cu = session.getUser(catre_control);
    if (cu == null) {
-      return CatserveServer.jsonError(cs,"Unauthorized access");
+      return BowerRouter.errorResponse(he,session,402,
+            "Unauthorized access");
     }
    
    cu.setNewPassword(npwd);
    
-   return CatserveServer.jsonResponse(cs,"STATUS","OK","TEMPORARY",false);
+   return BowerRouter.jsonOKResponse(session,"STATUS","OK","TEMPORARY",false);
 }
 
 
@@ -170,17 +178,21 @@ public String handleChangePassword(HttpExchange e,CatreSession cs)
 /*                                                                              */
 /********************************************************************************/
 
-public String handleForgotPassword(HttpExchange e,CatreSession cs)
+public String handleForgotPassword(HttpExchange he,CatserveSessionImpl session)
 {
    CatreLog.logD("CATSERVE","handleForgotPasswrd entered");
    
-   String email = CatserveServer.getParameter(e,"email");
+   String email = BowerRouter.getParameter(he,"email");
    if (email == null || email.isEmpty()) {
-      return CatserveServer.jsonError(cs,"No email given");
+      return BowerRouter.errorResponse(he,session,400,
+            "No email given");
     }
    
    CatreUser cu = catre_control.getDatabase().findUserByEmail(email);
-   if (cu == null) return CatserveServer.jsonError(cs,"Unknown email given");
+   if (cu == null) {
+      return BowerRouter.errorResponse(he,session,400,
+         "Unknown email given");
+    }
    
    String npwd = CatreUtil.randomString(12);
    
@@ -193,32 +205,35 @@ public String handleForgotPassword(HttpExchange e,CatreSession cs)
    body += "and the password " + npwd + ".";
          
    if (CatreUtil.sendEmail(email,"SHERPA password request",body)) {
-      return CatserveServer.jsonResponse(cs);
+      return BowerRouter.jsonOKResponse(session);
     }
    
-   return CatserveServer.jsonError(cs,"Email failed");
+   return BowerRouter.errorResponse(he,session,500,"Email failed");
 }
 
 
-public String handleValidateUser(HttpExchange e,CatreSession cs)
+public String handleValidateUser(HttpExchange he,CatserveSessionImpl session)
 {
    CatreLog.logD("CATSERVE","Handle verify user");
    
-   String email = CatserveServer.getParameter(e,"email");
-   String code = CatserveServer.getParameter(e,"code");
+   String email = BowerRouter.getParameter(he,"email");
+   String code = BowerRouter.getParameter(he,"code");
    if (email == null || email.isEmpty() || code == null || code.isEmpty()) {
-      return CatserveServer.jsonError(cs,"Bad validation request");
+      return BowerRouter.errorResponse(he,session,400,
+            "Bad validation request");
     }
    email = email.toLowerCase();
    CatreUser cu = catre_control.getDatabase().findUserByEmail(email);
    if (cu == null) {
-      return CatserveServer.jsonError(cs,"Bad validation request");
+      return BowerRouter.errorResponse(he,session,402,
+            "Bad validation request");
     }
    if (!cu.validateUser(code)) {
-      return CatserveServer.jsonError(cs,"Bad validation request");
+      return BowerRouter.errorResponse(he,session,402,
+            "Bad validation request");
     }
    
-   return CatserveServer.jsonResponse(cs); 
+   return BowerRouter.jsonOKResponse(session); 
 }
 
 
@@ -230,34 +245,40 @@ public String handleValidateUser(HttpExchange e,CatreSession cs)
 /*										*/
 /********************************************************************************/
  
-public String handleLogin(HttpExchange e, CatreSession cs)
+public String handleLogin(HttpExchange he, CatserveSessionImpl session)
 {
-   if (cs == null) return CatserveServer.jsonError(cs,"Bad session");
-   
-   String username = CatserveServer.getParameter(e,"username");
-   String pwd = CatserveServer.getParameter(e,"password");
-   if (username == null || pwd == null) {
-      return CatserveServer.jsonError(cs,"Bad username or password");
+   if (session == null) {
+      return BowerRouter.errorResponse(he,session,402,
+            "Bad session");
     }
-   String salt = CatserveServer.getParameter(e,"SALT");
-   String salt1 = cs.getStringValue("SALT");
+   
+   String username = BowerRouter.getParameter(he,"username");
+   String pwd = BowerRouter.getParameter(he,"password");
+   if (username == null || pwd == null) {
+      return BowerRouter.errorResponse(he,session,402,
+            "Bad username or password");
+    }
+   String salt = BowerRouter.getParameter(he,"SALT");
+   String salt1 = session.getStringValue("SALT");
    CatreLog.logD("CATSERVE","LOGIN " + username + " " + pwd + " " + salt);
    
    if (username == null || pwd == null) {
-      return CatserveServer.jsonError(cs,"Missing username or password");
+      return BowerRouter.errorResponse(he,session,400,
+            "Missing username or password");
     }
    else if (salt == null || salt1 == null || !salt.equals(salt1)) {
-      return CatserveServer.jsonError(cs,"Bad setup");
+      return BowerRouter.errorResponse(he,session,400,
+            "Bad setup");
     }
    else {
       CatreUser cu = catre_control.getDatabase().findUser(username,pwd,salt);
       if (cu == null) {
-         return CatserveServer.jsonError(cs,"Bad user name or password");
+         return BowerRouter.errorResponse(he,session,402,"Bad user name or password");
        }
       else {
-         cs.setupSession(cu);
-         cs.saveSession(catre_control);
-         return CatserveServer.jsonResponse(cs,"TEMPORARY",cu.isTemporary());
+         session.setupSession(cu);
+         session.saveSession(catre_control);
+         return BowerRouter.jsonOKResponse(session,"TEMPORARY",cu.isTemporary());
        }
     }
 }
