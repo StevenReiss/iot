@@ -588,16 +588,19 @@ private final class CreateCodeAction implements BowerSessionHandler<IQsignSessio
       Number uid = getIdParameter(he,"signuser");
       String nkey = BowerRouter.getParameter(he,"signkey");
       if (!uid.equals(session.getUserId())) {
-	 return BowerRouter.errorResponse(he,session,400,"Invalid user");
+         return BowerRouter.errorResponse(he,session,400,"Invalid user");
        }
       IQsignSign sign = iqsign_database.findSign(sid,uid,nkey);
       if (sign == null) {
-	 return BowerRouter.errorResponse(he,session,400,"Invalid sign");
+         return BowerRouter.errorResponse(he,session,400,"Invalid sign");
        }
-      String code = iqsign_database.addLoginCode(uid,sid);
-	
+      String code = BowerRouter.getParameter(he,"code");
+      if (code == null || code.length() < 12) {
+         return BowerRouter.errorResponse(he,session,400,"Invalid user");
+       }
+      iqsign_database.addLoginCode(uid,sid,code);
+        
       return BowerRouter.jsonOKResponse(session,"code",code);
-
     }
 
 }	// end of inner class CreateCodeAction

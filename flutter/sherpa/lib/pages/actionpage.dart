@@ -31,12 +31,10 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/models/catremodel.dart';
 import 'package:sherpa/util.dart' as util;
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -49,7 +47,9 @@ class SherpaActionWidget extends StatefulWidget {
   final CatreRule _forRule;
   final CatreAction _forAction;
 
-  const SherpaActionWidget(this._forDevice, this._forRule, this._forAction, {super.key});
+  const SherpaActionWidget(
+      this._forDevice, this._forRule, this._forAction,
+      {super.key});
 
   @override
   State<SherpaActionWidget> createState() => _SherpaActionWidgetState();
@@ -60,8 +60,10 @@ class _SherpaActionWidgetState extends State<SherpaActionWidget> {
   late CatreDevice _forDevice;
   late CatreRule _forRule;
 
-  final TextEditingController _labelControl = TextEditingController(text: "");
-  final TextEditingController _descControl = TextEditingController(text: "");
+  final TextEditingController _labelControl =
+      TextEditingController(text: "");
+  final TextEditingController _descControl =
+      TextEditingController(text: "");
   bool _labelMatchesDescription = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -354,7 +356,8 @@ class _ActionParameter {
             onChanged: _setValue);
         break;
       case "REAL":
-        double vdbl = util.getDoubleValue(value, _parameter.getMaxValue());
+        double vdbl =
+            util.getDoubleValue(value, _parameter.getMaxValue());
         w = widgets.doubleField(
             min: _parameter.getMinValue().toDouble(),
             max: _parameter.getMaxValue().toDouble(),

@@ -53,7 +53,7 @@ class CatreBridge extends CatreData {
   }
 
   Future<void> addOrUpdateBridge() async {
-    Map<String, dynamic> args = {"BRIDGE": getBridgeName()};
+    Map<String, String?> args = {"BRIDGE": getBridgeName()};
     for (int i = 0; i < getCount(); ++i) {
       for (CatreBridgeField fld in _fields) {
         String key = fld.getKeyName();

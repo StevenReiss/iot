@@ -1,6 +1,6 @@
 /********************************************************************************/
 /*                                                                              */
-/*              registrationpage.dart                                           */
+/*              registerpage.dart                                               */
 /*                                                                              */
 /*      Page to handle registering a new CATRE/SHERPA user                      */
 /*                                                                              */
@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -58,7 +57,8 @@ class SherpaRegisterWidget extends StatefulWidget {
   const SherpaRegisterWidget({super.key});
 
   @override
-  State<SherpaRegisterWidget> createState() => _SherpaRegisterWidgetState();
+  State<SherpaRegisterWidget> createState() =>
+      _SherpaRegisterWidgetState();
 }
 
 class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
@@ -130,6 +130,10 @@ class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
                     validator: _validateEmail,
                     context: context,
                     fraction: 0.8,
+                    tooltip:
+                        "Enter a valid email address.  SHERPA will send you "
+                        "a confirmation email you will have to respond to befor you "
+                        "can log in.",
                   ),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
@@ -138,6 +142,7 @@ class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
                     validator: _validateUserName,
                     context: context,
                     fraction: 0.8,
+                    tooltip: "Enter a user name for using SHERPA.",
                   ),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
@@ -147,6 +152,7 @@ class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
                     obscureText: true,
                     context: context,
                     fraction: 0.8,
+                    tooltip: "Enter a secure password.",
                   ),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
@@ -164,13 +170,16 @@ class _SherpaRegisterWidgetState extends State<SherpaRegisterWidget> {
                     validator: _validateUniverseName,
                     context: context,
                     fraction: 0.8,
+                    tooltip: "Provide a name for your universe.",
                   ),
                   widgets.fieldSeparator(),
                   widgets.errorField(_registerError),
                   Container(
-                    constraints: const BoxConstraints(minWidth: 150, maxWidth: 350),
+                    constraints: const BoxConstraints(
+                        minWidth: 150, maxWidth: 350),
                     width: MediaQuery.of(context).size.width * 0.4,
-                    child: widgets.submitButton("Submit", _handleRegister),
+                    child:
+                        widgets.submitButton("Submit", _handleRegister),
                   ),
                 ],
               ),

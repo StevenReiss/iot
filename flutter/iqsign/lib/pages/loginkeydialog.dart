@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 /********************************************************************************/
 /*                                                                              */
 /*              loginkeydialog.dart                                             */
@@ -41,31 +43,40 @@ import 'package:flutter/services.dart';
 
 Future loginKeyDialog(BuildContext context, SignData sd) async {
   BuildContext dcontext = context;
+
+  String code = util.randomString(24);
+
   var body = {
     'signuser': sd.getSignUserId().toString(),
     'signid': sd.getSignId().toString(),
     'signkey': sd.getNameKey(),
+    'code': code,
   };
-  Map<String, dynamic> js = await util.postJson(
-    "/rest/createcode",
-    body: body,
-  );
-  if (js['status'] != 'OK') {
-    if (!dcontext.mounted) return;
-    Navigator.of(context).pop("CANCEL");
-    return;
-  }
-  String code = js['code'];
+  await Clipboard.setData(ClipboardData(text: code));
+
   if (!dcontext.mounted) return;
 
   Future accept() async {
-    await Clipboard.setData(ClipboardData(text: code));
+    Map<String, dynamic> js = await util.postJson(
+      "/rest/createcode",
+      body: body,
+    );
+    if (js['status'] != 'OK') {
+      // handle error
+    }
     if (dcontext.mounted) {
       Navigator.of(dcontext).pop("OK");
     }
   }
 
+  Future cancel() async {
+    if (dcontext.mounted) {
+      Navigator.of(dcontext).pop("CANCEL");
+    }
+  }
+
   Widget acceptBtn = widgets.submitButton("OK", accept);
+  Widget cancelBtn = widgets.submitButton("Cancel", cancel);
 
   Dialog dlg = Dialog(
     child: Padding(
@@ -78,18 +89,23 @@ Future loginKeyDialog(BuildContext context, SignData sd) async {
           children: <Widget>[
             const Text(
               "Login Code: ",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 15),
             Text(
               code,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 15),
-            const Text("Code will be posted to clipboard"),
+            const Text(
+              "Code has been posted to clipboard.  Accepting this "
+              "code will remove all previous codes for this sign",
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [acceptBtn],
+              children: [cancelBtn, acceptBtn],
             )
           ],
         ),

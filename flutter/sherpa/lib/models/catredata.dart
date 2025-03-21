@@ -84,7 +84,8 @@ class CatreData {
     return catreData;
   }
 
-  List<Map<String, dynamic>>? listCatreOutput(Iterable<CatreData>? itms) {
+  List<Map<String, dynamic>>? listCatreOutput(
+      Iterable<CatreData>? itms) {
     if (itms == null) return null;
     List<Map<String, dynamic>> rslt = [];
     for (CatreData cd in itms) {
@@ -100,10 +101,12 @@ class CatreData {
   }
 
   @protected
-  List<T> buildList<T>(String id, T Function(CatreUniverse, dynamic) fun) {
+  List<T> buildList<T>(
+      String id, T Function(CatreUniverse, dynamic) fun) {
     List<dynamic>? rdevs = catreData[id] as List<dynamic>?;
     if (rdevs == null) return <T>[];
-    List<T> devs = rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
+    List<T> devs =
+        rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
     return devs;
   }
 
@@ -113,12 +116,14 @@ class CatreData {
     T Function(CatreUniverse, dynamic) fun,
   ) {
     if (rdevs == null) return <T>[];
-    List<T> devs = rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
+    List<T> devs =
+        rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
     return devs;
   }
 
   @protected
-  List<T>? optList<T>(String id, T Function(CatreUniverse, dynamic) fun) {
+  List<T>? optList<T>(
+      String id, T Function(CatreUniverse, dynamic) fun) {
     if (catreData[id] == null) return null;
     List<dynamic>? rdevs = catreData[id] as List<dynamic>?;
     if (rdevs == null) return <T>[];
@@ -326,7 +331,8 @@ class CatreData {
     return hc;
   }
 
-  Future<Map<String, dynamic>?> issueCommand(String cmd, String argname) async {
+  Future<Map<String, dynamic>?> issueCommand(
+      String cmd, String argname) async {
     var url = Uri.https(util.getServerURL(), cmd);
     var body = {
       globals.catreSession: globals.sessionId,
@@ -339,21 +345,11 @@ class CatreData {
 
   Future<Map<String, dynamic>?> issueCommandWithArgs(
     String cmd,
-    Map<String, dynamic> args,
+    Map<String, String?> args,
   ) async {
     var url = Uri.https(util.getServerURL(), cmd);
-    var body = {globals.catreSession: globals.sessionId};
-    for (String key in args.keys) {
-      dynamic val = args[key];
-      String? sval;
-      if (val.runtimeType == List || val.runtimeType == String) {
-        sval = convert.jsonEncode(val);
-      } else {
-        sval = val?.toString();
-      }
-      body[key] = sval;
-    }
-    var resp = await http.post(url, body: body);
+    args[globals.catreSession] = globals.sessionId;
+    var resp = await http.post(url, body: args);
     if (resp.statusCode >= 400) return null;
     return convert.jsonDecode(resp.body) as Map<String, dynamic>;
   }

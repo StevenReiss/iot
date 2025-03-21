@@ -201,7 +201,14 @@ Widget itemWithMenu<T>(
   void Function()? onTap,
   void Function()? onDoubleTap,
   void Function()? onLongPress,
+  void Function()? onHover,
+  void Function()? onSecondaryTap,
+  void Function()? onTertiaryTap,
+  String tooltip = "",
 }) {
+  onDoubleTap ??= onTap;
+  onSecondaryTap ??= onDoubleTap;
+  onTertiaryTap ??= onTertiaryTap ??= onSecondaryTap;
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
     itemBuilder: (context) => _itemMenuBuilder(acts),
@@ -218,10 +225,11 @@ Widget itemWithMenu<T>(
     onTap: onTap,
     onDoubleTap: onDoubleTap,
     onLongPress: onLongPress,
-    onSecondaryTap: onDoubleTap,
-    onTertiaryTapUp: _dummyTapUp(onLongPress),
+    onSecondaryTap: onSecondaryTap,
+    onTertiaryTapUp: _dummyTapUp(onTertiaryTap),
     child: w,
   );
+  w1 = tooltipWidget(tooltip, w1);
   return w1;
 }
 

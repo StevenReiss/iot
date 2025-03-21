@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 library iqsign.util;
 
 import 'dart:convert' as convert;
@@ -40,6 +39,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'globals.dart' as globals;
+import 'dart:math';
 
 String hasher(String msg) {
   final bytes = convert.utf8.encode(msg);
@@ -83,7 +83,8 @@ Uri getServerUri(String path, [Map<String, dynamic>? query]) {
   );
 }
 
-Future<Map<String, dynamic>> postJson(String url, {dynamic body}) async {
+Future<Map<String, dynamic>> postJson(String url,
+    {dynamic body}) async {
   Uri u = getServerUri(url);
   Map<String, String> headers = {
     "accept": "application/json",
@@ -133,4 +134,11 @@ Future<Map<String, dynamic>> getJson(String url, {dynamic body}) async {
   Map<String, dynamic> js = {};
   js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
   return js;
+}
+
+String randomString(int len) {
+  var r = Random();
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  return List.generate(len, (index) => chars[r.nextInt(chars.length)])
+      .join();
 }

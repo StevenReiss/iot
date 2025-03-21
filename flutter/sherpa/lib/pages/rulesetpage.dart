@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/util.dart' as util;
@@ -39,8 +38,6 @@ import 'package:sherpa/levels.dart';
 import 'package:sherpa/pages/rulepage.dart';
 import 'package:sherpa/pages/authorizationpage.dart';
 import 'package:sherpa/models/catremodel.dart';
-
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -61,7 +58,8 @@ class SherpaRulesetWidget extends StatefulWidget {
   });
 
   @override
-  State<SherpaRulesetWidget> createState() => _SherpaRulesetWidgetState();
+  State<SherpaRulesetWidget> createState() =>
+      _SherpaRulesetWidgetState();
 }
 
 class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
@@ -90,6 +88,8 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       value: _forDevice,
       nullValue: "All Devices",
       onChanged: _deviceSelected,
+      tooltip: "Select a device to view its rules.  In order to edit "
+          "the rules, you must select a particular device.",
     );
   }
 
@@ -108,26 +108,38 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
 
   Widget _buildRuleWidget(CatreRule cr) {
     List<widgets.MenuAction> acts = [
-      widgets.MenuAction('Edit Rule', () => _editRule(cr)),
-      widgets.MenuAction('Remove Rule', () => _removeRule(cr)),
+      widgets.MenuAction(
+        'Edit Rule',
+        () => _editRule(cr),
+        "View or edit the conditions and actions of this rule",
+      ),
+      widgets.MenuAction(
+        'Remove Rule',
+        () => _removeRule(cr),
+        "Remove this rule from your program",
+      ),
     ];
     if (_forDevice != null) {
       acts.addAll([
         widgets.MenuAction(
           'Add New Rule Before',
           () => _newRule(cr, false, true),
+          "Insert a new rule with higher priority than this rule",
         ),
         widgets.MenuAction(
           'Add New Rule After',
           () => _newRule(cr, false, false),
+          "Insert a new rule with lower priority than this rule",
         ),
         widgets.MenuAction(
           'Add New Trigger Before',
           () => _newRule(cr, true, true),
+          "Insert a new trigger rule with higher priority than this rule",
         ),
         widgets.MenuAction(
           'Add New Trigger After',
           () => _newRule(cr, true, false),
+          "Insert a new trigger rule with lower priority than this rule",
         ),
       ]);
     }
@@ -139,6 +151,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
         widgets.MenuAction(
           "Move to ${pl1.name}",
           () => _findRulePriority(pl1a.highPriority - 1, true, pl1a),
+          "Move this rule to a the lower priority level ${pl1.name}",
         ),
       );
     }
@@ -150,15 +163,23 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
         widgets.MenuAction(
           "Move to ${pl1.name}",
           () => _findRulePriority(h, false, pl1a),
+          "Move this rule to a the higher priority level ${pl1.name}",
         ),
       );
     }
-    return widgets.itemWithMenu(
+    Widget w1 = widgets.itemWithMenu(
       cr.getLabel(),
       acts,
-      onTap: () => _conditionalEdit(cr),
+      onTap: () => _editRule(cr),
       onDoubleTap: () => _editRule(cr),
+      onLongPress: () => _conditionalEdit(cr),
+      tooltip:
+          "Tap to edit this rule.  Long press to see the rule description. "
+          "Use the menu on the left for further rule options.  Use the gadget "
+          "on the right to adjust the rule priority by moving it up or down.",
     );
+
+    return w1;
   }
 
   void _conditionalEdit(CatreRule cr) {
@@ -227,20 +248,24 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
               widgets.MenuAction(
                 'Add a New Rule',
                 _addRule,
+                "Create a new rule for the selected device",
               ),
             if (_forDevice != null)
               widgets.MenuAction(
                 'Add a New Trigger',
                 _addTrigger,
+                "Create a new trigger rule for the selected device",
               ),
             if (_forDevice != null)
               widgets.MenuAction(
-                'Show Current Device States',
+                'Show Current Device Status',
                 _showStates,
+                "Show the current status of the device",
               ),
             widgets.MenuAction(
               'Add or Modify Authorizations',
               _updateBridges,
+              "Add or modify the authorizations for this device",
             )
           ]),
         ],
@@ -259,12 +284,12 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
                 children: <Widget>[
                   IconButton(
                     icon: const Icon(Icons.add_alert_outlined),
-                    tooltip: "Add a new trigger rule",
+                    tooltip: "Add a new trigger rule for the device",
                     onPressed: _addTrigger,
                   ),
                   IconButton(
                     icon: const Icon(Icons.add_task_outlined),
-                    tooltip: 'Add new rule',
+                    tooltip: 'Add new rule for the device',
                     onPressed: _addRule,
                   ),
                 ],
@@ -286,7 +311,8 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     setState(() {});
   }
 
-  Future<CatreRule?> _newRule(CatreRule? cr, bool trig, bool after) async {
+  Future<CatreRule?> _newRule(
+      CatreRule? cr, bool trig, bool after) async {
     if (_forDevice == null) {
       await widgets.displayDialog(
         context,
@@ -299,10 +325,11 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     bool below = false;
 
     if (cr == null) {
-      List<CatreRule> rules = _forUniverse.getProgram().getSelectedRules(
-            _priority,
-            _forDevice,
-          );
+      List<CatreRule> rules =
+          _forUniverse.getProgram().getSelectedRules(
+                _priority,
+                _forDevice,
+              );
       if (rules.isNotEmpty) {
         if (after) {
           cr = rules.last;
@@ -375,7 +402,8 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
   }
 
   void _showStates() async {
-    Map<String, dynamic>? states = await _forDevice?.issueCommandWithArgs(
+    Map<String, dynamic>? states =
+        await _forDevice?.issueCommandWithArgs(
       "/universe/deviceStates",
       {"DEVICEID": _forDevice?.getDeviceId()},
     );

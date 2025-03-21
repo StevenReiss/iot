@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.brown.cs.catre.catre.CatreBridge;
 import edu.brown.cs.catre.catre.CatreBridgeAuthorization;
 import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatreSavableBase;
@@ -256,14 +257,19 @@ CatstoreUser(CatreStore store,Map<String,Object> doc)
    user_password = getSavedString(map,"PASSWORD",user_password);
    universe_id = getSavedString(map,"UNIVERSE_ID",universe_id);
    temp_password = getSavedString(map,"TEMP_PASSWORD",null);
-   user_universe = null;
+   user_universe = getUniverse();
 
    bridge_auths = new HashMap<>();
    List<BridgeAuth> bal = new ArrayList<>();
    bal = getSavedSubobjectList(store,map,"AUTHORIZATIONS",
 	 BridgeAuth::new,bal);
    for (BridgeAuth ba : bal) {
-      bridge_auths.put(ba.getBridgeName(),ba);
+      String name = ba.getBridgeName();
+      if (user_universe != null) {
+         CatreBridge br = user_universe.findBridge(name);
+         if (br == null) continue;
+       }
+      bridge_auths.put(name,ba);
     }
 }
 

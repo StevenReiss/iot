@@ -320,13 +320,14 @@ IQsignLoginCode checkAccessToken(String token,Number uid,String code)
 }
 
 
-String addLoginCode(Number uid,Number sid)
+void addLoginCode(Number uid,Number sid,String code)
 {
-   String code = IQsignMain.randomString(24);
-   String q1 = "INSERT INTO iQsignLoginCodes ( code, userid, signid ) " +
+   String q1 = "DELETE FROM iQsignLoginCodes WHERE userid = $1 AND signid = $2";
+   String q2 = "INSERT INTO iQsignLoginCodes ( code, userid, signid ) " +
       "VALUES ( $1, $2, $3 )";
+   
+   sql_database.sqlUpdate(q1,uid,sid);
    sql_database.sqlUpdate(q1,code,uid,sid);
-   return code;
 }
 
 

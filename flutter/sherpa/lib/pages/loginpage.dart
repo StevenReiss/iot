@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -52,8 +51,6 @@ import 'package:sherpa/models/catremodel.dart';
 /********************************************************************************/
 
 bool _loginValid = false;
-
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -76,7 +73,6 @@ Future<bool> testLogin() async {
   }
   return false;
 }
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -169,6 +165,7 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
                       validator: _validateUserName,
                       controller: _userController,
                       fraction: 0.8,
+                      tooltip: "Enter your username",
                       context: context),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
@@ -177,13 +174,14 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
                     validator: _validatePassword,
                     controller: _pwdController,
                     obscureText: true,
-                    context: context,
                     fraction: 0.8,
+                    tooltip: "Enter your password",
+                    context: context,
                   ),
                   widgets.errorField(_loginError),
                   Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 150, maxWidth: 350),
+                    constraints: const BoxConstraints(
+                        minWidth: 150, maxWidth: 350),
                     width: MediaQuery.of(context).size.width * 0.4,
                     child: widgets.submitButton("Login", _handleLogin),
                   ),
@@ -205,7 +203,8 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
             const Padding(
               padding: EdgeInsets.all(16.0),
             ),
-            widgets.textButton("Not a user? Register Here.", _gotoRegister),
+            widgets.textButton(
+                "Not a user? Register Here.", _gotoRegister),
             widgets.textButton("Forgot Password?", _gotoForgotPassword),
           ],
         ),
@@ -344,4 +343,3 @@ class _HandleLogin {
     return jresp['MESSAGE'];
   }
 }
-

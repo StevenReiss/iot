@@ -31,14 +31,12 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/models/catremodel.dart';
 import 'package:day_picker/day_picker.dart';
 // import 'package:flutter_spinbox/material.dart';
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -51,10 +49,12 @@ class SherpaConditionWidget extends StatefulWidget {
   final CatreRule _forRule;
   final CatreCondition _forCondition;
 
-  const SherpaConditionWidget(this._forRule, this._forCondition, {super.key});
+  const SherpaConditionWidget(this._forRule, this._forCondition,
+      {super.key});
 
   @override
-  State<SherpaConditionWidget> createState() => _SherpaConditionWidgetState();
+  State<SherpaConditionWidget> createState() =>
+      _SherpaConditionWidgetState();
 }
 
 class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
@@ -92,8 +92,16 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     return Scaffold(
       appBar: AppBar(title: Text(ttl), actions: [
         widgets.topMenuAction([
-          widgets.MenuAction('Save Changes', _saveCondition),
-          widgets.MenuAction('Revert condition', _revertCondition),
+          widgets.MenuAction(
+            'Save Changes',
+            _saveCondition,
+            "Save change to this condition",
+          ),
+          widgets.MenuAction(
+            'Revert condition',
+            _revertCondition,
+            "Undo any changes and restore condition to its previously saved state",
+          ),
         ]),
       ]),
       body: widgets.topLevelPage(
@@ -136,26 +144,35 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       validator: _labelValidator,
       onChanged: _setLabel,
       controller: _labelControl,
+      tooltip: "Enter a brief descriptive label for the condition",
     );
   }
 
   Widget _conditionDescription() {
     return widgets.textFormField(
-        hint: "Detailed condition description",
-        label: "Condition Description",
-        controller: _descControl,
-        onChanged: _setDescription,
-        maxLines: 3);
+      hint: "Detailed condition description",
+      label: "Condition Description",
+      controller: _descControl,
+      onChanged: _setDescription,
+      maxLines: 3,
+      tooltip: "Enter a detailed description of the condition",
+    );
   }
 
   Widget _conditionType() {
     bool trig = _forCondition.isTrigger();
-    List<CatreConditionType> ctyps = (trig ? triggerConditionTypes : ruleConditionTypes);
-    return widgets.dropDownWidget(ctyps,
-        labeler: (CatreConditionType ct) => ct.label,
-        value: _condType,
-        onChanged: _setConditionType,
-        label: "Condition Type");
+    List<CatreConditionType> ctyps =
+        (trig ? triggerConditionTypes : ruleConditionTypes);
+    return widgets.dropDownWidget(
+      ctyps,
+      labeler: (CatreConditionType ct) => ct.label,
+      value: _condType,
+      onChanged: _setConditionType,
+      label: "Condition Type",
+      tooltip: "Choose the type of condition. "
+          "${_condType.label} means ${_condType.description}",
+    );
+    // should get a descriptoin based on _condType and add to value
   }
 
   String? _labelValidator(String? lbl) {
@@ -189,7 +206,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       CatreCondition? ccnm = shared[cnm];
       if (ccnm == null && !cnm.startsWith("Undefined")) {
         w0 = widgets.submitButton("Share", _shareCondition);
-      } else if (ccnm != _forCondition && !cnm.startsWith("Undefined")) {
+      } else if (ccnm != _forCondition &&
+          !cnm.startsWith("Undefined")) {
         w0 = widgets.submitButton("Update Shared", _updateShared);
       }
     }
@@ -502,7 +520,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     if (sensors.isEmpty) return rslt;
 
     _SensorParameter sp = sensors.firstWhere(
-      (_SensorParameter sp) => sp.parameter == _forCondition.getParameter(),
+      (_SensorParameter sp) =>
+          sp.parameter == _forCondition.getParameter(),
       orElse: () => sensors[0],
     );
     Widget w1 = widgets.dropDownWidget(
@@ -628,7 +647,9 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     List<CatreDevice> devs = _getDevices();
     String? devid = _forCondition.getDeviceId();
     CatreDevice dev = devs[0];
-    if (devid != null) dev = _forCondition.getUniverse().findDevice(devid);
+    if (devid != null) {
+      dev = _forCondition.getUniverse().findDevice(devid);
+    }
     List<String> choices = ["IS ENABLED", "IS DISABLED"];
 
     Widget w1 = widgets.dropDownWidget(
@@ -696,7 +717,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
 
     CatreProgram pgm = _forCondition.getUniverse().getProgram();
     Map<String, CatreCondition> conds = pgm.getSharedConditions();
-    conds.removeWhere((String nm, CatreCondition cc) => cc.isTrigger() != trigger);
+    conds.removeWhere(
+        (String nm, CatreCondition cc) => cc.isTrigger() != trigger);
     List<String> names = [];
     for (String n in conds.keys) {
       names.add(n);
@@ -917,7 +939,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
   void _setResetTime(TimeOfDay td) {
     setState(() {
       _forCondition.setOffAfter(0);
-      _forCondition.setResetTime((td.hour * 60 + td.minute * 60) * 60 * 1000);
+      _forCondition
+          .setResetTime((td.hour * 60 + td.minute * 60) * 60 * 1000);
     });
   }
 

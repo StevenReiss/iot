@@ -54,7 +54,8 @@ class SherpaProgramWidget extends StatefulWidget {
   const SherpaProgramWidget(this._theUniverse, {super.key});
 
   @override
-  State<SherpaProgramWidget> createState() => _SherpaProgramWidgetState();
+  State<SherpaProgramWidget> createState() =>
+      _SherpaProgramWidgetState();
 }
 
 class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
@@ -89,15 +90,15 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
             widgets.MenuAction(
               'Restore or Reload Program',
               _reloadProgram,
+              "This will reload the program from the server.",
             ),
             widgets.MenuAction(
               'Add or Modify Authorizations',
               _handleAuthorizations,
+              "View or change the authorizations for devices in your universe.",
             ),
-            widgets.MenuAction(
-              'Remove Device',
-              _handleRemoveDevice,
-            ),
+            widgets.MenuAction('Remove Device', _handleRemoveDevice,
+                "Remove a device from your universe."),
 //          widgets.MenuAction(
 //            'Create Virtual Condition',
 //            _createVirtualCondition,
@@ -123,7 +124,11 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
                     ),
                   ),
                   widgets.fieldSeparator(),
-                  Expanded(child: _createDeviceSelector()),
+                  Expanded(
+                      child: _createDeviceSelector(
+                    tooltip:
+                        "Select the device whose rules you with to view or edit",
+                  )),
                 ],
               ),
               widgets.fieldSeparator(),
@@ -159,21 +164,26 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
               onChanged: _removeDeviceSelected,
               nullValue: "No Device",
               useAll: true,
+              tooltip:
+                  "Select the device you wish to remove from your universe. "
+                  "This cannot be undone easily.",
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
-                child: const Text("Remove"),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, false);
-                },
-                child: const Text("Cancel"),
-              ),
-            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    child: const Text("Remove"),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text("Cancel"),
+                  ),
+                ]),
           ],
         );
       },
@@ -199,6 +209,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     void Function(CatreDevice?)? onChanged,
     String? nullValue = "All Devices",
     bool useAll = false,
+    String tooltip = "",
   }) {
     List<CatreDevice> devs = _theUniverse.getOutputDevices().toList();
     if (useAll) devs = _theUniverse.getDevices();
@@ -210,6 +221,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       onChanged: onChanged,
       value: _forDevice,
       nullValue: nullValue,
+      tooltip: tooltip,
     );
   }
 
@@ -277,7 +289,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       textAlign: TextAlign.left,
       style: lblstyle,
     );
-    return GestureDetector(
+    Widget w1 = GestureDetector(
       onTap: () => _handleSelect(lvl),
       onDoubleTap: () => _handleSelect(lvl),
       child: Container(
@@ -303,5 +315,11 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
         ),
       ),
     );
+
+    Widget w2 = widgets.tooltipWidget(
+      "Tap to select the priority level to work on",
+      w1,
+    );
+    return w2;
   }
 }

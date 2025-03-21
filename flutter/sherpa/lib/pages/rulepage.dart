@@ -31,14 +31,12 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/models/catremodel.dart';
 import 'conditionpage.dart';
 import 'actionpage.dart';
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -86,8 +84,17 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       appBar: AppBar(title: Text(ttl), actions: [
         widgets.topMenuAction(
           [
-            widgets.MenuAction('Save Changes', _saveRule),
-            widgets.MenuAction('Revert rule', _revertRule),
+            widgets.MenuAction(
+              'Save Changes',
+              _saveRule,
+              "Save the changes made to this rule",
+            ),
+            widgets.MenuAction(
+              'Revert rule',
+              _revertRule,
+              "Undo any changes made to this rule and restore to previous "
+                  "saved state",
+            ),
           ],
         ),
       ]),
@@ -103,8 +110,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  widgets.fieldSeparator(),
-                  widgets.fieldSeparator(),
+                  widgets.fieldSeparator(16),
                   _ruleLabel(),
                   widgets.fieldSeparator(),
                   _ruleDescription(),
@@ -129,12 +135,18 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       label: "Rule Label",
       validator: _labelValidator,
       controller: _labelControl,
+      tooltip: "Provide a short but meaningful label for this rule.",
     );
   }
 
   Widget _ruleDescription() {
     return widgets.textFormField(
-        hint: "Detailed rule description", label: "Rule Description", controller: _descControl, maxLines: 3);
+      hint: "Detailed rule description",
+      label: "Rule Description",
+      controller: _descControl,
+      maxLines: 3,
+      tooltip: "Provide a detailed description of this rule.",
+    );
   }
 
   Widget _ruleConditions() {
@@ -300,12 +312,14 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
   }
 
   void _editCondition(CatreCondition cc) async {
-    await widgets.gotoThen(context, SherpaConditionWidget(_forRule, cc));
+    await widgets.gotoThen(
+        context, SherpaConditionWidget(_forRule, cc));
     setState(() {});
   }
 
   void _showCondition(CatreCondition cc) {
-    widgets.displayDialog(context, "Condition Description", cc.getDescription());
+    widgets.displayDialog(
+        context, "Condition Description", cc.getDescription());
   }
 
   void _addNewAction() {
@@ -326,12 +340,14 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
 
   void _editAction(CatreAction ca) async {
     CatreDevice cd = _forRule.getDevice();
-    await widgets.gotoThen(context, SherpaActionWidget(cd, _forRule, ca));
+    await widgets.gotoThen(
+        context, SherpaActionWidget(cd, _forRule, ca));
     setState(() {});
   }
 
   void _showAction(CatreAction ca) {
-    widgets.displayDialog(context, "Action Description", ca.getDescription());
+    widgets.displayDialog(
+        context, "Action Description", ca.getDescription());
   }
 
   void _labelListener() {
