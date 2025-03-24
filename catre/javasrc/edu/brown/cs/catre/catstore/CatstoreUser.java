@@ -251,6 +251,8 @@ CatstoreUser(CatreStore store,Map<String,Object> doc)
 
 @Override public void fromJson(CatreStore store,Map<String,Object> map)
 {
+   catre_store = store;
+   
    super.fromJson(store,map);
    user_name = getSavedString(map,"USERNAME",user_name);
    user_email = getSavedString(map,"EMAIL",user_email);
