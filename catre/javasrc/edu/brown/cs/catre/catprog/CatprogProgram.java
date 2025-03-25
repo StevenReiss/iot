@@ -363,6 +363,7 @@ public Set<CatreParameterRef> getActiveSensors()
    List<CatreRule> rls = new ArrayList<>();
    rls = getSavedSubobjectList(cs,map,"RULES",
 	 this::createRule,rls);
+   rls = removeDuplicates(rls);
   
    rule_list.clear();
    rule_list.addAll(rls);
@@ -376,6 +377,29 @@ public Set<CatreParameterRef> getActiveSensors()
          shared_conditions.put(cc.getName(),(CatprogCondition) cc);
        }
     }
+}
+
+
+private List<CatreRule> removeDuplicates(List<CatreRule> rls)
+{
+   List<CatreRule> rslt = new ArrayList<>();
+   for (CatreRule cr : rls) {
+      boolean dup = false;
+      for (CatreRule cr0 : rslt) {
+         if (ruleIsDuplicate(cr0,cr)) dup = true;
+       }
+      if (!dup) rslt.add(cr);
+    }
+   return rslt;
+}
+
+
+private boolean ruleIsDuplicate(CatreRule cr0,CatreRule cr1)
+{
+   if (cr0.getTargetDevice() != cr1.getTargetDevice()) return false;
+   if (cr0.getPriority() != cr1.getPriority()) return false;
+   CatreLog.logD("CATPROG","Remove duplicate rule " + cr1);
+   return true;
 }
 
 
