@@ -170,8 +170,8 @@ async function processCommand(user, dev, trans, command, values) {
     }
    
    let cmdarg = {
-         "component": trans.componentid, 
-         "capability": trans.capabilityid,
+         "component": trans.COMPONENTID, 
+         "capability": trans.CAPABILITYID,
          "command": command, 
          "arguments": args,
    };
@@ -691,6 +691,8 @@ class SamsungDevice {
          params.push(p);
       }
       cattrans.DEFAULTS = { PARAMETERS: params };
+      cattrans.COMPONENTID = cmd.componentid;
+      cattrans.CAPABILITYID = cmd.capabilityid;
       return cattrans;
    }
 

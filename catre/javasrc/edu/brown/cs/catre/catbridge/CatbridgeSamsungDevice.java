@@ -78,6 +78,7 @@ private static String [] PARAM_FIELDS = {
 
 private static String [] TRANSITION_FIELDS = {
    "NAME","TYPE","LABEL","DESCRIPTION",
+// "COMPONENTID","CAPABILITYID",
 };
 
 
