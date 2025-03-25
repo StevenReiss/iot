@@ -119,7 +119,7 @@ async function addBridge(authdata, bid) {
 async function handleCommand(bid, uid, devid, command, values) {
    let user = users[uid];
    if (user == null) {
-      console.log("COMMAND: USER NOT FOUND", uid);
+      console.log("SAMSUNG COMMAND: USER NOT FOUND", uid);
       return;
    }
 
@@ -135,7 +135,7 @@ async function handleCommand(bid, uid, devid, command, values) {
 
 
 async function handleActiveSensors(bid, uid, active) {
-   console.log("HANDLE ACTIVE SAMSUNG SENSORS", uid, active);
+   console.log("SAMSUNG HANDLE ACTIVE SENSORS", uid, active);
    let user = users[uid];
    if (user == null) {
       console.log("SAMSUNG COMMAND: USER NOT FOUND", uid);
@@ -157,15 +157,32 @@ async function handleActiveSensors(bid, uid, active) {
 
 
 async function processCommand(user, dev, trans, command, values) {
+   console.log("SAMSUNG SETUP COMMAND ",command,
+         JSON.stringify(trans,null,2),
+         JSON.stringify(values,null,2));
+
+   let args = [];
+   let params = trans.DEFAULTS.PARAMETERS;
+   for (let p of trans.DEFAULTS.PARAMETERS) {
+      let pname = p.NAME;
+      let pv = values[pname];
+      args.push(pv);
+    }
+   
    let cmdarg = {
-      component: trans.componentid, capability: trans.capabilityid,
-      command: command, "arguments": values
+         "component": trans.componentid, 
+         "capability": trans.capabilityid,
+         "command": command, 
+         "arguments": args,
    };
+   
+   console.log("SAMSUNG WORK ON COMMAND ",
+         JSON.stringify(cmdarg,null,2));
 
    let client = user.client;
    let resp = await client.devices.executeCommand(dev.UID, cmdarg);
 
-   console.log("EXECUTE COMMAND", dev, trans, cmdarg, resp);
+   console.log("SAMSUNG EXECUTE COMMAND", dev, trans, cmdarg, resp);
 
    return resp;
 }
@@ -175,7 +192,7 @@ async function processCommand(user, dev, trans, command, values) {
 async function handleParameters(bid, uid, devid, parameters) {
    let user = users[uid];
    if (user == null) {
-      console.log("COMMAND: USER NOT FOUND", uid);
+      console.log("SAMSUNG PARAMETERS: USER NOT FOUND", uid);
       return;
    }
 
@@ -190,12 +207,12 @@ async function getParameterValues(user, devid, parameters = null) {
    let client = user.client;
    let rslt = {};
    let sts = await client.devices.getStatus(devid);
-   console.log("DEVICE STATUS", devid, sts);
+   console.log("SAMSUNG DEVICE STATUS", devid, sts);
    for (let compname in sts.components) {
       let compstatus = sts.components[compname];
       for (let attrname in compstatus) {
          let capstatus = compstatus[attrname];
-         console.log("CAPABILITY STATUS", capstatus);
+         console.log("SAMSUNG CAPABILITY STATUS", capstatus);
          for (let aname in capstatus) {
             if (parameters == null || aname in parameters) {
                let attrstate = capstatus[aname];
@@ -226,14 +243,14 @@ async function getParameterValuesByCapability(user,devid,parameters)
          plist.push(param.NAME);
        }
     }
-   console.log("CAP STATUS",caps);
+   console.log("SAMSUNG CAP STATUS",caps);
    for (let data in caps) {
       let x = data.split("@@@");
       let compid = x[0];
       let capid = x[1];
-      console.log("CAP CHECK",compid,capid,caps[data])
+      console.log("SAMSUNG CAP CHECK",compid,capid,caps[data])
       let capstatus = await client.devices.getCapabilityStatus(devid,compid,capid);
-      console.log("CAP STATUS",capstatus);
+      console.log("SAMSUNG CAP STATUS",capstatus);
       for (let pnm of caps[data]) {
          rslt[pnm] = capstatus[pnm];
        }
@@ -275,21 +292,21 @@ async function getDevices(username) {
 
    user.devices = {};
    let devs = await client.devices.list();
-   console.log("FOUND DEVICES", devs.length, devs);
+   console.log("SAMSUNG FOUND DEVICES", devs.length, devs);
    let devlst = [];
    for (let dev of devs) {
-      console.log("WORK ON DEVICE", dev.deviceId);
+      console.log("SAMSUNG WORK ON DEVICE", dev.deviceId);
       let newdev = new SamsungDevice(user, dev);
       let devdef = await newdev.setup();
       if (devdef != null) {
          user.devices[devdef.UID] = devdef;
          devlst.push(devdef);
        }
-      console.log("NEW DEFINITION", JSON.stringify(devdef,null,2));
+      console.log("SAMSUNG NEW DEFINITION", JSON.stringify(devdef,null,2));
 //    await defineDevice(user, dev);
    }
 
-   console.log("OUTPUT DEVICES", devlst.length);
+   console.log("SAMSUNG OUTPUT DEVICES", devlst.length);
 
    let msg = {
          command: "DEVICES",
@@ -374,7 +391,7 @@ class SamsungDevice {
          LABEL: dev.label,
          DESCRIPTION: dev.name + ":" + dev.label,
       }
-      console.log("BUILD DEVICE",dev,this.cat_dev,this.samsung_device);
+      console.log("SAMSUNG BUILD DEVICE",dev,this.cat_dev,this.samsung_device);
       this.capability_map = {};
       this.condition_map = {};
       this.action_map = {};
@@ -395,7 +412,7 @@ class SamsungDevice {
    async analyzePresentation() {
       let client = this.user_id.client;
       let devid = this.samsung_device.deviceId;
-      console.log("GETTING PRESENTATION",devid);
+      console.log("SAMSUNG GETTING PRESENTATION",devid);
       let presentation = await client.devices.getPresentation(devid);
       if (presentation == null) return;
       let use = presentation.automation;
@@ -460,7 +477,7 @@ class SamsungDevice {
 
       let client = user.client;
       let key = capid.id + "_" + capid.version;
-      console.log("GETTING CAPABILITY",capid.id,capid.version);
+      console.log("SAMSUNG GETTING CAPABILITY",capid.id,capid.version);
 
       let cap = await client.capabilities.get(capid.id, capid.version);
       if (cap == null || cap.status != 'live') return null;
@@ -587,7 +604,7 @@ class SamsungDevice {
                param.TYPE = 'STRINGLIST';
             }
             else {
-               console.log("UNKNOWN array/set type", items, value);
+               console.log("SANSUNG UNKNOWN array/set type", items, value);
                return null;
             }
             let svals = this.getValues(ocap);
@@ -613,7 +630,7 @@ class SamsungDevice {
             param.ISSENSOR = false;
             break;
          default:
-            console.log("Unknown schema type", value);
+            console.log("SAMSUNG Unknown schema type", value);
             break;
       }
 
@@ -695,13 +712,13 @@ class SamsungDevice {
       let cap = this.capability_map[capid];
       let ocap = this.condition_map[capid];
       if (cap == null) {
-         console.log("CAPABILITY NOT FOUND",capid,JSON.stringify(cmd,null,2));
+         console.log("SAMSUNG CAPABILITY NOT FOUND",capid,JSON.stringify(cmd,null,2));
          return null;
        }
       if (cap.status != 'live') return null;
       let sub1 = cap.supportedValues;
       if (sub1 == null) sub1 = this.reference_map[capid];
-      console.log("COMMAND PARAMETER",capid,sub1,JSON.stringify(cap,null,2),
+      console.log("SAMSUNG COMMAND PARAMETER",capid,sub1,JSON.stringify(cap,null,2),
             JSON.stringify(ocap,null,2),JSON.stringify(schema,null,2));
       let pref = null;
       if (sub1 != null) {
@@ -713,7 +730,7 @@ class SamsungDevice {
 
       param = this.scanParameter(schema, param, pref,ocap);
 
-      console.log("PARAMETER RESULT",JSON.stringify(param,null,2),JSON.stringify(pref,null,2));
+      console.log("SAMSUNG PARAMETER RESULT",JSON.stringify(param,null,2),JSON.stringify(pref,null,2));
 
       return param;
    }

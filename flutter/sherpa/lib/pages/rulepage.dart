@@ -354,6 +354,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     if (_labelMatchesDescription) {
       _descControl.text = _labelControl.text;
     }
+    setState(() {});
   }
 
   void _descriptionListener() {
@@ -362,6 +363,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
         _labelMatchesDescription = false;
       }
     }
+    setState(() {});
   }
 
   bool _isRuleAcceptable() {

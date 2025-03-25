@@ -173,10 +173,6 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       onTap: () => _editRule(cr),
       onDoubleTap: () => _editRule(cr),
       onLongPress: () => _conditionalEdit(cr),
-      tooltip:
-          "Tap to edit this rule.  Long press to see the rule description. "
-          "Use the menu on the left for further rule options.  Use the gadget "
-          "on the right to adjust the rule priority by moving it up or down.",
     );
 
     return w1;
@@ -194,7 +190,10 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     if (o == n) return;
     CatreRule cr0 = _ruleSet[o];
     bool below = false;
-    if (o < n) n -= 1;
+    if (o < n) {
+      below = true;
+      n -= 1;
+    }
     CatreRule? cr;
     if (n >= _ruleSet.length) {
       below = true;
@@ -238,6 +237,13 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       onReorder: _handleReorder,
       children: rulewl,
     );
+    Widget w1 = widgets.tooltipWidget(
+      "Tap to edit this rule.  Long press to see the rule description. "
+      "Use the menu on the left for further rule options.  Use the gadget "
+      "on the right to adjust the rule priority by moving it up or down.",
+      rulew,
+    );
+    rulew = w1;
 
     return Scaffold(
       appBar: AppBar(

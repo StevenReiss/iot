@@ -217,7 +217,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       _saveCondition,
       enabled: _isConditionValid(),
     );
-    Widget w2 = widgets.submitButton("Cancel", _revertCondition);
+    Widget w2 = widgets.submitButton("Cancel", _cancelCondition);
 
     if (w0 != null) rslt.add(w0);
     rslt.add(w1);
@@ -1047,6 +1047,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     _forCondition.setName(_labelControl.text);
     _forCondition.setDescription(_descControl.text);
 
+    if (_forCondition.getCatreType() == "UNKNOWN") return true;
+
     if (_labelControl.text.isEmpty) return false;
     if (_labelControl.text.startsWith('Undefined')) return false;
 
@@ -1067,6 +1069,11 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     setState(() {
       if (!_forCondition.pop()) _forCondition.revert();
     });
+  }
+
+  void _cancelCondition() {
+    if (!_forCondition.pop()) _forCondition.revert();
+    Navigator.pop(context);
   }
 
   void _copyShared() {

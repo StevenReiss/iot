@@ -265,7 +265,7 @@ async function handleParameters(bid,uid,devid,params)
 
 async function updateValues(user,devid)
 {
-   console.log("UPDATE VALUES ",devid,user);
+   console.log("IQSIGN UPDATE VALUES ",devid,user);
 
    if (user == null || user.devices == null) return;
    
@@ -306,7 +306,7 @@ async function pingChecker()
    if (users.length == 0) return;
    
    let resp = await sendToIQsign("POST","ping",{ users : ulist });
-   console.log("PING",resp);
+   console.log("IQSIGN PING",resp);
 
    let upds = resp.update;
    for (let uid of resp.update) {
@@ -340,7 +340,7 @@ async function sendToIQsign(method,path,data)
        }
     }
 
-   console.log("Send to iQsign",path,data);
+   console.log("IQSIGN Send to iQsign",path,data);
 
    let response = await fetch(url, {
 	 method: method,
@@ -348,7 +348,7 @@ async function sendToIQsign(method,path,data)
 	 headers: hdrs });
    let rslt = await response.json();
 
-   console.log("Recieved back from iQsign",rslt);
+   console.log("IQSIGN Recieved back from iQsign",rslt);
 
    return rslt;
 }

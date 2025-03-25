@@ -668,10 +668,9 @@ private String handleAddRule(HttpExchange e,CatserveSessionImpl cs)
       return BowerRouter.errorResponse(e,cs,400,"Bad rule definition");
     }
    
-   
    cp.addRule(cr);
    
-  return BowerRouter.jsonOKResponse(cs,"RULE",cr.toJson());
+   return BowerRouter.jsonOKResponse(cs,"RULE",cr.toJson());
    
 }
 

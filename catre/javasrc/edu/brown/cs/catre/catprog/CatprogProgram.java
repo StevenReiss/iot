@@ -182,6 +182,7 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 {
    CatreRule oldcr = findRule(ur.getDataUID());
    if (oldcr != null) {
+      CatreLog.logD("CATPROG","Remove old rule " + oldcr.toJson());
       rule_list.remove(oldcr);
       for (CatreCondition cc : oldcr.getConditions()) {
          if (!cc.isShared()) {
@@ -192,6 +193,7 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
        }
     }
 	
+   CatreLog.logD("CATPROG","Add new rule " + ur.toJson());
    rule_list.add(ur);
    updateConditions();
 

@@ -123,8 +123,10 @@ Widget textField({
 
   InputDecoration deco = getDecoration(hint: hint, label: label);
   if (collapse) {
-    deco = InputDecoration.collapsed(
+    deco = InputDecoration(
       hintText: hint,
+      isCollapsed: true,
+      contentPadding: const EdgeInsets.only(left: 8, right: 4),
       border: const OutlineInputBorder(),
     );
   }
@@ -152,10 +154,10 @@ Widget textField({
 
 Widget errorField(String? text) {
   String t1 = (text ?? "");
-  return Text(
+  return largeText(
     t1,
-    style: const TextStyle(
-        color: laf.errorColor, fontSize: laf.errorFontSize),
+    color: laf.errorColor,
+    scaler: laf.errorFontScale,
   );
 }
 
@@ -201,14 +203,7 @@ Widget itemWithMenu<T>(
   void Function()? onTap,
   void Function()? onDoubleTap,
   void Function()? onLongPress,
-  void Function()? onHover,
-  void Function()? onSecondaryTap,
-  void Function()? onTertiaryTap,
-  String tooltip = "",
 }) {
-  onDoubleTap ??= onTap;
-  onSecondaryTap ??= onDoubleTap;
-  onTertiaryTap ??= onTertiaryTap ??= onSecondaryTap;
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_sharp),
     itemBuilder: (context) => _itemMenuBuilder(acts),
@@ -225,16 +220,16 @@ Widget itemWithMenu<T>(
     onTap: onTap,
     onDoubleTap: onDoubleTap,
     onLongPress: onLongPress,
-    onSecondaryTap: onSecondaryTap,
-    onTertiaryTapUp: _dummyTapUp(onTertiaryTap),
+    onSecondaryTap: onDoubleTap,
+    onTertiaryTapUp: _dummyTapUp(onLongPress),
     child: w,
   );
-  w1 = tooltipWidget(tooltip, w1);
   return w1;
 }
 
 List<PopupMenuItem<MenuAction>> _itemMenuBuilder(
-    List<MenuAction> acts) {
+  List<MenuAction> acts,
+) {
   return acts.map<PopupMenuItem<MenuAction>>(_menuItemAction).toList();
 }
 
@@ -257,7 +252,10 @@ Widget tooltipWidget(String tooltip, Widget w) {
     height: laf.toolTipHeight,
     padding: const EdgeInsets.all(8.0),
     preferBelow: true,
-    textStyle: const TextStyle(fontSize: laf.toolTipFontSize),
+    textStyle: const TextStyle(
+      fontSize: laf.toolTipFontSize,
+      color: Colors.black,
+    ),
     showDuration: const Duration(seconds: 2),
     waitDuration: const Duration(seconds: 1),
     child: w,
@@ -290,8 +288,10 @@ Widget submitButton(
     child: Text(name),
   );
   Widget w = Padding(
-    padding:
-        const EdgeInsets.symmetric(vertical: 16.0, horizontal: 6.0),
+    padding: const EdgeInsets.symmetric(
+      vertical: 16.0,
+      horizontal: 6.0,
+    ),
     child: eb,
   );
   w = tooltipWidget(tooltip, w);
@@ -344,7 +344,8 @@ Widget topMenuAction(List<MenuAction> labels) {
 }
 
 List<PopupMenuItem<MenuAction>> _topMenuActionBuilder(
-    List<MenuAction> labels) {
+  List<MenuAction> labels,
+) {
   return labels
       .map<PopupMenuItem<MenuAction>>(_menuItemAction)
       .toList();
@@ -406,6 +407,15 @@ Widget fieldSeparator([double ht = 8]) {
   return SizedBox(height: ht);
 }
 
+Widget fieldDivider({
+  double height = 8,
+  double? thickness,
+  Color color = laf.topLevelBackground,
+}) {
+  thickness ??= height;
+  return Divider(height: height, thickness: thickness, color: color);
+}
+
 /********************************************************************************/
 /*                                                                              */
 /*      Text fields                                                             */
@@ -417,9 +427,12 @@ Widget largeText(
   TextStyle? style,
   TextAlign? textAlign,
   int? maxLines,
+  Color? color,
+  Color? backgroundColor,
   Color? selectionColor,
   double scaler = 1.75,
 }) {
+  style ??= TextStyle(color: color, backgroundColor: backgroundColor);
   return Text(
     data,
     textScaler: TextScaler.linear(scaler),
@@ -450,6 +463,7 @@ Widget largeBoldText(
     textAlign: textAlign,
     maxLines: maxLines,
     selectionColor: selectionColor,
+    scaler: scaler,
   );
 }
 
@@ -486,10 +500,9 @@ Widget dropDownMenu(
   String? value,
   Function(String?)? onChanged,
   textAlign = TextAlign.left,
-  String tooltip = "",
 }) {
   value ??= items[0];
-  Widget w = DropdownMenu<String>(
+  return DropdownMenu<String>(
     initialSelection: value,
     requestFocusOnTap: true,
     onSelected: onChanged,
@@ -498,8 +511,6 @@ Widget dropDownMenu(
       return DropdownMenuEntry<String>(value: value, label: value);
     }).toList(),
   );
-  w = tooltipWidget(tooltip, w);
-  return w;
 }
 
 Widget dropDownWidget<T>(
@@ -530,7 +541,10 @@ Widget dropDownWidget<T>(
   itmlst.addAll(
     items.map<DropdownMenuItem<T>>((T v) {
       return DropdownMenuItem<T>(
-          value: v, enabled: true, child: Text(lbl(v)));
+        value: v,
+        enabled: true,
+        child: Text(lbl(v)),
+      );
     }).toList(),
   );
 
@@ -555,16 +569,22 @@ Widget booleanField({
   bool value = false,
   void Function(bool?)? onChanged,
   String tooltip = "",
+  compact = false,
 }) {
   label ??= "";
+  Widget w1 = Checkbox(value: value, onChanged: onChanged);
+  if (compact) {
+    w1 = SizedBox(
+      height: 24.0,
+      width: 24.0,
+      child: Transform.scale(scale: 0.8, child: w1),
+    );
+  }
   Widget w = Row(
     mainAxisSize: MainAxisSize.min,
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
-    children: <Widget>[
-      Checkbox(value: value, onChanged: onChanged),
-      Text(label),
-    ],
+    children: <Widget>[w1, Text(label)],
   );
   return tooltipWidget(tooltip, w);
 }
@@ -577,13 +597,15 @@ Widget booleanField({
 
 void goto(BuildContext context, Widget w) {
   // if (!context.mounted) return;
-  Navigator.of(context)
-      .push(MaterialPageRoute(builder: (context) => w));
+  Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => w));
 }
 
 Future<dynamic> gotoThen(BuildContext context, Widget w) async {
-  await Navigator.of(context)
-      .push(MaterialPageRoute(builder: (context) => w));
+  await Navigator.of(
+    context,
+  ).push(MaterialPageRoute(builder: (context) => w));
 }
 
 void gotoDirect(BuildContext context, Widget w) {
@@ -1060,7 +1082,9 @@ Future<bool> getValidation(
 }
 
 Future<bool> getValidationOld(
-    BuildContext context, String title) async {
+  BuildContext context,
+  String title,
+) async {
   bool? sts = await showDialog<bool>(
     context: context,
     builder: (BuildContext context) {
@@ -1092,7 +1116,9 @@ PreferredSizeWidget appBar(String title) {
     title: Text(
       title,
       style: const TextStyle(
-          fontWeight: FontWeight.bold, color: Colors.black),
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
     ),
   );
 }
@@ -1203,8 +1229,10 @@ InputDecoration getDecoration({
     labelStyle: getLabelStyle(),
     hoverColor: laf.decorationHoverColor,
     focusedBorder: const OutlineInputBorder(
-      borderSide:
-          BorderSide(width: 2, color: laf.decorationBorderColor),
+      borderSide: BorderSide(
+        width: 4,
+        color: laf.decorationBorderColor,
+      ),
     ),
     border: const OutlineInputBorder(
       borderSide: BorderSide(width: 2, color: laf.decorationInputColor),
@@ -1219,7 +1247,9 @@ InputDecoration getDecoration({
 
 TextStyle getLabelStyle() {
   return const TextStyle(
-      color: laf.labelColor, fontWeight: FontWeight.bold);
+    color: laf.labelColor,
+    fontWeight: FontWeight.bold,
+  );
 }
 
 Widget getPadding(double size) {
@@ -1231,7 +1261,8 @@ Widget getTopLevelLogo(BuildContext context) {
     width: MediaQuery.of(context).size.width * 0.3,
     height: MediaQuery.of(context).size.height * 0.25,
     child: Center(
-        child: Image.asset(laf.topLevelImage, fit: BoxFit.contain)),
+      child: Image.asset(laf.topLevelImage, fit: BoxFit.contain),
+    ),
   );
 }
 

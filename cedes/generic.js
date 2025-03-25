@@ -140,7 +140,7 @@ function handleAttach(req,res)
 
    let uid = req.body.uid;
    if (users[uid] == null) {
-      console.log("NO USER FOUND");
+      console.log("GENERIC NO USER FOUND");
       config.handleFail(req,res,"No such user",403);
     }
    else {
@@ -167,7 +167,7 @@ function handleAuthorize(req,res)
    else {
       let p1 = user.pat;
       let p2 = config.hasher(p1 + user.seed);
-      // console.log("CHECK PWD",p1,p2,user.seed,patencode);
+      // console.log("GENERIC CHECK PWD",p1,p2,user.seed,patencode);
       if (p2 != patencode) {
          config.handleFail(req,res,"Bad uid or password",404);
        }
@@ -224,7 +224,7 @@ async function handleDevices(req,res)
 
 function handlePing(req,res)
 {
-   console.log("GENERIC PING",req.body);
+   console.log("GENERIC PING",req.body,new Date());
 
    let user = req.body.user;
    let c = queues[user.uid].shift();
@@ -345,7 +345,7 @@ async function checkUpdates()
 {
    let now = Date.now();
    
-   console.log("CHECK UPDATES",now);
+   console.log("GENERIC CHECK UPDATES",now);
    
    for (let uid in users) {
       let user = users[uid];
@@ -354,7 +354,7 @@ async function checkUpdates()
          if (dev.PINGTIME != null && dev.PINGTIME > 0) {
             let lp = user.lastping[dev.UID];
             if (lp != null && lp > 0 && (now-lp) > 2 * dev.PINGTIME) {
-               console.log("LOST DEVICE",dev);
+               console.log("GENERIC LOST DEVICE",dev);
                user.lastping[dev.UID] = 0;
                for (let par of dev.PARAMETERS) {
                   await noPingEvent(user,dev,par);
