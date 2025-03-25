@@ -338,7 +338,13 @@ class CatreData {
       globals.catreSession: globals.sessionId,
       argname: convert.jsonEncode(getCatreOutput()),
     };
-    var resp = await http.post(url, body: body);
+    Map<String, String> headers = {};
+    headers["accept"] = "application/json";
+    var resp = await http.post(
+      url,
+      body: body,
+      headers: headers,
+    );
     if (resp.statusCode >= 400) return null;
     return convert.jsonDecode(resp.body) as Map<String, dynamic>;
   }
@@ -349,7 +355,13 @@ class CatreData {
   ) async {
     var url = Uri.https(util.getServerURL(), cmd);
     args[globals.catreSession] = globals.sessionId;
-    var resp = await http.post(url, body: args);
+    Map<String, String> headers = {};
+    headers["accept"] = "application/json";
+    var resp = await http.post(
+      url,
+      body: args,
+      headers: headers,
+    );
     if (resp.statusCode >= 400) return null;
     return convert.jsonDecode(resp.body) as Map<String, dynamic>;
   }

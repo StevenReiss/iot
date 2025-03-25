@@ -370,10 +370,6 @@ private JSONArray getValues(JSONObject obj)
 private JSONObject fixTransition(JSONObject pretrans,JSONObject device)
 {
    JSONObject rslt = new JSONObject(pretrans,TRANSITION_FIELDS);
-// String capid = pretrans.getString("capabilityid");
-// JSONObject cap = capability_map.get(capid);
-// String name = pretrans.getString("NAME"); 
-// JSONObject ocap = condition_map.get(capid);
 
    JSONObject odflts = pretrans.getJSONObject("DEFAULTS");
    JSONArray oparams = odflts.getJSONArray("PARAMETERS");

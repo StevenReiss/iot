@@ -328,8 +328,19 @@ private String handleAuthorize(HttpExchange he,CatserveSessionImpl cs)
 {
    CatreLog.logD("CATSERVE","AUTHORIZE " +
          BowerRouter.getParameter(he,SESSION_PARAMETER));
-   if (cs == null || cs.getUser(catre_control) == null ||
+   if (cs == null || 
+         cs.getUser(catre_control) == null ||
 	 cs.getUniverse(catre_control) == null) {
+      if (cs == null) {
+         CatreLog.logI("CATSERVE","Unauthorized access -- no session");
+       }
+      else if (cs.getUser(catre_control) == null) {
+         CatreLog.logI("CATSERVE","Unauthorized access -- no user");
+       }
+      else {
+         CatreLog.logI("CATSERVE","Unauthorized access -- no universe");
+       }
+      
       return BowerRouter.errorResponse(he,cs,402,"Unauthorized access");
     }
    

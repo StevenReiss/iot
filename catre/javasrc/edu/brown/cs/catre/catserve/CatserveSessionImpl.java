@@ -228,7 +228,7 @@ public void fromJson(CatreStore cs,Map<String,Object> map)
 {
    super.fromJson(cs,map);
    user_id = getSavedString(map,"USER_ID",user_id);
-   universe_id = getSavedString(map,"universe_id",universe_id);
+   universe_id = getSavedString(map,"UNIVERSE_ID",universe_id);
    last_used = getSavedDate(map,"LAST_USED",last_used);
    expires_at = last_used.getTime() + EXPIRE_DELTA;
    if (value_map == null) value_map = new HashMap<>();
