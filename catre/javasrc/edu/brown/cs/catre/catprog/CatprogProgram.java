@@ -517,7 +517,7 @@ private class Updater implements Runnable {
       for_universe.updateLock();
       try {
          run_again = true;
-         if (devices != null && !for_devices.isEmpty()) {
+         if (devices != null && !devices.isEmpty()) {
             if (for_devices == null) for_devices = devices;
             else for_devices.addAll(devices);
           }
@@ -552,7 +552,6 @@ private class Updater implements Runnable {
        }
       
       if (used != null && used.isEmpty()) used = null;
-      
       CatreLog.logD("CATPROG","Ready to do update for " + for_universe.getName() + 
             " " + used);
       
