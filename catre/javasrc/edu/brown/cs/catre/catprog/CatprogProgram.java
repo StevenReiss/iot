@@ -467,13 +467,14 @@ private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps
    CatreLog.logD("CATPROG","Condition changed " + c + " " +
          istrig + " " + ps);
    
-   Set<CatreDevice> devices = new HashSet<>();
+   Set<CatreDevice> devices = null;
    for (CatreRule cr : rule_list) {
       CatprogRule cpr = (CatprogRule) cr;
       CatreDevice cd = cpr.getTargetDevice();
       if (cd == null) continue;
-      if (devices.contains(cd)) continue;
+      if (devices != null && devices.contains(cd)) continue;
       if (cpr.getUsedConditions().contains(c)) {
+         if (devices == null) devices = new HashSet<>();
          devices.add(cd);
        }
     }
@@ -550,7 +551,10 @@ private class Updater implements Runnable {
          for_universe.updateUnlock();
        }
       
-      CatreLog.logD("CATPROG","Ready to do update for " + for_universe.getName());
+      if (used != null && used.isEmpty()) used = null;
+      
+      CatreLog.logD("CATPROG","Ready to do update for " + for_universe.getName() + 
+            " " + used);
       
       for ( ; ; ) {
          CatreTriggerContext ctx = null;
