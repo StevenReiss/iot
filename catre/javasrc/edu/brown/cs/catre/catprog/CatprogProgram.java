@@ -516,7 +516,7 @@ private class Updater implements Runnable {
       for_universe.updateLock();
       try {
          run_again = true;
-         if (devices != null) {
+         if (devices != null && !for_devices.isEmpty()) {
             if (for_devices == null) for_devices = devices;
             else for_devices.addAll(devices);
           }
