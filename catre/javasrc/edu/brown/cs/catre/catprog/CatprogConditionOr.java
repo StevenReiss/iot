@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.brown.cs.catre.catre.CatreCondition;
 import edu.brown.cs.catre.catre.CatreConditionListener;
@@ -95,6 +96,22 @@ CatprogConditionOr(CatprogConditionOr cc)
 {
    for (CatreCondition cc : or_conditions) {
       cc.activate();
+    }
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+void addUsedConditions(Set<CatreCondition> rslt)
+{
+   if (!rslt.add(this)) return;
+   for (CatprogCondition cc : or_conditions) {
+      cc.addUsedConditions(rslt);
     }
 }
 

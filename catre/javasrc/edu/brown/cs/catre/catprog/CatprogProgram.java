@@ -85,7 +85,7 @@ private SortedSet<CatreRule>	rule_list;
 private CatreUniverse		for_universe;
 private Set<CatreCondition>	active_conditions;
 private Map<CatreCondition,RuleConditionHandler> cond_handlers;
-private Updater 		active_updates;
+private Updater 		active_updater;
 private SwingEventListenerList<CatreProgramListener> program_callbacks;
 private Map<String,CatprogCondition> shared_conditions;
 
@@ -105,7 +105,7 @@ CatprogProgram(CatreUniverse uu)
    rule_list = new ConcurrentSkipListSet<>(new RuleComparator());
    active_conditions = new HashSet<>();
    shared_conditions = new HashMap<>();
-   active_updates = null;
+   active_updater = null;
    cond_handlers = new WeakHashMap<>();
    program_callbacks = new SwingEventListenerList<>(CatreProgramListener.class);
 }
@@ -467,16 +467,28 @@ private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps
    CatreLog.logD("CATPROG","Condition changed " + c + " " +
          istrig + " " + ps);
    
+   Set<CatreDevice> devices = new HashSet<>();
+   for (CatreRule cr : rule_list) {
+      CatprogRule cpr = (CatprogRule) cr;
+      CatreDevice cd = cpr.getTargetDevice();
+      if (cd == null) continue;
+      if (devices.contains(cd)) continue;
+      if (cpr.getUsedConditions().contains(c)) {
+         devices.add(cd);
+       }
+    }
+   CatreLog.logD("CATPROG","Relevant target devices " + devices);
+   
    for_universe.updateLock();
    try {
       if (istrig && c != null) for_universe.addTrigger(c,ps);
-      Updater upd = active_updates;
+      Updater upd = active_updater;
       if (upd != null) {
-	 upd.runAgain();
+	 upd.runAgain(devices);
        }
       else {
-	 upd = new Updater();
-	 active_updates = upd;
+	 upd = new Updater(devices);
+	 active_updater = upd;
 	 for_universe.getCatre().submit(upd);
        }
     }
@@ -492,16 +504,22 @@ private class Updater implements Runnable {
 
    private boolean run_again;
    private long last_request;
+   private Set<CatreDevice> for_devices;
 
-   Updater() {
+   Updater(Set<CatreDevice> devices) {
       run_again = true;
       last_request = 0;
+      for_devices = devices;
     }
 
-   void runAgain() {
+   void runAgain(Set<CatreDevice> devices) {
       for_universe.updateLock();
       try {
          run_again = true;
+         if (devices != null) {
+            if (for_devices == null) for_devices = devices;
+            else for_devices.addAll(devices);
+          }
          last_request = System.currentTimeMillis();
        }
       finally {
@@ -511,17 +529,22 @@ private class Updater implements Runnable {
 
    @Override public void run() {
       CatreLog.logD("CATPROG","Start updater for " + for_universe.getName());
+      
+      Set<CatreDevice> used = null;
       for_universe.updateLock();
       try {
          for ( ; ; ) {
             long now = System.currentTimeMillis();
             if (now - last_request > RUN_DELAY) break;
             try {
-               wait(now-last_request);
+               Thread.sleep(now-last_request);
              }
             catch (InterruptedException e) { }
           }
+         used = for_devices;
+         for_devices = null;
          run_again = false;
+         
        }
       finally {
          for_universe.updateUnlock();
@@ -541,7 +564,7 @@ private class Updater implements Runnable {
           }
         
          try {
-            runOnce(ctx);
+            runOnce(ctx,used);
           }
          catch (Throwable t) {
             CatreLog.logE("CATPROG","Problem running program",t);
@@ -550,7 +573,7 @@ private class Updater implements Runnable {
          for_universe.updateLock();
          try {
             if (!run_again) {
-               active_updates = null;
+               active_updater = null;
                resetTriggers();
                break;
              }
@@ -593,10 +616,10 @@ private final class RuleConditionHandler implements CatreConditionListener {
 /*										*/
 /********************************************************************************/
 
-@Override public synchronized boolean runOnce(CatreTriggerContext ctx)
+@Override public synchronized boolean runOnce(CatreTriggerContext ctx,Set<CatreDevice> relevant)
 {
    CatreLog.logD("CATPROG","Run program " +
-         rule_list.size() + " " + ctx);
+         rule_list.size() + " " + ctx + " " + relevant);
    
    boolean rslt = false;
 
@@ -604,11 +627,15 @@ private final class RuleConditionHandler implements CatreConditionListener {
 
    Collection<CatreRule> rules = new ArrayList<>(rule_list);
 
-   CatreLog.logI("CATPROG","CHECK RULES at " + new Date());
+   CatreLog.logI("CATPROG","CHECK RULES at " + new Date()); 
 
    for (CatreRule r : rules) {
       CatreDevice rent = r.getTargetDevice();
       if (entities.contains(rent)) continue;
+      if (relevant != null && !relevant.contains(rent)) {
+         CatreLog.logD("CATPROG","Skip rule " + r.getName() + " due to relevancy");
+         continue;
+       }
       try {
 	 if (startRule(r,ctx)) {
 	    rslt = true;

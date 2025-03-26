@@ -107,7 +107,7 @@ private CatprogConditionDuration(CatprogConditionDuration cc)
 /*										*/
 /********************************************************************************/
 
-@Override protected CatprogCondition getSubcondition() 
+@Override CatprogCondition getSubcondition() 
 {
    return base_condition;
 }

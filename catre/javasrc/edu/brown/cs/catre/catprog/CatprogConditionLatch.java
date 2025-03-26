@@ -63,7 +63,7 @@ class CatprogConditionLatch extends CatprogCondition
 /*                                                                              */
 /********************************************************************************/
 
-private CatreCondition  base_condition;
+private CatprogCondition base_condition;
 private Calendar        reset_time;
 private long            reset_after;
 private long            off_after;
@@ -117,6 +117,17 @@ private CatprogConditionLatch(CatprogConditionLatch cc)
 }
 
 
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+@Override CatprogCondition getSubcondition()
+{
+   return base_condition;
+}
 
 
 

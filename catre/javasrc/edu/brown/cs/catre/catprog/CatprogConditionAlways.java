@@ -35,6 +35,7 @@
 package edu.brown.cs.catre.catprog;
 
 import java.util.Map;
+import java.util.Set;
 
 import edu.brown.cs.catre.catre.CatreCondition;
 import edu.brown.cs.catre.catre.CatreStore;
@@ -66,6 +67,19 @@ CatprogConditionAlways(CatprogConditionAlways ca)
 @Override public CatreCondition cloneCondition()
 {
    return new CatprogConditionAlways(this);
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+void addUsedConditions(Set<CatreCondition> rslt)
+{
+   // don't add this condition as it never changes
 }
 
 

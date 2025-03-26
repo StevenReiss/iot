@@ -93,7 +93,7 @@ JSONObject validateRule(CatreRule cr);
  *	returns true if a rule is triggered.
  **/
 
-boolean runOnce(CatreTriggerContext ctx);
+boolean runOnce(CatreTriggerContext ctx,Set<CatreDevice> relevant);
 
 
 /**

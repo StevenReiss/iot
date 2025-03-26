@@ -108,7 +108,7 @@ private CatprogConditionDebounce(CatprogConditionDebounce cc)
 /*                                                                              */
 /********************************************************************************/
 
-@Override protected CatprogCondition getSubcondition() 
+@Override CatprogCondition getSubcondition()  
 {
    return base_condition;
 }

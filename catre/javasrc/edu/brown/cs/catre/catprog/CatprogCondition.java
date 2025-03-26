@@ -37,6 +37,7 @@
 package edu.brown.cs.catre.catprog;
 
 import java.util.Map;
+import java.util.Set;
 
 import edu.brown.cs.catre.catre.CatreCondition;
 import edu.brown.cs.catre.catre.CatreConditionException;
@@ -166,6 +167,16 @@ boolean isUndefined()
 }
 
 
+void addUsedConditions(Set<CatreCondition> rslt)
+{
+   if (!rslt.add(this)) return;
+   CatprogCondition sub = getSubcondition();
+   if (sub != null) {
+      sub.addUsedConditions(rslt);
+    }
+}
+
+
 
 /********************************************************************************/
 /*										*/
@@ -193,7 +204,7 @@ protected boolean hasConditionHandlers()
 }
 
 
-protected CatprogCondition getSubcondition() 	      { return null; }
+CatprogCondition getSubcondition() 	      { return null; }
 
 
 

@@ -36,8 +36,10 @@
 
 package edu.brown.cs.catre.catprog;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import edu.brown.cs.catre.catre.CatreAction;
 import edu.brown.cs.catre.catre.CatreActionException;
@@ -71,6 +73,7 @@ private double		rule_priority;
 private volatile RuleRunner active_rule;
 private long		creation_time;
 private boolean         force_trigger;
+private Set<CatreCondition> use_conditions;
 
 
 
@@ -93,6 +96,7 @@ CatprogRule(CatreProgram pgm,CatreStore cs,Map<String,Object> map)
    active_rule = null;
    force_trigger = false;
    device_id = null;
+   use_conditions = null;
 
    fromJson(cs,map);
    
@@ -154,6 +158,28 @@ private boolean validateRule()
 {
    return device_id;
 }
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Get conditions used by this rule                                        */
+/*                                                                              */
+/********************************************************************************/
+
+Set<CatreCondition> getUsedConditions()
+{
+   if (use_conditions == null) {
+      Set<CatreCondition> rslt = new HashSet<>();
+      for (CatreCondition cc : for_conditions) {
+         CatprogCondition cpc = (CatprogCondition) cc;
+         cpc.addUsedConditions(rslt);
+       }
+      use_conditions = rslt;
+    }
+   
+   return use_conditions;
+}
+
 
 
 /********************************************************************************/
@@ -305,6 +331,8 @@ private class RuleRunner implements Runnable {
    device_id = getSavedString(map,"DEVICEID",device_id);
 
    creation_time = getSavedLong(map,"CREATED",System.currentTimeMillis());
+   
+   use_conditions = null;
 }
 
 
