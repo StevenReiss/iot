@@ -33,6 +33,7 @@
 
 import 'catredata.dart';
 import 'catreuniverse.dart';
+import '../util.dart' as util;
 
 class CatreBridge extends CatreData {
   late List<CatreBridgeField> _fields;
@@ -66,7 +67,7 @@ class CatreBridge extends CatreData {
         }
       }
     }
-    await issueCommandWithArgs("/bridge/add", args);
+    await util.postJson("/bridge/add", args);
   }
 }
 

@@ -1,5 +1,3 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
-
 /********************************************************************************/
 /*                                                                              */
 /*              loginkeydialog.dart                                             */
@@ -106,7 +104,7 @@ Future loginKeyDialog(BuildContext context, SignData sd) async {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [cancelBtn, acceptBtn],
-            )
+            ),
           ],
         ),
       ),

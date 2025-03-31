@@ -31,12 +31,11 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'catredata.dart';
 import 'catredevice.dart';
 import 'catreprogram.dart';
 import 'catrebridge.dart';
-
+import '../util.dart' as util;
 
 /********************************************************************************/
 /*                                                                              */
@@ -64,7 +63,8 @@ class CatreUniverse extends CatreData {
 
   void addBridges(dynamic obj) {
     List<dynamic> data = obj["BRIDGES"];
-    List<CatreBridge> brl = buildListFromObject(data, CatreBridge.build);
+    List<CatreBridge> brl =
+        buildListFromObject(data, CatreBridge.build);
     _bridgeData = {};
     for (CatreBridge br in brl) {
       String nm = br.getBridgeName();
@@ -115,15 +115,18 @@ class CatreUniverse extends CatreData {
 
   Future<bool> removeDevice(CatreDevice? cd) async {
     if (cd == null) return false;
-    Map<String, dynamic>? rslt = await issueCommandWithArgs(
+    Map<String, dynamic> rslt = await util.postJson(
       "/universe/removedevice",
       {
         "DEVICEID": cd.getDeviceId(),
       },
     );
-    if (rslt == null || rslt["STATUS"] != "OK") return false;
+    if (rslt["STATUS"] != "OK") return false;
     CatreDevice? od = _devices.remove(cd.getDeviceId());
-    if (od != null) _deviceList.remove(od);
+    if (od != null) {
+      _deviceList.remove(od);
+      return true;
+    }
     return false;
   }
 
@@ -137,10 +140,3 @@ class CatreUniverse extends CatreData {
 
   List<String> getBridgeNames() => getStringList("BRIDGES");
 } // end of class CatreUniverse
-
-
-
-
-
-
-

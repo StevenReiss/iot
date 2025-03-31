@@ -32,8 +32,6 @@
  ********************************************************************************/
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/widgets.dart' as widgets;
 import 'loginpage.dart';
@@ -43,7 +41,8 @@ class SherpaPasswordWidget extends StatefulWidget {
   const SherpaPasswordWidget({super.key});
 
   @override
-  State<SherpaPasswordWidget> createState() => _SherpaPasswordWidgetState();
+  State<SherpaPasswordWidget> createState() =>
+      _SherpaPasswordWidgetState();
 }
 
 class _SherpaPasswordWidgetState extends State<SherpaPasswordWidget> {
@@ -148,10 +147,8 @@ class _SherpaPasswordWidgetState extends State<SherpaPasswordWidget> {
   Future _forgotPassword() async {
     String em = (_emailGiven as String).toLowerCase();
     var body = {
-      globals.catreSession: globals.sessionId,
       'email': em,
     };
-    var url = Uri.https(util.getServerURL(), "/forgotpassword");
-    await http.post(url, body: body);
+    await util.postJson("/forgotpassword", body);
   }
 }

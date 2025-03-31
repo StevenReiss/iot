@@ -182,6 +182,7 @@ Set<CatreCondition> getUsedConditions()
 
 
 
+
 /********************************************************************************/
 /*										*/
 /*	Application methods							*/

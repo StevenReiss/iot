@@ -31,11 +31,10 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'catredata.dart';
 import 'catreuniverse.dart';
 import 'catredevice.dart';
-
+import '../util.dart' as util;
 
 /********************************************************************************/
 /*                                                                              */
@@ -44,7 +43,8 @@ import 'catredevice.dart';
 /********************************************************************************/
 
 class CatreParameter extends CatreData {
-  CatreParameter.build(CatreUniverse cu, dynamic data) : super(cu, data as Map<String, dynamic>);
+  CatreParameter.build(CatreUniverse cu, dynamic data)
+      : super(cu, data as Map<String, dynamic>);
 
   String getParameterType() => getString("TYPE");
   bool isSensor() => getBool("ISSENSOR");
@@ -55,7 +55,8 @@ class CatreParameter extends CatreData {
   bool isVolatile() => getBool("VOLATILE");
 
   Future<void> updateValues(CatreDevice? cd) async {
-    CatreParameterRef? ref = optItem("RANGEREF", CatreParameterRef.build);
+    CatreParameterRef? ref =
+        optItem("RANGEREF", CatreParameterRef.build);
     if (ref != null) {
       CatreParameter? rp = ref.getParameter();
       if (rp != null) {
@@ -66,14 +67,14 @@ class CatreParameter extends CatreData {
         }
       }
     } else if (isVolatile() && cd != null) {
-      Map<String, dynamic>? rslt = await issueCommandWithArgs(
+      Map<String, dynamic> rslt = await util.postJson(
         "/universe/getValue",
         {
           "DEVICE": cd.getDeviceId(),
           "PARAMETER": getName(),
         },
       );
-      if (rslt != null && rslt["STATUS"] == "OK") {
+      if (rslt["STATUS"] == "OK") {
         dynamic v = rslt["VALUE"];
         setField("VALUES", v);
       }
@@ -168,8 +169,6 @@ class CatreParameter extends CatreData {
     return ops;
   }
 }
-
-
 
 /********************************************************************************/
 /*                                                                              */

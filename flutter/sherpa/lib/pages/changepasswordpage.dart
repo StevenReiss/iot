@@ -31,11 +31,7 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
-import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/models/catremodel.dart';
@@ -76,12 +72,10 @@ class _SherpaChangePasswordWidgetState
     String p2 = util.hasher(p1 + usr);
 
     var body = {
-      globals.catreSession: globals.sessionId,
       'password': p2,
     };
-    var url = Uri.https(util.getServerURL(), "/changePassword");
-    var resp = await http.post(url, body: body);
-    var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> jresp =
+        await util.postJson("/changePassword", body);
     if (jresp['status'] == "OK") return null;
     return jresp['message'];
   }
@@ -129,11 +123,11 @@ class _SherpaChangePasswordWidgetState
                   widgets.fieldSeparator(),
                   widgets.errorField(_changePasswordError),
                   Container(
-                    constraints:
-                        const BoxConstraints(minWidth: 150, maxWidth: 350),
+                    constraints: const BoxConstraints(
+                        minWidth: 150, maxWidth: 350),
                     width: MediaQuery.of(context).size.width * 0.4,
-                    child:
-                        widgets.submitButton("Submit", _handleChangePassword),
+                    child: widgets.submitButton(
+                        "Submit", _handleChangePassword),
                   ),
                 ],
               ),
@@ -181,4 +175,3 @@ class _SherpaChangePasswordWidgetState
     widgets.goto(context, const SplashPage());
   }
 }
-

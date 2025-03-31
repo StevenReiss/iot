@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 library sherpa.util;
 
 import 'dart:convert' as convert;
@@ -65,8 +64,9 @@ Logger? _sherpaLog;
 void setupLogging() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
-    Uri url = Uri.https(getServerURL(), "/logmessage");
-    String msg = '${record.level.name}: ${record.time}: ${record.message}';
+    Uri url = Uri.https(_getServerURL(), "/logmessage");
+    String msg =
+        '${record.level.name}: ${record.time}: ${record.message}';
 
     var body = {
       globals.catreSession: globals.sessionId,
@@ -139,11 +139,58 @@ List<String> mapDays(List<String> days) {
   return rslt;
 }
 
-String getServerURL() {
+String _getServerURL() {
   if (kDebugMode) {
     return globals.catreURL;
   }
   return globals.catreURL;
+}
+
+Future<Map<String, dynamic>> postJson(
+  String cmd,
+  Map<String, String?>? body,
+) async {
+  Uri u = Uri.https(_getServerURL(), cmd);
+
+  if (globals.sessionId != null) {
+    if (body == null) {
+      body = {globals.catreSession: globals.sessionId};
+    } else {
+      body[globals.catreSession] = globals.sessionId;
+    }
+  }
+
+  Map<String, String> headers = {
+    'Accept': 'application/json',
+  };
+
+  dynamic resp = await http.post(u, body: body, headers: headers);
+  if (resp.statusCode >= 400) {
+    logE("Error: ${resp.statusCode} ${resp.body}");
+  }
+  return convert.jsonDecode(resp.body) as Map<String, dynamic>;
+}
+
+Future<Map<String, dynamic>> getJson(
+  String cmd, [
+  Map<String, String?>? body,
+]) async {
+  if (globals.sessionId != null) {
+    if (body == null) {
+      body = {globals.catreSession: globals.sessionId};
+    } else {
+      body[globals.catreSession] = globals.sessionId;
+    }
+  }
+  Map<String, String> headers = {
+    'Accept': 'application/json',
+  };
+  Uri u = Uri.https(_getServerURL(), cmd, body);
+  dynamic resp = await http.get(u, headers: headers);
+  if (resp.statusCode >= 400) {
+    logE("Error: ${resp.statusCode} ${resp.body}");
+  }
+  return convert.jsonDecode(resp.body) as Map<String, dynamic>;
 }
 
 class RepeatOption {

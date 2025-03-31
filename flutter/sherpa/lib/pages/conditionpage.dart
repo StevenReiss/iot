@@ -302,7 +302,10 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     List<String> ops = sp.getOperators(cc.isTrigger());
     String? op = cc.getOperator();
     if (!ops.contains(op)) op = null;
-    op ??= ops[0];
+    if (op == null) {
+      op = ops[0];
+      _setOperator(op);
+    }
     Widget w2 = widgets.dropDownWidget(
       ops,
       value: op,
@@ -346,7 +349,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
   List<Widget> _createTimeWidgets() {
     List<Widget> rslt = [];
     DateTime starttime = _forCondition.getTimeSlot().getFromDateTime();
-    DateTime endtime = _forCondition.getTimeSlot().getToDateTime();
+    DateTime? endtime = _forCondition.getTimeSlot().getToDateTime();
 
     rslt.add(widgets.fieldSeparator());
 
@@ -1129,7 +1132,10 @@ class _SensorParameter {
       case "ENUMREF":
         List<String>? vals = parameter.getValues();
         if (vals != null) {
-          value = vals[0];
+          if (!vals.contains(value)) {
+            value = vals[0];
+            onChanged(value);
+          }
           return widgets.dropDownWidget(
             vals,
             value: value,

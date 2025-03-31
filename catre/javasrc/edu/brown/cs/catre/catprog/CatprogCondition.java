@@ -178,6 +178,8 @@ void addUsedConditions(Set<CatreCondition> rslt)
 
 
 
+
+
 /********************************************************************************/
 /*										*/
 /*	Condition handling							*/

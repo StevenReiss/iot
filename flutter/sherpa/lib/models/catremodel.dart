@@ -31,11 +31,7 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'catreuniverse.dart';
-import 'package:sherpa/globals.dart' as globals;
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import "package:sherpa/util.dart" as util;
 export 'catredata.dart';
 export 'catredevice.dart';
@@ -56,28 +52,17 @@ class CatreModel {
   CatreModel._internal();
 
   Future<CatreUniverse> loadUniverse() async {
-    var url = Uri.https(
-      util.getServerURL(),
-      "/universe",
-      {globals.catreSession: globals.sessionId},
-    );
-    var resp = await http.get(url);
-    if (resp.statusCode >= 400) throw Exception("Bad response from CATRE");
-    var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
-    if (jresp["STATUS"] != "OK") throw Exception("Lost connection to CATRE");
+    Map<String, dynamic> jresp = await util.getJson("/universe");
+    if (jresp["STATUS"] != "OK") {
+      throw Exception("Lost connection to CATRE");
+    }
     CatreUniverse u = CatreUniverse.fromJson(jresp);
     _theUniverse = u;
-    var url1 = Uri.https(
-      util.getServerURL(),
-      "/bridge/list",
-      {globals.catreSession: globals.sessionId},
-    );
-    var resp1 = await http.get(url1);
-    util.logD("bridge response ${resp1.statusCode}");
-    //  if (resp1.statusCode >= 400) throw Exception("Bad response from CATRE");
-    var jresp1 = convert.jsonDecode(resp1.body) as Map<String, dynamic>;
-    if (jresp1["STATUS"] != "OK") throw Exception("Lost connection to CATRE");
-    util.logD("Bridge response $jresp1");
+
+    Map<String, dynamic> jresp1 = await util.getJson("/bridge/list");
+    if (jresp1["STATUS"] != "OK") {
+      throw Exception("Lost connection to CATRE");
+    }
     _theUniverse?.addBridges(jresp1);
     return u;
   }

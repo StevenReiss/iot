@@ -34,9 +34,7 @@
 import 'catreuniverse.dart';
 import 'dart:convert' as convert;
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'package:sherpa/util.dart' as util;
-import 'package:sherpa/globals.dart' as globals;
 
 /********************************************************************************/
 /*                                                                              */
@@ -72,12 +70,25 @@ class CatreData {
   String getName() => getString("NAME");
   CatreUniverse getUniverse() => catreUniverse;
   String getLabel() => getString("LABEL");
-  String getDescription() {
+  String getSavedDescription() {
     if (optString("DESCRIPTION") == null) {
       return getLabel();
     }
-    if (!getBool("USERDESC")) return getString("DESCRIPTION");
+    return getString("DESCRIPTION");
+  }
+
+  String getDescription() {
+    if (getBool("USERDESC")) {
+      if (optString("DESCRIPTION") == null) {
+        return getLabel();
+      }
+      return getString("DESCRIPTION");
+    }
     return buildDescription();
+  }
+
+  bool isUserDescription() {
+    return getBool("USERDESC");
   }
 
   Map<String, dynamic> getCatreOutput() {
@@ -263,8 +274,14 @@ class CatreData {
     return null;
   }
 
-  String? setDescription(dynamic text) {
+  String? setDescription(
+    dynamic text, [
+    bool? userdesc,
+  ]) {
     setField("DESCRIPTION", text);
+    if (userdesc != null) {
+      setField("USERDESC", userdesc);
+    }
     return null;
   }
 
@@ -333,36 +350,9 @@ class CatreData {
 
   Future<Map<String, dynamic>?> issueCommand(
       String cmd, String argname) async {
-    var url = Uri.https(util.getServerURL(), cmd);
     var body = {
-      globals.catreSession: globals.sessionId,
       argname: convert.jsonEncode(getCatreOutput()),
     };
-    Map<String, String> headers = {};
-    headers["accept"] = "application/json";
-    var resp = await http.post(
-      url,
-      body: body,
-      headers: headers,
-    );
-    if (resp.statusCode >= 400) return null;
-    return convert.jsonDecode(resp.body) as Map<String, dynamic>;
-  }
-
-  Future<Map<String, dynamic>?> issueCommandWithArgs(
-    String cmd,
-    Map<String, String?> args,
-  ) async {
-    var url = Uri.https(util.getServerURL(), cmd);
-    args[globals.catreSession] = globals.sessionId;
-    Map<String, String> headers = {};
-    headers["accept"] = "application/json";
-    var resp = await http.post(
-      url,
-      body: args,
-      headers: headers,
-    );
-    if (resp.statusCode >= 400) return null;
-    return convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    return await util.postJson(cmd, body);
   }
 }

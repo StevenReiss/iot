@@ -173,6 +173,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       onTap: () => _editRule(cr),
       onDoubleTap: () => _editRule(cr),
       onLongPress: () => _conditionalEdit(cr),
+      tooltip: cr.getDescription(),
     );
 
     return w1;
@@ -408,8 +409,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
   }
 
   void _showStates() async {
-    Map<String, dynamic>? states =
-        await _forDevice?.issueCommandWithArgs(
+    Map<String, dynamic>? states = await util.postJson(
       "/universe/deviceStates",
       {"DEVICEID": _forDevice?.getDeviceId()},
     );

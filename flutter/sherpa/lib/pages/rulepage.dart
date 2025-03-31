@@ -59,7 +59,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _labelControl = TextEditingController();
   final TextEditingController _descControl = TextEditingController();
-  bool _labelMatchesDescription = false;
+  bool _isUserDescription = false;
 
   _SherpaRuleWidgetState();
 
@@ -68,13 +68,9 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     _forRule = widget._forRule;
     _forDevice = _forRule.getDevice();
     super.initState();
-    _labelControl.text = _forRule.getLabel();
-    _descControl.text = _forRule.getDescription();
-    _labelMatchesDescription = _labelControl.text == _descControl.text;
-    if (_labelMatchesDescription) {
-      _labelControl.addListener(_labelListener);
-      _descControl.addListener(_descriptionListener);
-    }
+    _resetRule();
+    _labelControl.addListener(_labelListener);
+    _descControl.addListener(_descriptionListener);
   }
 
   @override
@@ -145,29 +141,31 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       label: "Rule Description",
       controller: _descControl,
       maxLines: 3,
-      tooltip: "Provide a detailed description of this rule.",
+      tooltip: "Provide a detailed description of this rule. "
+          "This will be automatically generated, but you may override "
+          "that by editing it directly.",
     );
   }
 
   Widget _ruleConditions() {
-    return Flexible(
-      child: widgets.listBox(
-        "Condition",
-        _forRule.getConditions(),
-        _conditionBuilder,
-        _addCondition,
-      ),
+    Widget w1 = widgets.listBox(
+      "Condition",
+      _forRule.getConditions(),
+      _conditionBuilder,
+      _addCondition,
     );
+    return Flexible(child: w1);
   }
 
   Widget _ruleActions() {
+    Widget w1 = widgets.listBox(
+      "Action",
+      _forRule.getActions(),
+      _actionBuilder,
+      _addNewAction,
+    );
     return Flexible(
-      child: widgets.listBox(
-        "Action",
-        _forRule.getActions(),
-        _actionBuilder,
-        _addNewAction,
-      ),
+      child: w1,
     );
   }
 
@@ -188,72 +186,68 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
 
   Widget _conditionBuilder(CatreCondition cc) {
     List<widgets.MenuAction> acts = [];
-    acts.add(widgets.MenuAction('Edit', () {
+    acts.add(widgets.MenuAction('Edit Condition', () {
       _editCondition(cc);
     }));
 
     if (_forRule.getConditions().length > 1 && !cc.isTrigger()) {
-      acts.add(widgets.MenuAction('Remove', () {
+      acts.add(widgets.MenuAction('Remove Condition', () {
         _removeCondition(cc);
       }));
     }
 
-    return widgets.itemWithMenu(
+    Widget w = widgets.itemWithMenu(
       cc.getLabel(),
       acts,
-      onTap: () {
+      onLongPress: () {
         if (cc.getLabel().startsWith("Undefined")) {
           _editCondition(cc);
         } else {
           _showCondition(cc);
         }
       },
-      onLongPress: () {
-        _editCondition(cc);
-      },
-      onDoubleTap: () {
-        _editCondition(cc);
-      },
+      onTap: () => _editCondition(cc),
+      onDoubleTap: () => _editCondition(cc),
     );
+
+    Widget w1 = widgets.tooltipWidget(cc.getDescription(), w);
+    return w1;
   }
 
   Widget _actionBuilder(CatreAction ca) {
     List<widgets.MenuAction> acts = [];
 
-    acts.add(widgets.MenuAction('Edit', () {
+    acts.add(widgets.MenuAction('Edit Action', () {
       _editAction(ca);
     }));
 
     if (_forRule.getActions().length > 1) {
-      acts.add(widgets.MenuAction('Remove', () {
+      acts.add(widgets.MenuAction('Remove Action', () {
         _removeAction(ca);
       }));
     }
 
-    return widgets.itemWithMenu(
+    Widget w1 = widgets.itemWithMenu(
       ca.getLabel(),
       acts,
-      onTap: () {
+      onLongPress: () {
         if (ca.getLabel().startsWith("Undefined")) {
           _editAction(ca);
         } else {
           _showAction(ca);
         }
       },
-      onDoubleTap: () {
-        _editAction(ca);
-      },
-      onLongPress: () {
-        _editAction(ca);
-      },
+      onDoubleTap: () => _editAction(ca),
+      onTap: () => _editAction(ca),
     );
+
+    Widget w2 = widgets.tooltipWidget(ca.getDescription(), w1);
+    return w2;
   }
 
   void _saveRule() async {
     if (_formKey.currentState!.validate()) {
-      _forRule.setLabel(_labelControl.text);
-      _forRule.setName(_labelControl.text);
-      _forRule.setDescription(_descControl.text);
+      _updateRuleData();
       await _forRule.addOrEditRule();
       // ensure validation has been run, run it if not
       // ensure validation status is ok
@@ -269,15 +263,14 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     setState(() {
       if (!_forRule.pop()) {
         _forRule.revert();
+        _resetRule();
         Navigator.of(context).pop();
       }
     });
   }
 
   _validateRule() async {
-    _forRule.setLabel(_labelControl.text);
-    _forRule.setName(_labelControl.text);
-    _forRule.setDescription(_descControl.text);
+    _updateRuleData();
     Map<String, dynamic>? jresp = await _forRule.issueCommand(
       "/rule/validate",
       "RULE",
@@ -286,6 +279,28 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     // TODO: create validate output page if needed
 
     util.logD("Validate response $jresp");
+  }
+
+  _resetRule() {
+    _labelControl.text = _forRule.getLabel();
+    _descControl.text = _forRule.getDescription();
+    _isUserDescription = _forRule.isUserDescription();
+  }
+
+  _updateDescription() {
+    String d = _forRule.getDescription();
+    if (d != _descControl.text) {
+      setState(() {
+        _descControl.text = d;
+        _updateRuleData();
+      });
+    }
+  }
+
+  _updateRuleData() {
+    _forRule.setLabel(_labelControl.text);
+    _forRule.setName(_labelControl.text);
+    _forRule.setDescription(_descControl.text, _isUserDescription);
   }
 
   String? _labelValidator(String? lbl) {
@@ -301,19 +316,23 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       cond = _forRule.addNewCondition();
     });
     if (cond != null) {
-      _editCondition(cond!);
+      await _editCondition(cond!);
+      _updateDescription();
+      setState(() {});
     }
   }
 
   void _removeCondition(CatreCondition cc) {
     setState(() {
       _forRule.removeCondition(cc);
+      _updateDescription();
     });
   }
 
-  void _editCondition(CatreCondition cc) async {
+  Future<void> _editCondition(CatreCondition cc) async {
     await widgets.gotoThen(
         context, SherpaConditionWidget(_forRule, cc));
+    _updateDescription();
     setState(() {});
   }
 
@@ -322,26 +341,29 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
         context, "Condition Description", cc.getDescription());
   }
 
-  void _addNewAction() {
+  void _addNewAction() async {
     CatreAction? act;
     setState(() {
       act = _forRule.addNewAction(_forDevice);
     });
     if (act != null) {
-      _editAction(act!);
+      await _editAction(act!);
+      _updateDescription();
     }
   }
 
   void _removeAction(CatreAction ca) {
     setState(() {
       _forRule.removeAction(ca);
+      _updateDescription();
     });
   }
 
-  void _editAction(CatreAction ca) async {
+  Future<void> _editAction(CatreAction ca) async {
     CatreDevice cd = _forRule.getDevice();
     await widgets.gotoThen(
         context, SherpaActionWidget(cd, _forRule, ca));
+    _updateDescription();
     setState(() {});
   }
 
@@ -351,18 +373,22 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
   }
 
   void _labelListener() {
-    if (_labelMatchesDescription) {
-      _descControl.text = _labelControl.text;
-    }
+    _updateDescription();
+    _updateRuleData();
     setState(() {});
   }
 
   void _descriptionListener() {
-    if (_labelMatchesDescription) {
-      if (_labelControl.text != _descControl.text) {
-        _labelMatchesDescription = false;
-      }
+    String d = _descControl.text;
+    if (d.isEmpty) {
+      _isUserDescription = false;
+      _forRule.setDescription("", false);
+      d = _forRule.getDescription();
+    } else {
+      _isUserDescription = true;
     }
+    _forRule.setDescription(d, _isUserDescription);
+    _updateDescription();
     setState(() {});
   }
 

@@ -32,8 +32,6 @@
  ********************************************************************************/
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/widgets.dart' as widgets;
@@ -306,9 +304,7 @@ class _HandleLogin {
   _HandleLogin(this._curUser, this._curPassword);
 
   Future _prelogin() async {
-    var url = Uri.https(util.getServerURL(), '/login');
-    var resp = await http.get(url);
-    var js = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> js = await util.getJson("/login");
     _curPadding = js['SALT'];
     _curSession = js[globals.catreSession];
     globals.sessionId = _curSession;
@@ -326,14 +322,11 @@ class _HandleLogin {
     String p3 = util.hasher(p2 + pad);
 
     var body = {
-      globals.catreSession: _curSession,
       'username': usr,
       'SALT': pad,
       'password': p3,
     };
-    var url = Uri.https(util.getServerURL(), "/login");
-    var resp = await http.post(url, body: body);
-    var jresp = convert.jsonDecode(resp.body) as Map<String, dynamic>;
+    Map<String, dynamic> jresp = await util.postJson("/login", body);
     if (jresp['STATUS'] == "OK") {
       globals.sessionId = _curSession;
       var temp = jresp['TEMPORARY'];

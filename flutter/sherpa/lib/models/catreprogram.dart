@@ -39,6 +39,7 @@ import 'catreparameter.dart';
 import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/levels.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 /********************************************************************************/
 /*                                                                              */
@@ -270,15 +271,15 @@ class CatreRule extends CatreData {
 
   @override
   String buildDescription() {
-    String desc = "WHEN\n";
+    String desc = "WHEN ";
     for (int i = 0; i < _conditions.length; ++i) {
-      desc += "   ${_conditions[i].getDescription()}";
-      if (i < _conditions.length - 1) desc += " AND\n";
+      desc += _conditions[i].getDescription();
+      if (i < _conditions.length - 1) desc += " AND ";
     }
-    desc += "\nDO\n";
+    desc += "\nDO   ";
     for (int i = 0; i < _actions.length; ++i) {
-      desc += "   ${_actions[i].getDescription()}";
-      if (i < _actions.length - 1) desc += " AND\n";
+      desc += _actions[i].getDescription();
+      if (i < _actions.length - 1) desc += " AND ";
     }
     return desc;
   }
@@ -453,12 +454,12 @@ class CatreCondition extends CatreData {
 
   @override
   String buildDescription() {
-    String rslt = getDescription();
+    String rslt = getString("DESCRIPTION");
     switch (getCatreType()) {
       case "Parameter":
         CatreParamRef pmf = getParameterReference();
         rslt =
-            "${pmf.getTitle()}\n\t${getOperator()}\n${getTargetValue()}";
+            "(${pmf.getTitle()} ${getOperator()} ${getTargetValue()})";
         break;
       case "Disabled":
         CatreDevice cd =
@@ -489,8 +490,10 @@ class CatreCondition extends CatreData {
             "${pmf.getTitle()} between ${getLowValue()} and ${getHighValue()}}";
         break;
       case "Time":
+        rslt = getTimeSlot().buildDescription();
         break;
       case "TriggerTime":
+        rslt = getTimeSlot().buildDescription();
         break;
       case "CalendarEvent":
         break;
@@ -781,7 +784,7 @@ class CatreAction extends CatreData {
 
   @override
   String buildDescription() {
-    return getDescription();
+    return getString("DESCRIPTION");
   }
 
   Map<String, dynamic> getValues() => _values;
@@ -903,12 +906,8 @@ class CatreTimeSlot extends CatreData {
         DateTime.fromMillisecondsSinceEpoch(getInt("TODATETIME"));
   }
 
-  // bool operator ==(Object other) {
-  //   return super == other;
-  // }
-
   DateTime getFromDateTime() => _fromDateTime;
-  DateTime getToDateTime() => _toDateTime;
+  DateTime? getToDateTime() => _toDateTime;
   String? getDays() => optString("DAYS");
   num getRepeatInterval() => getNum("INTERVAL");
   bool getAllDay() => getBool("ALLDAY");
@@ -984,6 +983,34 @@ class CatreTimeSlot extends CatreData {
       time.minute,
       0,
     );
+  }
+
+  @override
+  String buildDescription() {
+    String rslt = "";
+    rslt += calDate(_fromDateTime);
+    rslt += " - ${calDate(_toDateTime)}";
+    rslt += " from ";
+    rslt += calTime(_fromDateTime);
+    rslt += " - ${calTime(_toDateTime)}";
+    // handle days and repeats
+    return rslt;
+  }
+
+  String calDate(DateTime dt) {
+    dt = dt.toLocal();
+    DateTime now = DateTime.now();
+    String rslt = "";
+    if (now.year == dt.year) {
+      rslt = DateFormat.Md().format(dt);
+    } else {
+      rslt = DateFormat.yMd().format(dt);
+    }
+    return rslt;
+  }
+
+  String calTime(DateTime dt) {
+    return DateFormat.jm().format(dt);
   }
 }
 

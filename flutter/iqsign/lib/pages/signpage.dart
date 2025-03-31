@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import '../signdata.dart';
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
@@ -42,6 +41,7 @@ import '../util.dart' as util;
 import 'setnamedialog.dart' as setname;
 import 'setsizedialog.dart' as setsize;
 import 'loginkeydialog.dart' as loginkey;
+import 'signurldialog.dart' as signurl;
 
 class IQSignSignWidget extends StatelessWidget {
   final SignData _signData;
@@ -127,6 +127,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
                 "Change Sign Name",
                 _changeSignName,
                 "Rename this sign",
+              ),
+              widgets.MenuAction(
+                "View Sign and Image URL",
+                _viewSignUrl,
+                "View the URL for the sign and its image and copy them "
+                    "to the clipboard if desired.",
               ),
               widgets.MenuAction(
                 "Generate Login Key for Sherpa",
@@ -260,6 +266,10 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   void _changeSignName() async {
     final result = await setname.setNameDialog(context, _signData);
     if (result == "OK") await _updateAction();
+  }
+
+  void _viewSignUrl() async {
+    await signurl.signUrlDialog(context, _signData);
   }
 
   void _generateLoginKey() async {

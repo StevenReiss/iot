@@ -258,6 +258,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     CatreProgram pgm = _theUniverse.getProgram();
     int ct = 0;
     List<String> rules = [];
+    List<String> tips = [];
     for (CatreRule cr in pgm.getRules()) {
       if (cr.getPriority() < lvl.lowPriority ||
           cr.getPriority() >= lvl.highPriority) {
@@ -268,12 +269,15 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       ++ct;
       if (ct <= globals.numRulesToDisplay) {
         rules.add(cr.getLabel());
+        tips.add(cr.getDescription());
       } else if (ct == globals.numRulesToDisplay + 1) {
         String s = rules[globals.numRulesToDisplay - 2];
         rules[globals.numRulesToDisplay - 2] = "$s ...";
         rules[globals.numRulesToDisplay - 1] = cr.getLabel();
+        tips[globals.numRulesToDisplay - 1] = cr.getDescription();
       } else {
         rules[globals.numRulesToDisplay - 1] = cr.getLabel();
+        tips[globals.numRulesToDisplay - 1] = cr.getDescription();
       }
     }
     if (ct == 0 && optional) return null;
@@ -283,7 +287,12 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       color: laf.labelColor,
       fontSize: 20.0,
     );
-    List<Text> rulew = rules.map((s) => Text(s)).toList();
+    List<Widget> rulew = [];
+    for (int i = 0; i < rules.length; ++i) {
+      Widget tw = Text(rules[i]);
+      Widget tw1 = widgets.tooltipWidget(tips[i], tw);
+      rulew.add(tw1);
+    }
     Text label = Text(
       "${lvl.name} Rules",
       textAlign: TextAlign.left,

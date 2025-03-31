@@ -101,6 +101,8 @@ Widget textField({
   ValueChanged<String>? onChanged,
   VoidCallback? onEditingComplete,
   ValueChanged<String>? onSubmitted,
+  TapRegionCallback? onTapOutside,
+  FocusNode? focusNode,
   bool? showCursor,
   int? maxLines,
   TextInputType? keyboardType,
@@ -136,8 +138,10 @@ Widget textField({
     onChanged: onChanged,
     onEditingComplete: onEditingComplete,
     onSubmitted: onSubmitted,
+    onTapOutside: onTapOutside,
     showCursor: showCursor,
     maxLines: maxLines,
+    focusNode: focusNode,
     keyboardType: keyboardType,
     textInputAction: textInputAction,
     enabled: enabled,
@@ -203,18 +207,30 @@ Widget itemWithMenu<T>(
   void Function()? onTap,
   void Function()? onDoubleTap,
   void Function()? onLongPress,
+  String tooltip = "",
 }) {
   Widget btn = PopupMenuButton(
-    icon: const Icon(Icons.menu_sharp),
+    icon: const Icon(Icons.menu_open_rounded),
     itemBuilder: (context) => _itemMenuBuilder(acts),
     onSelected: (MenuAction act) => act.action(),
   );
+  Widget wt = Text(lbl);
+  wt = tooltipWidget(tooltip, wt);
   Widget w = Row(
     mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[btn, Expanded(child: Text(lbl))],
+    children: <Widget>[
+      btn,
+      wt,
+      const Spacer(flex: 10),
+    ],
   );
-  if (onTap == null && onDoubleTap == null) return w;
+
+  onDoubleTap ??= onTap;
   onLongPress ??= onDoubleTap;
+  if (onTap == null && onDoubleTap == null && onLongPress == null) {
+    return w;
+  }
+
   Widget w1 = GestureDetector(
     key: Key(lbl),
     onTap: onTap,
@@ -500,9 +516,10 @@ Widget dropDownMenu(
   String? value,
   Function(String?)? onChanged,
   textAlign = TextAlign.left,
+  String tooltip = "",
 }) {
   value ??= items[0];
-  return DropdownMenu<String>(
+  Widget w = DropdownMenu<String>(
     initialSelection: value,
     requestFocusOnTap: true,
     onSelected: onChanged,
@@ -511,6 +528,8 @@ Widget dropDownMenu(
       return DropdownMenuEntry<String>(value: value, label: value);
     }).toList(),
   );
+  w = tooltipWidget(tooltip, w);
+  return w;
 }
 
 Widget dropDownWidget<T>(
