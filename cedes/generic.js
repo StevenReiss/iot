@@ -395,7 +395,7 @@ setInterval(checkUpdates,5*60*1000);
 exports.addBridge = addBridge;
 exports.handleCommand = handleCommand;
 exports.handleActiveSensors = handleActiveSensors;
-exports.handleParamters = handleParameters;
+exports.handleParameters = handleParameters;
 exports.getRouter = getRouter;
 
 

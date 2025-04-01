@@ -197,7 +197,6 @@ async function handleParameters(bid, uid, devid, parameters) {
    }
    
    // updateValues(user,devid); -- this will send event messages for all
-  
 
    let rslt = await getParameterValuesByCapability(user,devid,parameters = null);
    let r1 = { }

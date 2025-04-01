@@ -33,7 +33,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
-import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/levels.dart';
 import 'package:sherpa/pages/rulepage.dart';
 import 'package:sherpa/pages/authorizationpage.dart';

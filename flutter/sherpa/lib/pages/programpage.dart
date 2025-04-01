@@ -38,6 +38,7 @@ import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/levels.dart' as levels;
 import 'package:sherpa/models/catremodel.dart';
 import 'package:sherpa/pages/authorizationpage.dart';
+import 'package:sherpa/pages/devicepage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
 import 'package:sherpa/lookandfeel.dart' as laf;
@@ -261,13 +262,23 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
   }
 
   void _showStates() async {
+    BuildContext bcontext = context;
+    CatreDevice cd = _forDevice as CatreDevice;
     Map<String, dynamic>? states = await util.postJson(
       "/universe/deviceStates",
-      {"DEVICEID": _forDevice?.getDeviceId()},
+      {"DEVICEID": cd.getDeviceId()},
     );
-    util.logD("Show device states for ${_forDevice?.getName()}");
+    util.logD("Show device states for ${cd.getName()}");
     util.logD("Result: $states");
-    // TODO: Show device states in dialog
+    if (bcontext.mounted) {
+      await widgets.gotoThen(
+          bcontext,
+          SherpaDevicePage(
+            cd,
+            states,
+          ));
+    }
+    setState(() {});
   }
 
   Widget? _createPriorityView(levels.PriorityLevel lvl, bool optional) {

@@ -364,7 +364,7 @@ async function sendToIQsign(method,path,data)
 exports.getRouter = getRouter;
 exports.addBridge = addBridge;
 exports.handleCommand = handleCommand;
-exports.handelParameters = handleParameters;
+exports.handleParameters = handleParameters;
 
 
 
