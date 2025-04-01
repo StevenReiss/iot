@@ -105,7 +105,7 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         const Text(
-          "Rules for Device:   ",
+          "State of Device:   ",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Colors.brown,
@@ -135,7 +135,7 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Device ${_forDevice.getName()}"),
+        title: Text("Device Status"),
         actions: const [], // possibly add device-specific actions
       ),
       body: widgets.topLevelPage(
