@@ -155,7 +155,7 @@ private static class IQsignDevice extends CatdevDevice {
    IQsignDevice(CatbridgeBase bridge,CatreStore cs,Map<String,Object> map) {
       super(bridge.getUniverse(),bridge);
       fromJson(cs,map);
-    }
+    } 
    
 }
 

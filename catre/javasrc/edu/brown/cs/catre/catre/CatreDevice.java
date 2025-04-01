@@ -90,7 +90,11 @@ Object getParameterValue(CatreParameter p);
 void setParameterValue(CatreParameter p,Object val) throws CatreActionException;
 
 
+/**
+ *      Update the value of all parameters so they are current
+ **/
 
+void updateParameterValues();
 
 
 

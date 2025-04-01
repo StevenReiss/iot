@@ -556,6 +556,10 @@ private String handleDeviceStates(HttpExchange e,CatserveSessionImpl cs)
       return BowerRouter.errorResponse(e,cs,400,"Device not found");
     }
    
+   // probably want to get the latest device state here
+   
+   cd.updateParameterValues();
+   
    JSONObject rslt = new JSONObject();
    for (CatreParameter cp : cd.getParameters()) {
       if (cp.isSensor()) {

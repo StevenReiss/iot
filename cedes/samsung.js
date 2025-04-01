@@ -195,6 +195,8 @@ async function handleParameters(bid, uid, devid, parameters) {
       console.log("SAMSUNG PARAMETERS: USER NOT FOUND", uid);
       return;
    }
+   
+  
 
 // let rslt = await getParameterValues(user,devid, parameters);
    let rslt = await getParameterValuesByCapability(user,devid,parameters = null);

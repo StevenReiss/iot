@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 import edu.brown.cs.catre.catre.CatreActionException;
 import edu.brown.cs.catre.catre.CatreBridge;
 import edu.brown.cs.catre.catre.CatreDescribableBase;
@@ -332,6 +334,21 @@ public CatreTransition addTransition(CatreTransition t)
    return cd;
 }
 
+
+@Override public void updateParameterValues()
+{
+   if (for_bridge != null) {
+      JSONObject rslt =for_bridge.updateParameterValues(this); 
+      CatreLog.logD("CATDEV","RESULT OF UPDATE PARAMETERS: " + rslt.toString(2));
+      for (String key : rslt.keySet()) {
+         Object v = rslt.get(key);
+         CatreParameter cp = findParameter(key);
+         if (cp != null) {
+            setParameterValue(cp,v);
+          }
+       }
+    }
+}
 
 
 /********************************************************************************/

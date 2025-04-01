@@ -332,6 +332,26 @@ protected String getUserId()		        { return null; }
 protected boolean useCedes()                    { return true; }
 
 
+/********************************************************************************/
+/*                                                                              */
+/*      Update parameter values                                                 */
+/*                                                                              */
+/********************************************************************************/
+
+@Override public JSONObject updateParameterValues(CatreDevice dev) 
+{
+   Map<String,Object> data = new HashMap<>();
+   
+   data.put("deviceid",dev.getDeviceId());
+   data.put("uid",getUserId());
+   data.put("bridge",getName());
+   data.put("bridgeid",getBridgeId());
+   
+   JSONObject rslt = sendCedesMessage("catre/parameter",data);
+   
+   return rslt;
+}
+
 
 /********************************************************************************/
 /*                                                                              */

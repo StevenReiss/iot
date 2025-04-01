@@ -58,6 +58,8 @@ CatreTransition createTransition(CatreDevice device,CatreStore cs,Map<String,Obj
 void applyTransition(CatreDevice device,CatreTransition t,
       Map<String,Object> vals) throws CatreActionException;
 
+JSONObject updateParameterValues(CatreDevice cd);
+
 }       // end of interface CatreBridge
 
 
