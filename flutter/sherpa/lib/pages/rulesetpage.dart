@@ -263,12 +263,6 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
                 _addTrigger,
                 "Create a new trigger rule for the selected device",
               ),
-            if (_forDevice != null)
-              widgets.MenuAction(
-                'Show Current Device Status',
-                _showStates,
-                "Show the current status of the device",
-              ),
             widgets.MenuAction(
               'Add or Modify Authorizations',
               _updateBridges,
@@ -406,16 +400,6 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
 
   void _addTrigger() async {
     await _newRule(null, true, true);
-  }
-
-  void _showStates() async {
-    Map<String, dynamic>? states = await util.postJson(
-      "/universe/deviceStates",
-      {"DEVICEID": _forDevice?.getDeviceId()},
-    );
-    util.logD("Show device states for ${_forDevice?.getName()}");
-    util.logD("Result: $states");
-    // TODO: Show device states in dialog
   }
 
   void _updateBridges() {

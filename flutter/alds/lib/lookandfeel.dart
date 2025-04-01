@@ -31,11 +31,11 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'package:flutter/material.dart';
 
 const Color errorColor = Colors.red;
 const double errorFontSize = 16;
+const double errorFontScale = 1.25;
 
 final Color toolTipLeftColor = Colors.yellow.shade50;
 final Color toolTipRightColor = Colors.yellow.shade200;

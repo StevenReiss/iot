@@ -97,6 +97,12 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
               _handleAuthorizations,
               "View or change the authorizations for devices in your universe.",
             ),
+            if (_forDevice != null)
+              widgets.MenuAction(
+                'Show Current Device Status',
+                _showStates,
+                "Show the current status of the device",
+              ),
             widgets.MenuAction('Remove Device', _handleRemoveDevice,
                 "Remove a device from your universe."),
 //          widgets.MenuAction(
@@ -252,6 +258,16 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
           lvl,
         ));
     setState(() {});
+  }
+
+  void _showStates() async {
+    Map<String, dynamic>? states = await util.postJson(
+      "/universe/deviceStates",
+      {"DEVICEID": _forDevice?.getDeviceId()},
+    );
+    util.logD("Show device states for ${_forDevice?.getName()}");
+    util.logD("Result: $states");
+    // TODO: Show device states in dialog
   }
 
   Widget? _createPriorityView(levels.PriorityLevel lvl, bool optional) {
