@@ -179,12 +179,14 @@ private void setupKeys()
 {
    JSONObject json = new JSONObject(cnts);
    JSONObject current = json.getJSONObject("main");
-   String temp = current.getString("temp");
+   Object otemp = current.get("temp");
+   String temp = null;
+   if (otemp != null) temp = otemp.toString();
    JSONObject weather = json.getJSONArray("weather").getJSONObject(0);
    String cond = weather.getString("main");
    
    CatreParameter p0 = findParameter("Temperature");
-   setParameterValue(p0,temp);
+   if (temp != null) setParameterValue(p0,temp);
    CatreParameter p1 = findParameter("WeatherCondition");
    setParameterValue(p1,cond);
 }
