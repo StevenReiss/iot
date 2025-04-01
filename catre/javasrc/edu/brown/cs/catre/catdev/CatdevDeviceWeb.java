@@ -121,6 +121,12 @@ protected void setPollRate(long rate)
 }
 
 
+@Override public void updateParameterValues()
+{
+   updateCurrentState();
+}
+
+
 protected abstract String getUrl();
 
 

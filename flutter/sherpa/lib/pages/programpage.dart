@@ -98,12 +98,11 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
               _handleAuthorizations,
               "View or change the authorizations for devices in your universe.",
             ),
-            if (_forDevice != null)
-              widgets.MenuAction(
-                'Show Current Device Status',
-                _showStates,
-                "Show the current status of the device",
-              ),
+            widgets.MenuAction(
+              'Show Device Status',
+              _showStates,
+              "Show the current status of the device",
+            ),
             widgets.MenuAction('Remove Device', _handleRemoveDevice,
                 "Remove a device from your universe."),
 //          widgets.MenuAction(
@@ -263,17 +262,20 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
 
   void _showStates() async {
     BuildContext bcontext = context;
-    CatreDevice cd = _forDevice as CatreDevice;
-    Map<String, dynamic>? states = await util.postJson(
-      "/universe/deviceStates",
-      {"DEVICEID": cd.getDeviceId()},
-    );
-    util.logD("Show device states for ${cd.getName()}");
-    util.logD("Result: $states");
+
+    CatreDevice? cd = _forDevice;
+    Map<String, dynamic>? states;
+    if (cd != null) {
+      states = await util.postJson(
+        "/universe/deviceStates",
+        {"DEVICEID": cd.getDeviceId()},
+      );
+    }
     if (bcontext.mounted) {
       await widgets.gotoThen(
           bcontext,
           SherpaDevicePage(
+            _theUniverse,
             cd,
             states,
           ));

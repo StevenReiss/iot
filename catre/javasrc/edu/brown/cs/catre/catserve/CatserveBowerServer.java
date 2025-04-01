@@ -560,7 +560,11 @@ private String handleDeviceStates(HttpExchange e,CatserveSessionImpl cs)
    
    cd.updateParameterValues();
    
-   JSONObject rslt = new JSONObject();
+   JSONObject rslt = buildJson("NAME",cd.getName(),
+         "DESCRIPTION",cd.getDescription(),
+         "LABEL",cd.getLabel(),
+         "ENABLED",cd.isEnabled());
+         
    for (CatreParameter cp : cd.getParameters()) {
       if (cp.isSensor()) {
 	 rslt.put(cp.getName(),cd.getParameterValue(cp));

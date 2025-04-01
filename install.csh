@@ -91,6 +91,7 @@ buildweb.csh >&! buildweb.out
 popd
 
 pushd flutter/alds
+flutter clean
 flutter build ios
 # flutter install
 popd
