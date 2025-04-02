@@ -113,8 +113,9 @@ class CatreProgram extends CatreData {
     return r2.getPriority().compareTo(r1.getPriority());
   }
 
-  void removeRule(CatreRule cr) {
+  Future<void> removeRule(CatreRule cr) async {
     _theRules.remove(cr);
+    await cr.issueCommand("/rule/remove", "RULE");
   }
 
   Map<String, CatreCondition> getSharedConditions() {

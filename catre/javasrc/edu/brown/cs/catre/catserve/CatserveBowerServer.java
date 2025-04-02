@@ -753,6 +753,11 @@ private String handleRemoveRule(HttpExchange e,CatserveSessionImpl cs)
    CatreUniverse cu = cs.getUniverse(catre_control);
    CatreProgram cp = cu.getProgram();
    String rid = BowerRouter.getParameter(e, "RULEID");
+   if (rid == null) {
+      String ruletext = BowerRouter.getParameter(e, "RULE");
+      JSONObject jobj = new JSONObject(ruletext);
+      rid = jobj.getString("_id");
+    }
    CatreRule cr = cp.findRule(rid);
    if (cr == null) {
       return BowerRouter.errorResponse(e,cs,400,"No such rule");
