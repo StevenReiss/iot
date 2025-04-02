@@ -275,7 +275,8 @@ public Set<CatreParameterRef> getActiveSensors()
       errs.put(jo);
     }
    
-   return buildJson("STATUS","OK","ERRORS",errs);
+   // might want to include error level in the result
+   return buildJson("ERRORS",errs);
 }
 
 

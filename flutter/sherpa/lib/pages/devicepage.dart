@@ -135,7 +135,7 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Device Status"),
+        title: const Text("Device Status"),
         actions: const [], // possibly add device-specific actions
       ),
       body: widgets.topLevelPage(

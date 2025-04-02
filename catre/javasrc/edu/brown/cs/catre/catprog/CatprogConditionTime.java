@@ -75,6 +75,7 @@ CatprogConditionTime(CatprogProgram pgm,CatreStore cs,Map<String,Object> map)
    super(pgm,cs,map);
 
    is_active = false;
+   setValid(true);
 }
 
 
@@ -84,6 +85,7 @@ private CatprogConditionTime(CatprogConditionTime cc)
 
    timeslot_event = cc.timeslot_event;
    is_active = false;
+   setValid(true);
 }
 
 
