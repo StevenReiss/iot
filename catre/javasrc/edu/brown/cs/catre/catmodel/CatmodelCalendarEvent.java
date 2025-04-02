@@ -102,8 +102,6 @@ CatmodelCalendarEvent(CatreStore cs,Map<String,Object> map)
 
 
 
-
-
 private void normalizeTimes() 
 {
    if (to_datetime == null && from_datetime != null) {

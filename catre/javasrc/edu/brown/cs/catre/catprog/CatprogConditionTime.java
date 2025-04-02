@@ -59,7 +59,7 @@ class CatprogConditionTime extends CatprogCondition
 /*										*/
 /********************************************************************************/
 
-private CatreTimeSlotEvent	calendar_event;
+private CatreTimeSlotEvent	timeslot_event;
 private boolean is_active;
 
 
@@ -82,7 +82,7 @@ private CatprogConditionTime(CatprogConditionTime cc)
 {
    super(cc);
 
-   calendar_event = cc.calendar_event;
+   timeslot_event = cc.timeslot_event;
    is_active = false;
 }
 
@@ -104,6 +104,18 @@ private CatprogConditionTime(CatprogConditionTime cc)
 
 
 /********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+@Override CatreTimeSlotEvent getTimeSlotEvent()
+{
+   return timeslot_event; 
+}
+
+
+/********************************************************************************/
 /*										*/
 /*	Action methods								*/
 /*										*/
@@ -112,7 +124,7 @@ private CatprogConditionTime(CatprogConditionTime cc)
 @Override public void setTime()
 {
    long now = getUniverse().getTime();
-   if (calendar_event.isActive(now)) {
+   if (timeslot_event.isActive(now)) {
       CatreLog.logI("CATPROG","CONDITION " + getLabel() + " ACTIVE");
       fireOn(null);
     }
@@ -132,7 +144,7 @@ private void setupTimer()
    c0.setTimeInMillis(now);
    Calendar c1 = Calendar.getInstance();
    c1.setTimeInMillis(now + delay);
-   List<Calendar> slots = calendar_event.getSlots(c0,c1);
+   List<Calendar> slots = timeslot_event.getSlots(c0,c1);
    if (slots != null && slots.size() > 0) {
       Calendar s0 = slots.get(0);
       long t0 = s0.getTimeInMillis();
@@ -165,7 +177,7 @@ private void setupTimer()
    Map<String,Object> rslt = super.toJson();
 
    rslt.put("TYPE","Time");
-   rslt.put("EVENT",calendar_event.toJson());
+   rslt.put("EVENT",timeslot_event.toJson());
 
    return rslt;
 }
@@ -175,8 +187,8 @@ private void setupTimer()
 {
    super.fromJson(cs,map);
 
-   calendar_event = getSavedSubobject(cs,map,"EVENT",
-	 getUniverse()::createCalendarEvent,calendar_event);
+   timeslot_event = getSavedSubobject(cs,map,"EVENT",
+	 getUniverse()::createCalendarEvent,timeslot_event);
 }
 
 

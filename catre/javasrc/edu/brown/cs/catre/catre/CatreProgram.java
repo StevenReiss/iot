@@ -73,17 +73,20 @@ CatreRule findRule(String id);
 /**
  *      Add a new rule:  should only be called by CatreUnniverse, not directly
  **/
+
 void addRule(CatreRule ur);
 
 /**
  *      Remove a rule
  **/
+
 void removeRule(CatreRule ur);
 
 /**
  *      Provide validation information on a rule
  **/
-JSONObject validateRule(CatreRule cr);
+
+JSONObject errorCheckRule(CatreRule cr);
 
 
 
@@ -100,6 +103,7 @@ boolean runOnce(CatreTriggerContext ctx,Set<CatreDevice> relevant);
  *      Return a list of parameter references used by this program.  This
  *      can be used by CEDES to determine what messages need to be sent.
  **/
+
 Set<CatreParameterRef> getActiveSensors();
 
 

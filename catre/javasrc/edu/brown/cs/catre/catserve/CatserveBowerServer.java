@@ -708,7 +708,7 @@ private String handleValidateRule(HttpExchange e,CatserveSessionImpl cs)
       return BowerRouter.errorResponse(e,cs,400,"Bad rule definition");
     }
    
-   JSONObject rslt = cp.validateRule(cr);
+   JSONObject rslt = cp.errorCheckRule(cr);
    
   return BowerRouter.jsonOKResponse(cs,"VALIDATION",rslt);
 }

@@ -145,8 +145,6 @@ private void setConditionName()
 /*										*/
 /********************************************************************************/
 
-
-
 @Override public boolean isTrigger()
 {
    return is_trigger;
@@ -168,6 +166,46 @@ private CatrePropertySet getResultProperties()
 {
    return param_ref;
 }
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Checking methods                                                        */
+/*                                                                              */
+/********************************************************************************/
+
+@Override boolean contradicts(CatreCondition cc)
+{
+   if (cc instanceof CatprogConditionParameter) {
+      CatprogConditionParameter ccp = (CatprogConditionParameter) cc;
+      if (param_ref.isValid() && ccp.param_ref.isValid()) {
+         if (param_ref.getDevice() == ccp.param_ref.getDevice()) {
+            if (param_ref.getParameter() == ccp.param_ref.getParameter()) {
+               if (check_operator == Operator.EQL && ccp.check_operator == Operator.EQL) {
+                  if (!for_state.equals(ccp.for_state)) {
+                     return true;
+                   }
+                }
+               if (check_operator == Operator.NEQ && ccp.check_operator == Operator.EQL) {
+                  if (for_state.equals(ccp.for_state)) {
+                     return true;
+                   }
+                }
+               if (check_operator == Operator.EQL && ccp.check_operator == Operator.NEQ) {
+                  if (for_state.equals(ccp.for_state)) {
+                     return true;
+                   }
+                }
+               // check bounds for >=, <= etc
+             }
+          }
+       }
+    }
+   
+   return super.contradicts(cc);
+}
+
 
 
 /********************************************************************************/

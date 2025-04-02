@@ -64,6 +64,8 @@ long T_MINUTE = 60 * T_SECOND;
 long T_HOUR = 60 * T_MINUTE;
 long T_DAY = 24 * T_HOUR;
 
+
+
 /********************************************************************************/
 /*										*/
 /*	Calendar Event								*/
@@ -78,6 +80,26 @@ interface CalendarEvent {
    
 }       // end of inner interface CalendarEvent
 
+
+/********************************************************************************/
+/*                                                                              */
+/*      Rule check error                                                        */
+/*                                                                              */
+/********************************************************************************/
+
+enum ErrorLevel {
+   ERROR,
+   WARNING,
+   NOTE,
+}
+
+
+interface RuleError {
+   
+   ErrorLevel getErrorLevel();
+   String getMessage();
+   
+}
 
 
 }       // end of interface CatprogConstants

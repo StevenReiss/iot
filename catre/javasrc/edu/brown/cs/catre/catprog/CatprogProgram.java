@@ -54,6 +54,7 @@ import java.util.SortedSet;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import edu.brown.cs.catre.catre.CatreAction;
@@ -261,9 +262,20 @@ public Set<CatreParameterRef> getActiveSensors()
 /*                                                                              */
 /********************************************************************************/
 
-@Override public JSONObject validateRule(CatreRule cr)
-{
-   return buildJson("STATUS","OK");
+@Override public JSONObject errorCheckRule(CatreRule cr)
+{ 
+   CatprogRule cpr = (CatprogRule) cr;
+   CatprogErrorChecker checker = new CatprogErrorChecker(this,cpr);
+   List<RuleError> errors = checker.analyzeRule();
+   
+   JSONArray errs = new JSONArray();
+   for (RuleError re : errors) {
+      JSONObject jo = buildJson("Level",re.getErrorLevel(),
+            "Message",re.getMessage());
+      errs.put(jo);
+    }
+   
+   return buildJson("STATUS","OK","ERRORS",errs);
 }
 
 

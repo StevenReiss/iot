@@ -48,6 +48,7 @@ import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatreParameterRef;
 import edu.brown.cs.catre.catre.CatrePropertySet;
 import edu.brown.cs.catre.catre.CatreStore;
+import edu.brown.cs.catre.catre.CatreTimeSlotEvent;
 import edu.brown.cs.catre.catre.CatreUniverse;
 import edu.brown.cs.ivy.swing.SwingEventListenerList;
 
@@ -177,6 +178,15 @@ void addUsedConditions(Set<CatreCondition> rslt)
 }
 
 
+/********************************************************************************/
+/*                                                                              */
+/*      Checking methods                                                        */
+/*                                                                              */
+/********************************************************************************/
+
+CatreTimeSlotEvent getTimeSlotEvent()                           { return null; }
+
+boolean contradicts(CatreCondition cc)                          { return false; }
 
 
 
