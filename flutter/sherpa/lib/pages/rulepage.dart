@@ -76,7 +76,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
   @override
   Widget build(BuildContext context) {
     String ttl = "Rule Editor for ${_forDevice.getName()}";
-    return Scaffold(
+    Widget ww = Scaffold(
       appBar: AppBar(title: Text(ttl), actions: [
         widgets.topMenuAction(
           [
@@ -123,6 +123,14 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
         ),
       ),
     );
+
+    Widget w1 = PopScope(
+      canPop: true,
+      onPopInvokedWithResult: _checkPop,
+      child: ww,
+    );
+
+    return w1;
   }
 
   Widget _ruleLabel() {
@@ -285,6 +293,10 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     _labelControl.text = _forRule.getLabel();
     _descControl.text = _forRule.getDescription();
     _isUserDescription = _forRule.isUserDescription();
+  }
+
+  _checkPop(bool didpop, dynamic result) async {
+    await _forRule.addOrEditRule();
   }
 
   _updateDescription() {

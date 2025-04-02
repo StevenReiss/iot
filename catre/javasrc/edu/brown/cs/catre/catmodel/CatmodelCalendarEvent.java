@@ -36,6 +36,7 @@
 package edu.brown.cs.catre.catmodel;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -72,7 +73,8 @@ private Set<Calendar>	exclude_dates;
 private boolean         all_day;
 
 private static DateFormat date_format = DateFormat.getDateInstance(DateFormat.SHORT);
-private static DateFormat time_format = DateFormat.getTimeInstance(DateFormat.SHORT);
+private static DateFormat time_format = new SimpleDateFormat("h:mm a");
+
 
 
 /********************************************************************************/

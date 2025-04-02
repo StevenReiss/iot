@@ -149,7 +149,8 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       acts.add(
         widgets.MenuAction(
           "Move to ${pl1.name}",
-          () => _findRulePriority(pl1a.highPriority - 1, true, pl1a),
+          () => _changeRulePriority(
+              cr, pl1a.highPriority - 1, true, pl1a),
           "Move this rule to a the lower priority level ${pl1.name}",
         ),
       );
@@ -161,7 +162,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       acts.add(
         widgets.MenuAction(
           "Move to ${pl1.name}",
-          () => _findRulePriority(h, false, pl1a),
+          () => _changeRulePriority(cr, h, false, pl1a),
           "Move this rule to a the higher priority level ${pl1.name}",
         ),
       );
@@ -354,6 +355,20 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     return rslt;
   }
 
+  void _changeRulePriority(
+    CatreRule cr,
+    num p,
+    bool below,
+    PriorityLevel lvl,
+  ) async {
+    num np = _findRulePriority(p, below, lvl);
+    _forUniverse.getProgram().setRulePriority(cr, np);
+    await cr.addOrEditRule();
+    setState(() {
+      _forUniverse.getProgram().reorderRules();
+    });
+  }
+
   num _findRulePriority(num p, bool below, PriorityLevel lvl) {
     num prior = (below ? p : lvl.highPriority);
     num next = (below ? lvl.lowPriority : p);
@@ -384,9 +399,8 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       );
     }
     if (sts) {
-      setState(() {
-        _forUniverse.getProgram().removeRule(cr);
-      });
+      await _forUniverse.getProgram().removeRule(cr);
+      setState(() {});
     }
   }
 
