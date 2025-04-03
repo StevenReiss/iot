@@ -34,14 +34,29 @@
 
 package edu.brown.cs.catre.catprog;
 
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+
 import edu.brown.cs.catre.catre.CatreCondition;
 import edu.brown.cs.catre.catre.CatreStore;
+import edu.brown.cs.catre.catre.CatreTimeSlotEvent;
+import edu.brown.cs.catre.catre.CatreUniverse;
 
 class CatprogConditionAlways extends CatprogCondition
 {
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Private storage                                                         */
+/*                                                                              */
+/********************************************************************************/
+
+private  CatreTimeSlotEvent always_time;
+
 
 
 /********************************************************************************/
@@ -82,6 +97,24 @@ void addUsedConditions(Set<CatreCondition> rslt)
    // don't add this condition as it never changes
 }
 
+
+@Override CatreTimeSlotEvent getTimeSlotEvent()
+{
+   if (always_time == null) {
+      Calendar c1 = Calendar.getInstance();
+      c1.set(2000,0,1);
+      Calendar c2 = Calendar.getInstance();
+      c2.set(2100,0,1);
+      Map<String,Object> map = new HashMap<>();
+      map.put("FROMDATETIME",c1.getTimeInMillis());
+      map.put("TODATETIME",c2.getTimeInMillis());
+      map.put("ALLDAY",true);
+      CatreUniverse cu = for_program.getUniverse();
+      always_time = cu.createTimeSlotEvent(cu.getCatre().getDatabase(),map);
+    }
+   
+   return always_time;
+}
 
 
 /********************************************************************************/

@@ -127,7 +127,7 @@ CatreParameter createStringParameter(String name);
 CatreParameter createEventsParameter(String name);
 
 CatreTriggerContext createTriggerContext();
-CatreTimeSlotEvent createCalendarEvent(CatreStore cs,Map<String,Object> map);
+CatreTimeSlotEvent createTimeSlotEvent(CatreStore cs,Map<String,Object> map);
 
 CatreParameterRef createParameterRef(CatreReferenceListener ref,String device,String parameter);
 CatreParameterRef createParameterRef(CatreReferenceListener ref,CatreStore cs,Map<String,Object> map);

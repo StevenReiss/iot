@@ -40,7 +40,7 @@ const double errorFontSize = 16;
 final Color toolTipLeftColor = Colors.yellow.shade50;
 final Color toolTipRightColor = Colors.yellow.shade200;
 const double toolTipHeight = 50;
-const double toolTipFontSize = 18;
+const double toolTipFontSize = 15;
 
 const Color submitBackgroundColor = Colors.yellow;
 const Color submitForegroundColor = Colors.black;

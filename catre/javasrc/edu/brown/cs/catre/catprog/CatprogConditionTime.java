@@ -190,7 +190,7 @@ private void setupTimer()
    super.fromJson(cs,map);
 
    timeslot_event = getSavedSubobject(cs,map,"EVENT",
-	 getUniverse()::createCalendarEvent,timeslot_event);
+	 getUniverse()::createTimeSlotEvent,timeslot_event);
 }
 
 

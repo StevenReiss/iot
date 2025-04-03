@@ -762,6 +762,9 @@ private String handleRemoveRule(HttpExchange e,CatserveSessionImpl cs)
    if (cr == null) {
       return BowerRouter.errorResponse(e,cs,400,"No such rule");
     }
+   
+   CatreLog.logD("Remove Rule " + cr.getName());
+   
    cp.removeRule(cr);
    
   return BowerRouter.jsonOKResponse(cs);

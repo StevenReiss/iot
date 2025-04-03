@@ -33,7 +33,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
-import 'package:sherpa/util.dart' as util;
 import 'package:sherpa/models/catremodel.dart';
 import 'conditionpage.dart';
 import 'actionpage.dart';
@@ -207,6 +206,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     Widget w = widgets.itemWithMenu(
       cc.getLabel(),
       acts,
+      tooltip: cc.getDescription(),
       onLongPress: () {
         if (cc.getLabel().startsWith("Undefined")) {
           _editCondition(cc);
@@ -218,7 +218,11 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       onDoubleTap: () => _editCondition(cc),
     );
 
-    Widget w1 = widgets.tooltipWidget(cc.getDescription(), w);
+    Widget w1 = widgets.tooltipWidget(
+      "Tap on condition to edit it.  Other "
+      "options available from the menu on the left.",
+      w,
+    );
     return w1;
   }
 
@@ -238,6 +242,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     Widget w1 = widgets.itemWithMenu(
       ca.getLabel(),
       acts,
+      tooltip: ca.getDescription(),
       onLongPress: () {
         if (ca.getLabel().startsWith("Undefined")) {
           _editAction(ca);
@@ -249,7 +254,11 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       onTap: () => _editAction(ca),
     );
 
-    Widget w2 = widgets.tooltipWidget(ca.getDescription(), w1);
+    Widget w2 = widgets.tooltipWidget(
+      "Tap on rule to edit it.  Other options available "
+      "using the menu on the left",
+      w1,
+    );
     return w2;
   }
 
@@ -278,15 +287,33 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
   }
 
   _validateRule() async {
+    BuildContext dcontext = context;
     _updateRuleData();
     Map<String, dynamic>? jresp = await _forRule.issueCommand(
       "/rule/validate",
       "RULE",
     );
 
-    // TODO: create validate output page if needed
-
-    util.logD("Validate response $jresp");
+    if (jresp == null || jresp["STATUS"] == "OK") {
+      Map<String, dynamic> valid = jresp?["VALIDATION"];
+      List<dynamic>? errors = valid["ERRORS"];
+      String text = "";
+      if (errors == null || errors.isEmpty) {
+        text = "Rule ${_forRule.getName()} is VALID";
+      } else {
+        text = "Possible issues for ${_forRule.getName()}:\n";
+        for (Map<String, dynamic> v in errors) {
+          text += "${v['Level']}: ${v['Message']}\n";
+        }
+      }
+      if (dcontext.mounted) {
+        await widgets.displayDialog(
+          dcontext,
+          "Validation for ${_forRule.getName()}",
+          text,
+        );
+      }
+    }
   }
 
   _resetRule() {

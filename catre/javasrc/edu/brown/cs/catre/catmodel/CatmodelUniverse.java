@@ -562,10 +562,10 @@ private CatreProgram createProgram(CatreStore cs,Map<String,Object> map)
    return new CatmodelTriggerContext();
 }
 
-@Override public CatreTimeSlotEvent createCalendarEvent(CatreStore cs,Map<String,Object> map)
+@Override public CatreTimeSlotEvent createTimeSlotEvent(CatreStore cs,Map<String,Object> map)
 {
    return new CatmodelCalendarEvent(cs,map);
-}
+} 
 
 
 @Override public CatreParameterRef createParameterRef(CatreReferenceListener ref,String deviceid,String param)

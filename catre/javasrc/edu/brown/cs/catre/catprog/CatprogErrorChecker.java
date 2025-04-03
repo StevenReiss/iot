@@ -43,6 +43,7 @@ import java.util.List;
 import edu.brown.cs.catre.catre.CatreAction;
 import edu.brown.cs.catre.catre.CatreCondition;
 import edu.brown.cs.catre.catre.CatreLog;
+import edu.brown.cs.catre.catre.CatreRule;
 import edu.brown.cs.catre.catre.CatreTimeSlotEvent;
 
 class CatprogErrorChecker implements CatprogConstants
@@ -55,7 +56,6 @@ class CatprogErrorChecker implements CatprogConstants
 /*                                                                              */
 /********************************************************************************/
 
-@SuppressWarnings("unused")
 private CatprogProgram  for_program;
 private CatprogRule     for_rule;
 private List<TimeInterval> rule_intervals;
@@ -93,21 +93,7 @@ List<RuleError> analyzeRule()
    checkCanFire(errors);
    checkParameterConditions(errors);
    checkValid(errors);
-  
-   // CHECKS TO BE MADE
-   //  1)  The rule has a time when it will fire in the future -- check that there is
-   //        a time slot consistent with all conditions that is in the future (and 
-   //        within the coming year)
-   //
-   //  2)  No rule with higher priority covers this rule
-   //
-   //  3)  No rule with lower priority is covered by this rule
-   //
-   //  4)  Check that trigger conditions only occur once and on trigger rules 
-   //
-   //  5)  No contradictory conditions (parameter with multiple values)
-   //
-   //  6)  Conditions are well defined (Parameter refs are resolved)
+   checkOccludedRules(errors);
   
    for (RuleError re : errors) {
       CatreLog.logD("CATPROG","Rule Error: " + re);
@@ -222,11 +208,57 @@ private void checkValid(List<RuleError> errors)
 
 /********************************************************************************/
 /*                                                                              */
+/*      Check for occluded rules                                                */
+/*                                                                              */
+/********************************************************************************/
+
+private void checkOccludedRules(List<RuleError> errors)
+{
+   boolean higher = true;
+   for (CatreRule cr : for_program.getRules()) {
+      boolean othercond = false;
+      boolean havetime = false;
+      for (CatreCondition ccc : cr.getConditions()) {
+         CatprogCondition cc = (CatprogCondition) ccc;
+         CatreTimeSlotEvent evt = cc.getTimeSlotEvent();
+         if (evt == null) othercond = true;
+         else havetime = true;
+       }
+      if (cr == for_rule) {
+         higher = false;
+         if (othercond) break;          // no need to check lower priorities
+         continue;
+       }
+      if (higher && havetime) {
+         if (othercond) continue;       // this rule is conditional -- don't check   
+         List<TimeInterval> crtimes = getTimeSlots(cr);
+         List<TimeInterval> usetimes = intersectIntervals(crtimes,rule_intervals);
+         if (usetimes.isEmpty()) {
+            CheckError ce = new CheckError(ErrorLevel.ERROR,
+                  "Higher priority rule " + cr.getName() + " prevents this rule from occurring");
+            errors.add(ce);
+          }
+       } 
+      else if (!higher && havetime) {
+         List<TimeInterval> crtimes = getTimeSlots(cr);
+         List<TimeInterval> usetimes = intersectIntervals(crtimes,rule_intervals);
+         if (usetimes.isEmpty()) {
+            CheckError ce = new CheckError(ErrorLevel.ERROR,
+                  "This rule prevents the rule " + cr.getName() + " from occurring");
+            errors.add(ce);
+          }
+       }
+    }
+}
+   
+
+/********************************************************************************/
+/*                                                                              */
 /*      Get the possible time slots for this rule                               */
 /*                                                                              */
 /********************************************************************************/
 
-private List<TimeInterval> getTimeSlots(CatprogRule cr)
+private List<TimeInterval> getTimeSlots(CatreRule cr)
 {
    Calendar now = Calendar.getInstance();
    now.add(Calendar.DAY_OF_YEAR,-1);

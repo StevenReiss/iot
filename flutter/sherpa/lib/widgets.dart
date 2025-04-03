@@ -209,6 +209,7 @@ Widget itemWithMenu<T>(
   void Function()? onLongPress,
   String tooltip = "",
 }) {
+// consider changing to MenuAnchor here
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_open_rounded),
     itemBuilder: (context) => _itemMenuBuilder(acts),
@@ -1098,36 +1099,6 @@ Future<bool> getValidation(
     },
   );
   return (sts ?? false);
-}
-
-Future<bool> getValidationOld(
-  BuildContext context,
-  String title,
-) async {
-  bool? sts = await showDialog<bool>(
-    context: context,
-    builder: (BuildContext context) {
-      return SimpleDialog(
-        title: Text(title),
-        children: <Widget>[
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-            child: const Text("Yes"),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(context, false);
-            },
-            child: const Text("No"),
-          ),
-        ],
-      );
-    },
-  );
-  if (sts != null) return sts;
-  return false;
 }
 
 PreferredSizeWidget appBar(String title) {

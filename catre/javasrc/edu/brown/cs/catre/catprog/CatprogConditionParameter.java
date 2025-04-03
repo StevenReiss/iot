@@ -36,6 +36,7 @@
 
 package edu.brown.cs.catre.catprog;
 
+import java.util.List;
 import java.util.Map;
 
 import edu.brown.cs.catre.catre.CatreCondition;
@@ -88,7 +89,7 @@ CatprogConditionParameter(CatprogProgram pgm,CatreStore cs,Map<String,Object> ma
 
    param_ref.initialize();
 
-   setValid(param_ref.isValid());
+   setValid(checkValid());
 
    is_on = null;
 }
@@ -105,7 +106,7 @@ private CatprogConditionParameter(CatprogConditionParameter cc)
    needs_name = false;	
    check_operator = cc.check_operator;
    param_ref.initialize();
-   setValid(param_ref.isValid());
+   setValid(checkValid());
    is_on = null;
 }
 
@@ -174,6 +175,27 @@ private CatrePropertySet getResultProperties()
 /*      Checking methods                                                        */
 /*                                                                              */
 /********************************************************************************/
+
+private boolean checkValid()
+{
+   if (param_ref == null || !param_ref.isValid()) return false;
+   
+   CatreParameter cp = param_ref.getParameter();
+   switch (cp.getParameterType()) {
+      case ENUM :
+         List<Object> vals = cp.getValues();
+         if (!vals.contains(for_state)) {
+            return false;
+          }
+         break;
+      default:
+         break;
+    }
+   
+   return true;
+}
+
+
 
 @Override boolean contradicts(CatreCondition cc)
 {
@@ -291,7 +313,7 @@ private boolean computeResult(Object cvl)
 
    if (needs_name) setConditionName();
 
-   setValid(fg);
+   setValid(checkValid());
 
    fireValidated();
    

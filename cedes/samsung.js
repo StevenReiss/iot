@@ -222,7 +222,7 @@ async function getParameterValues(user, devid, parameters = null) {
          let capstatus = compstatus[attrname];
          console.log("SAMSUNG CAPABILITY STATUS", capstatus);
          for (let aname in capstatus) {
-            if (parameters == null || aname in parameters) {
+            if (parameters == null || parameters.includes(aname)) {
                let attrstate = capstatus[aname];
                rslt[aname] = attrstate;
             }
@@ -242,7 +242,6 @@ async function getParameterValuesByCapability(user,devid,parameters)
    if (dev == null) return null;
    let caps = {};
    for (let param of dev.PARAMETERS) {
-      console.log("SAMSUNG CHECK PARAM ",param,param.NAME,parameters);
       if (parameters == null || parameters.includes(param.NAME)) {
          let plist = caps[param.DATA];
          if (plist == null) {
@@ -250,7 +249,6 @@ async function getParameterValuesByCapability(user,devid,parameters)
             caps[param.DATA] = plist;
           }
          plist.push(param.NAME);
-         console.log("SAMSUNG NOTE PARAM ",plist,param.DATA);
        }
     }
    console.log("SAMSUNG CAP STATUS",caps);
