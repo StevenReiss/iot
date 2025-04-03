@@ -183,6 +183,8 @@ async function processCommand(user, dev, trans, command, values) {
    let resp = await client.devices.executeCommand(dev.UID, cmdarg);
 
    console.log("SAMSUNG EXECUTE COMMAND", dev, trans, cmdarg, resp);
+   
+   setTimeout(checkUpdates);
 
    return resp;
 }
@@ -240,6 +242,7 @@ async function getParameterValuesByCapability(user,devid,parameters)
    if (dev == null) return null;
    let caps = {};
    for (let param of dev.PARAMETERS) {
+      console.log("SAMSUNG CHECK PARAM ",param,param.NAME,parameters);
       if (parameters == null || param.NAME in parameters) {
          let plist = caps[param.DATA];
          if (plist == null) {
@@ -247,6 +250,7 @@ async function getParameterValuesByCapability(user,devid,parameters)
             caps[param.DATA] = plist;
           }
          plist.push(param.NAME);
+         console.log("SAMSUNG NOTE PARAM ",plist,param.DATA);
        }
     }
    console.log("SAMSUNG CAP STATUS",caps);

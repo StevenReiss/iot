@@ -90,6 +90,10 @@ pushd flutter/iqsign
 buildweb.csh >&! buildweb.out
 popd
 
+pushd flutter/sherpa
+buildweb.csh >&! buildweb.out
+popd
+
 pushd flutter/alds
 flutter clean
 flutter build ios
