@@ -243,7 +243,7 @@ async function getParameterValuesByCapability(user,devid,parameters)
    let caps = {};
    for (let param of dev.PARAMETERS) {
       console.log("SAMSUNG CHECK PARAM ",param,param.NAME,parameters);
-      if (parameters == null || param.NAME in parameters) {
+      if (parameters == null || parameters.includes(param.NAME)) {
          let plist = caps[param.DATA];
          if (plist == null) {
             plist = [];
