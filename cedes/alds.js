@@ -77,7 +77,7 @@ function getRouter(restful)
 
 function handleRawData(req,res)
 {
-   console.log("ALDS DATA",req.body.data);
+// console.log("ALDS DATA",req.body.data);
 
    if (data_stream == null) {
       data_stream = fs.createWriteStream('aldsdata.json',{flags: 'a'});
@@ -96,7 +96,7 @@ function handleRawData(req,res)
 
 function handleLogData(req,res)
 {
-   console.log("ALDS LOG",req.body.message);
+// console.log("ALDS LOG",req.body.message);
 
    if (log_stream == null) {
       log_stream = fs.createWriteStream('alds.log',{ flags: 'a'});

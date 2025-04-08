@@ -31,25 +31,26 @@
  *                                                                               *
  ********************************************************************************/
 
-
 library alds.storage;
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'globals.dart' as globals;
 import 'util.dart' as util;
 
-AuthData _authData = AuthData('*', "*");
+AuthData _authData = AuthData('*', '*', false);
 List<String> _locations = globals.defaultLocations;
 String _deviceId = "*";
 
 class AuthData {
   final String _userId;
   final String _userPass;
+  final bool _userSet;
 
-  AuthData(this._userId, this._userPass);
+  AuthData(this._userId, this._userPass, this._userSet);
 
   String get userId => _userId;
   String get password => _userPass;
+  bool get userSet => _userSet;
 } // end of inner class AuthData
 
 Future<void> setupStorage() async {
@@ -68,7 +69,11 @@ Future<void> setupStorage() async {
     "userpass",
     defaultValue: util.randomString(16),
   );
-  _authData = AuthData(uid, upa);
+  bool uset = await appbox.get(
+    "userset",
+    defaultValue: false,
+  );
+  _authData = AuthData(uid, upa, uset);
   _locations = appbox.get(
     "locations",
     defaultValue: globals.defaultLocations,
@@ -85,14 +90,27 @@ Future<void> setupStorage() async {
 Future<void> saveData() async {
   var appbox = Hive.box('appData');
   await appbox.put('setup', true);
-  await appbox.put('userid', _authData.userId);
-  await appbox.put('userpass', _authData.password);
+  if (_authData.userId == '*') {
+    await appbox.delete('userid');
+  } else {
+    await appbox.put('userid', _authData.userId);
+  }
+  if (_authData.password == '*') {
+    await appbox.delete('userpass');
+  } else {
+    await appbox.put('userpass', _authData.password);
+  }
+  await appbox.put('userset', _authData.userSet);
   await appbox.put('locations', _locations);
   await appbox.put('deviceid', _deviceId);
 }
 
 AuthData getAuthData() {
   return _authData;
+}
+
+bool isAuthUserSet() {
+  return _authData.userSet;
 }
 
 List<String> getLocations() {
@@ -114,7 +132,7 @@ Future<String?> readLocationData() async {
 }
 
 Future<void> setAuthData(String uid, String pwd) async {
-  _authData = AuthData(uid, pwd);
+  _authData = AuthData(uid, pwd, true);
   await saveData();
 }
 

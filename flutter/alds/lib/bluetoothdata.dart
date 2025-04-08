@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              main.dart                                                       */
+/*              bluetoothdata.dart                                              */
 /*                                                                              */
-/*      Main program for ALDS: Abstract Location Determination Service?         */
+/*      Represent information about a bluetooth finding                         */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
@@ -31,88 +31,38 @@
  *                                                                               *
  ********************************************************************************/
 
-import 'package:flutter/material.dart';
-import 'package:phone_state/phone_state.dart';
-import 'pages/selectpage.dart';
-import 'pages/loginpage.dart';
-import 'storage.dart' as storage;
-import 'globals.dart' as globals;
-import 'recheck.dart' as recheck;
-import 'device.dart' as device;
-import 'util.dart' as util;
-import "locator.dart";
-import 'dart:async';
+Map<String, int> _bluetoothIds = {};
 
-void main() {
-  initialize(false).then(_startApp);
-//   Widget w = storage.isAuthUserSet()
-//       ? const AldsSelectPage()
-//       : const AldsLoginPage();
-//   runApp(
-//     MaterialApp(
-//       title: "ALDS Location Selector",
-//       home: w,
-//     ),
-//   );
-}
+class BluetoothData {
+  final String _id;
+  int rssi;
+  final String _name;
+  late int _index;
 
-FutureOr<dynamic> _startApp(void x) async {
-  Widget w = storage.isAuthUserSet()
-      ? const AldsSelectPage()
-      : const AldsLoginPage();
-  runApp(
-    MaterialApp(
-      title: "ALDS Location Selector",
-      home: w,
-    ),
-  );
-}
+  BluetoothData(this._id, this.rssi, this._name) {
+    int? idx = _bluetoothIds[_id];
+    if (idx == null) {
+      idx = _bluetoothIds.length + 1;
+      _bluetoothIds[_id] = idx;
+    }
+    _index = idx;
+  }
 
-Future<void> initialize(bool flag) async {
-  await util.setup();
-  await storage.setupStorage();
-  recheck.initialize();
-  Locator loc = Locator();
-  loc.setup();
+  String get id => _id;
+  String get name => _name;
+  int get index => _index;
 
-  Timer.periodic(
-    const Duration(seconds: globals.recheckEverySeconds),
-    _handleRecheck,
-  );
-  Timer.periodic(
-    const Duration(seconds: globals.pingEverySeconds),
-    _handleDevice,
-  );
+  @override
+  String toString() {
+    return "BT:$_id = $rssi ($_name)";
+  }
 
-  handlePhone();
-}
-
-Future handlePhone() async {
-  PhoneState.stream.forEach(handlePhoneStream);
-}
-
-void _handleRecheck(Timer timer) async {
-  await recheck.recheck();
-}
-
-void _handleDevice(Timer timer) async {
-  device.Cedes cedes = device.Cedes();
-  await cedes.ping();
-}
-
-void handlePhoneStream(PhoneState state) {
-  PhoneStateStatus sts = state.status;
-  sts != PhoneStateStatus.NOTHING;
-
-  switch (sts) {
-    case PhoneStateStatus.CALL_STARTED:
-      device.Cedes().updatePhoneState(true);
-      break;
-    case PhoneStateStatus.CALL_ENDED:
-      device.Cedes().updatePhoneState(false);
-      break;
-    case PhoneStateStatus.CALL_INCOMING:
-    case PhoneStateStatus.NOTHING:
-      break;
+  Map<String, dynamic> toJson() {
+    return {
+      "id": _id,
+      "rssi": rssi,
+      "name": _name,
+      "index": _index,
+    };
   }
 }

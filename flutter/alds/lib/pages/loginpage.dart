@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              main.dart                                                       */
+/*              loginpage.dart                                                  */
 /*                                                                              */
-/*      Main program for ALDS: Abstract Location Determination Service?         */
+/*      Page (not dialog) to handle login credentials                           */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
@@ -31,88 +31,95 @@
  *                                                                               *
  ********************************************************************************/
 
+import '../widgets.dart' as widgets;
 import 'package:flutter/material.dart';
-import 'package:phone_state/phone_state.dart';
-import 'pages/selectpage.dart';
-import 'pages/loginpage.dart';
-import 'storage.dart' as storage;
-import 'globals.dart' as globals;
-import 'recheck.dart' as recheck;
-import 'device.dart' as device;
-import 'util.dart' as util;
-import "locator.dart";
-import 'dart:async';
+import '../storage.dart' as storage;
+import 'selectpage.dart';
 
-void main() {
-  initialize(false).then(_startApp);
-//   Widget w = storage.isAuthUserSet()
-//       ? const AldsSelectPage()
-//       : const AldsLoginPage();
-//   runApp(
-//     MaterialApp(
-//       title: "ALDS Location Selector",
-//       home: w,
-//     ),
-//   );
+class AldsLoginWidget extends StatelessWidget {
+  const AldsLoginWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const AldsLoginPage();
+  }
 }
 
-FutureOr<dynamic> _startApp(void x) async {
-  Widget w = storage.isAuthUserSet()
-      ? const AldsSelectPage()
-      : const AldsLoginPage();
-  runApp(
-    MaterialApp(
-      title: "ALDS Location Selector",
-      home: w,
-    ),
-  );
+class AldsLoginPage extends StatefulWidget {
+  const AldsLoginPage({super.key});
+
+  @override
+  State<AldsLoginPage> createState() {
+    return _AldsLoginPageState();
+  }
 }
 
-Future<void> initialize(bool flag) async {
-  await util.setup();
-  await storage.setupStorage();
-  recheck.initialize();
-  Locator loc = Locator();
-  loc.setup();
+class _AldsLoginPageState extends State<AldsLoginPage> {
+  late storage.AuthData authdata;
+  TextEditingController idcontrol = TextEditingController();
+  TextEditingController pwdcontrol = TextEditingController();
 
-  Timer.periodic(
-    const Duration(seconds: globals.recheckEverySeconds),
-    _handleRecheck,
-  );
-  Timer.periodic(
-    const Duration(seconds: globals.pingEverySeconds),
-    _handleDevice,
-  );
+  _AldsLoginPageState();
 
-  handlePhone();
-}
+  @override
+  void initState() {
+    authdata = storage.getAuthData();
+    idcontrol.text = authdata.userId;
+    pwdcontrol.text = authdata.password;
+    super.initState();
+  }
 
-Future handlePhone() async {
-  PhoneState.stream.forEach(handlePhoneStream);
-}
+  @override
+  Widget build(BuildContext context) {
+    Widget w = widgets.topLevelPage(
+      context,
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          widgets.textField(
+            hint: "Generic User Id",
+            controller: idcontrol,
+          ),
+          widgets.fieldSeparator(),
+          widgets.textField(
+            hint: "Generic Password",
+            controller: pwdcontrol,
+          ),
+          widgets.fieldSeparator(),
+          _bottomButtons(),
+        ],
+      ),
+    );
+    String ttl = "Set Login Credentials";
+    Widget top = Scaffold(
+      appBar: AppBar(
+        title: Text(ttl),
+      ),
+      body: w,
+    );
+    return top;
+  }
 
-void _handleRecheck(Timer timer) async {
-  await recheck.recheck();
-}
+  Widget _bottomButtons() {
+    Widget w = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        widgets.submitButton("Accept", _saveCreds),
+        widgets.submitButton("Cancel", _cancel),
+      ],
+    );
+    return w;
+  }
 
-void _handleDevice(Timer timer) async {
-  device.Cedes cedes = device.Cedes();
-  await cedes.ping();
-}
+  void _saveCreds() async {
+    BuildContext dcontext = context;
+    await storage.setAuthData(idcontrol.text, pwdcontrol.text);
+    if (dcontext.mounted) {
+      widgets.gotoDirect(dcontext, const AldsSelectWidget());
+    }
+  }
 
-void handlePhoneStream(PhoneState state) {
-  PhoneStateStatus sts = state.status;
-  sts != PhoneStateStatus.NOTHING;
-
-  switch (sts) {
-    case PhoneStateStatus.CALL_STARTED:
-      device.Cedes().updatePhoneState(true);
-      break;
-    case PhoneStateStatus.CALL_ENDED:
-      device.Cedes().updatePhoneState(false);
-      break;
-    case PhoneStateStatus.CALL_INCOMING:
-    case PhoneStateStatus.NOTHING:
-      break;
+  void _cancel() async {
+    widgets.gotoDirect(context, const AldsSelectWidget());
   }
 }

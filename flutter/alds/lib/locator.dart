@@ -51,6 +51,7 @@ class Locator {
   String? lastLocation;
   String? _nextLocation;
   int _nextCount = 0;
+  DateTime lastTime = DateTime.now();
 
   static final Locator _locator = Locator._internal();
 
@@ -84,6 +85,9 @@ class Locator {
     _curLocationData = nloc;
 
     findLocation();
+
+    lastTime = DateTime.now();
+
     return nloc;
   }
 
@@ -157,7 +161,7 @@ class Locator {
     } else {
       KnownLocation nloc = KnownLocation(ld, loc);
       _knownLocations.add(nloc);
-      lastLocation = loc;
+      _changeLocation(loc);
 
       // might want to force merge locations if there are too many
       // for a single room
@@ -399,7 +403,11 @@ class KnownLocation {
   KnownLocation.fromJson(Map<String, dynamic> json) {
     _count = json['count'];
     location = json['location'];
-    _position = Position.fromMap(json['position']);
+    if (json['position'] == null) {
+      _position = null;
+    } else {
+      _position = Position.fromMap(json['position']);
+    }
     Map<String, dynamic> dmap = jsonDecode(json['bluetooth']);
     for (MapEntry<String, dynamic> ent in dmap.entries) {
       double d = ent.value;

@@ -45,5 +45,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>ALDS needs to know where you are</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>ALDS needs to access bluetooth to know where you are</string>
 </dict>
 </plist>

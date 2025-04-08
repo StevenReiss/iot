@@ -39,6 +39,7 @@ import '../widgets.dart' as widgets;
 import "../locator.dart";
 import "logindialog.dart";
 import "locationpage.dart";
+import "package:intl/intl.dart";
 
 class AldsSelectPage extends StatelessWidget {
   const AldsSelectPage({super.key});
@@ -68,17 +69,16 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return _getWidget();
+  }
+
+  Widget _getWidget() {
+    Widget w = Scaffold(
       appBar: AppBar(
         title: const Text("Check Location"),
         actions: [
           widgets.topMenuAction(
             <widgets.MenuAction>[
-              widgets.MenuAction(
-                "Refresh Current Location",
-                _handleUpdate,
-                "Recompute the current location",
-              ),
               widgets.MenuAction(
                 "Show/Edit Login Data",
                 _showLoginDataAction,
@@ -125,6 +125,8 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
                     )),
                   ],
                 ),
+                Text("Last Updated: ${_getLastTime()}"),
+                // add last updated here
                 widgets.fieldSeparator(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -135,13 +137,30 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
                     ),
                   ],
                 ),
-                widgets.submitButton("Validate", _handleValidate),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    widgets.submitButton(
+                      "Update",
+                      _handleUpdate,
+                      tooltip: "Recompute the current location",
+                    ),
+                    widgets.submitButton(
+                      "Set Location",
+                      _handleValidate,
+                      tooltip:
+                          "Make the selected location the current one",
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+
+    return w;
   }
 
   Widget _createLocationSelector() {
@@ -163,8 +182,8 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
     });
   }
 
-  void _showLoginDataAction() async {
-    await showLoginDialog(context);
+  Future<String?> _showLoginDataAction() async {
+    return await showLoginDialog(context);
   }
 
   void _editLocationAction() async {
@@ -193,5 +212,28 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
     Locator loc = Locator();
     String? where = await loc.findLocation();
     await _locationSelected(where);
+  }
+
+  String _getLastTime() {
+    Locator loc = Locator();
+    DateTime dt = loc.lastTime;
+    DateTime now = DateTime.now();
+    DateTime yday = now.add(const Duration(
+      days: -1,
+    ));
+    String day = "";
+    if (now.year == dt.year &&
+        now.month == dt.month &&
+        now.day == dt.day) {
+      day = "Today";
+    } else if (yday.year == dt.year &&
+        yday.month == dt.month &&
+        yday.day == dt.day) {
+      day = "Yesterday";
+    } else {
+      day = DateFormat.yMMMd().format(dt);
+    }
+    String time = DateFormat.jms().format(dt);
+    return "$day at $time";
   }
 }

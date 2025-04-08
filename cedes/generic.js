@@ -90,7 +90,7 @@ function authenticate(req,res,next)
    console.log("GENERIC AUTHENTICATE",req.token);
 
    let tok = req.token;
-   if (tokens[tok] == null) config.handleFail(req,res,"Unauthorized");
+   if (tokens[tok] == null) config.handleFail(req,res,"Unauthorized",402);
    else {
       req.body.user = tokens[tok];
       next();

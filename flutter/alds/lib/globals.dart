@@ -31,7 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
 library alds.globals;
 
 const String storageName = "alds_app.json";
@@ -53,3 +52,12 @@ const List<String> defaultLocations = [
   'Home Office',
   'Other',
 ];
+
+const btFraction = 0.7;
+const locFraction = 0.15;
+const altFraction = 0.15;
+const useThreshold = 0.50;
+const stableCount = 3;
+
+const int numberLocationEntries = 20; // 100?
+const int numberSampleEntries = 10; // 50?

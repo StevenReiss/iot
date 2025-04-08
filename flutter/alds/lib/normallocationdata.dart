@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              main.dart                                                       */
+/*              normallocationdata.dart                                         */
 /*                                                                              */
-/*      Main program for ALDS: Abstract Location Determination Service?         */
+/*      Representation of normalized location dcata                             */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
@@ -31,88 +31,49 @@
  *                                                                               *
  ********************************************************************************/
 
-import 'package:flutter/material.dart';
-import 'package:phone_state/phone_state.dart';
-import 'pages/selectpage.dart';
-import 'pages/loginpage.dart';
-import 'storage.dart' as storage;
-import 'globals.dart' as globals;
-import 'recheck.dart' as recheck;
-import 'device.dart' as device;
-import 'util.dart' as util;
-import "locator.dart";
-import 'dart:async';
+import 'package:geolocator/geolocator.dart';
+import 'bluetoothdata.dart';
+import 'dart:math';
+import 'locationdata.dart';
 
-void main() {
-  initialize(false).then(_startApp);
-//   Widget w = storage.isAuthUserSet()
-//       ? const AldsSelectPage()
-//       : const AldsLoginPage();
-//   runApp(
-//     MaterialApp(
-//       title: "ALDS Location Selector",
-//       home: w,
-//     ),
-//   );
-}
+class NormalLocationData {
+  Map<String, double> _bluetoothMap = {};
+  Position? _gpsPosition;
+  final DateTime _when = DateTime.now();
 
-FutureOr<dynamic> _startApp(void x) async {
-  Widget w = storage.isAuthUserSet()
-      ? const AldsSelectPage()
-      : const AldsLoginPage();
-  runApp(
-    MaterialApp(
-      title: "ALDS Location Selector",
-      home: w,
-    ),
-  );
-}
+  NormalLocationData(this._gpsPosition, List<BluetoothData> bts) {
+    Map<String, double> bmap = {};
+    double totsq = 0;
+    for (BluetoothData btd in bts) {
+      double v = btd.rssi.toDouble();
+      v = (v + 128) / 100;
+      if (v < 0) continue;
+      if (v > 1) v = 1;
+      totsq += v * v;
+      bmap[btd.id] = v;
+    }
+    totsq = sqrt(totsq);
+    _bluetoothMap = bmap.map(
+      (k, v) => MapEntry(
+        k,
+        v / totsq,
+      ),
+    );
+  }
 
-Future<void> initialize(bool flag) async {
-  await util.setup();
-  await storage.setupStorage();
-  recheck.initialize();
-  Locator loc = Locator();
-  loc.setup();
+  NormalLocationData.update(this._gpsPosition, this._bluetoothMap);
 
-  Timer.periodic(
-    const Duration(seconds: globals.recheckEverySeconds),
-    _handleRecheck,
-  );
-  Timer.periodic(
-    const Duration(seconds: globals.pingEverySeconds),
-    _handleDevice,
-  );
+  NormalLocationData.fromLocation(LocationData loc)
+      : this(loc.gpsPosition, loc.getBluetoothValues());
 
-  handlePhone();
-}
+  Position? get gpsPosition => _gpsPosition;
+  Map<String, double> get bluetoothMap => _bluetoothMap;
 
-Future handlePhone() async {
-  PhoneState.stream.forEach(handlePhoneStream);
-}
-
-void _handleRecheck(Timer timer) async {
-  await recheck.recheck();
-}
-
-void _handleDevice(Timer timer) async {
-  device.Cedes cedes = device.Cedes();
-  await cedes.ping();
-}
-
-void handlePhoneStream(PhoneState state) {
-  PhoneStateStatus sts = state.status;
-  sts != PhoneStateStatus.NOTHING;
-
-  switch (sts) {
-    case PhoneStateStatus.CALL_STARTED:
-      device.Cedes().updatePhoneState(true);
-      break;
-    case PhoneStateStatus.CALL_ENDED:
-      device.Cedes().updatePhoneState(false);
-      break;
-    case PhoneStateStatus.CALL_INCOMING:
-    case PhoneStateStatus.NOTHING:
-      break;
+  Map<String, dynamic> toJson() {
+    return {
+      "bluetoothData": _bluetoothMap,
+      "gpsPosition": _gpsPosition?.toJson(),
+      "date": _when.toString(),
+    };
   }
 }

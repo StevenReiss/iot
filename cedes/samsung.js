@@ -103,6 +103,7 @@ async function addBridge(authdata, bid) {
       user = {
          username: username, client: client, bridgeid: bid,
          devices: {}, locations: {}, rooms: {}, active: {},
+         values: {},
       };
       users[username] = user;
    }
@@ -271,18 +272,28 @@ async function updateValues(user, devid,parameters = null) {
 // let rslt = await getParameterValues(user, devid, parameters);
    let rslt = await getParameterValuesByCapability(user,devid,parameters);
    for (let p in rslt) {
+      // check previous value
+      let  v1 = user.values[devid];
+      if (v1 == null) {
+         v1 = {};
+         user.values[devid] = v1;
+       }
+      let v2 = v1[p];
+      if (v2 == rslt[p].value) continue;
+      v1[p] = rslt[p].value;
+      
       let event = {
-         TYPE: "PARAMETER",
-         DEVICE: devid,
-         PARAMETER: p,
-         VALUE: rslt[p].value
-      };
+            TYPE: "PARAMETER",
+            DEVICE: devid,
+            PARAMETER: p,
+            VALUE: rslt[p].value
+       };
       await catre.sendToCatre({
          command: "EVENT",
          bid: user.bridgeid,
          event: event
-      });
-   }
+       });
+    }
 }
 
 
