@@ -31,8 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-library alds.recheck;
-
 import 'dart:io';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
@@ -41,6 +39,7 @@ import 'locator.dart';
 import 'package:mutex/mutex.dart';
 import 'util.dart' as util;
 import 'package:flutter/foundation.dart';
+import 'wifidata.dart';
 
 bool _checkLocation = false;
 bool _checkBluetooth = false;
@@ -50,6 +49,7 @@ final _doingRecheck = Mutex();
 dynamic _subscription;
 bool _geolocEnabled = false;
 BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
+final _wifiData = WifiData();
 
 Future<void> initialize() async {
   FlutterBluePlus.setLogLevel(LogLevel.warning, color: false);
@@ -94,7 +94,7 @@ void _bluetoothSub(BluetoothAdapterState state) {
   }
 }
 
-Future<LocationData> recheck() async {
+Future<LocationData> recheck([String? userLocation]) async {
   await _doingRecheck.acquire();
   try {
     util.log("START RECHECK");
@@ -116,7 +116,6 @@ Future<LocationData> recheck() async {
     }
 
     List<BluetoothData> btdata = [];
-
     var sub1 = FlutterBluePlus.onScanResults.listen(
       (List<ScanResult> scanrslts) {
         _btscan0(scanrslts, btdata);
@@ -141,6 +140,8 @@ Future<LocationData> recheck() async {
     //  List<BluetoothData> btdata = await st.fold([], _btscan2);
 
     // no way to scan wifi access points on ios
+
+    _wifiData.update();
 
     LocationData rslt = _locator.updateLocation(curpos, btdata);
     util.log("FINISHED RECHECK");

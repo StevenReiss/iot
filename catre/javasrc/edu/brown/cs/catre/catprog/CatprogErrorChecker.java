@@ -51,6 +51,7 @@ class CatprogErrorChecker implements CatprogConstants
 
 
 /********************************************************************************/
+
 /*                                                                              */
 /*      Private Storage                                                         */
 /*                                                                              */

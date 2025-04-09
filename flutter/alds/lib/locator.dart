@@ -84,7 +84,7 @@ class Locator {
     }
     _curLocationData = nloc;
 
-    findLocation();
+    findLocation(location: nloc);
 
     lastTime = DateTime.now();
 
@@ -120,11 +120,14 @@ class Locator {
       rslt = best.location as String;
     }
 
-    if (lastLocation == null || userset || rslt == lastLocation) {
+    if (lastLocation == null || userset) {
       await _changeLocation(rslt);
       _nextLocation = null;
       _nextCount = 0;
-    } else if (rslt == _nextLocation) {
+    } else if (rslt == lastLocation) {
+      _nextLocation = null;
+      _nextCount = 0;
+    } else if (rslt == _nextLocation || _nextLocation == null) {
       if (++_nextCount >= stableCount) {
         await _changeLocation(rslt);
         _nextLocation = null;

@@ -337,7 +337,7 @@ async function getDevices(username) {
    await catre.sendToCatre(msg);
 
    for (let dev of devlst) {
-      let params = getParameters(dev);
+      let params = getParameterList(dev);
       await updateValues(user, dev.UID,params);
    }
 }
@@ -364,6 +364,16 @@ function getParameters(dev)
    let rslt = {};
    for (let p of dev.PARAMETERS) {
       rslt[p.NAME] = true;
+    }
+   return rslt;
+}
+
+
+function getParameterList(dev)
+{
+   let rslt = [];
+   for (let p of dev.PARAMETERS) {
+      rslt.push(p.NAME);
     }
    return rslt;
 }

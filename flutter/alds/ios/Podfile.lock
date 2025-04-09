@@ -8,6 +8,8 @@ PODS:
     - ZIPFoundation
   - geolocator_apple (1.2.0):
     - Flutter
+  - network_info_plus (0.0.1):
+    - Flutter
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -23,6 +25,7 @@ DEPENDENCIES:
   - flutter_blue_plus_darwin (from `.symlinks/plugins/flutter_blue_plus_darwin/darwin`)
   - flutter_logs (from `.symlinks/plugins/flutter_logs/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
+  - network_info_plus (from `.symlinks/plugins/network_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - phone_state (from `.symlinks/plugins/phone_state/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -40,6 +43,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_logs/ios"
   geolocator_apple:
     :path: ".symlinks/plugins/geolocator_apple/ios"
+  network_info_plus:
+    :path: ".symlinks/plugins/network_info_plus/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   phone_state:
@@ -52,6 +57,7 @@ SPEC CHECKSUMS:
   flutter_blue_plus_darwin: 09444a26fb6bdef523e55b68fc1c59af5a877ea6
   flutter_logs: 30a36079651dcdfb260dbff875bf882bbbcaa22e
   geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
+  network_info_plus: cf61925ab5205dce05a4f0895989afdb6aade5fc
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   phone_state: 498a43ae8795d4341a78a12ac2144cd0ac7a77cd
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7

@@ -35,11 +35,14 @@ import 'package:flutter/material.dart';
 
 import '../storage.dart' as storage;
 import '../util.dart' as util;
+import '../globals.dart' as globals;
 import '../widgets.dart' as widgets;
 import "../locator.dart";
+import '../recheck.dart' as recheck;
 import "logindialog.dart";
 import "locationpage.dart";
 import "package:intl/intl.dart";
+import 'dart:async';
 
 class AldsSelectPage extends StatelessWidget {
   const AldsSelectPage({super.key});
@@ -59,16 +62,22 @@ class AldsSelectWidget extends StatefulWidget {
 
 class _AldsSelectWidgetState extends State<AldsSelectWidget> {
   final TextEditingController _curController = TextEditingController();
+  late BuildContext? dcontext;
 
   @override
   void initState() {
     Locator loc = Locator();
     _curController.text = loc.lastLocation ?? "";
     super.initState();
+    Timer.periodic(
+      const Duration(seconds: globals.recheckEverySeconds),
+      _handleRecheck,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    dcontext = context;
     return _getWidget();
   }
 
@@ -161,6 +170,15 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
     );
 
     return w;
+  }
+
+  Future<void> _handleRecheck(Timer timer) async {
+    BuildContext? ctx = dcontext;
+    await recheck.recheck();
+    if (ctx != null && ctx.mounted) {
+      Locator loc = Locator();
+      await _locationSelected(loc.lastLocation);
+    }
   }
 
   Widget _createLocationSelector() {

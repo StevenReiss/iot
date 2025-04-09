@@ -33,22 +33,27 @@
 
 import 'package:geolocator/geolocator.dart';
 import 'bluetoothdata.dart';
+import 'wifidata.dart';
 import 'dart:math';
 
 class LocationData {
   Map<String, BluetoothData> _bluetoothData = {};
   Position? _gpsPosition;
+  WifiData? _wifiData;
   DateTime _when = DateTime.now();
   int _count = 1;
 
-  LocationData(this._gpsPosition, List<BluetoothData> bts) {
+  LocationData(
+      this._gpsPosition, List<BluetoothData> bts, WifiData? wifi) {
     _bluetoothData = {
       for (BluetoothData bt in bts) bt.id: bt,
     };
+    _wifiData = wifi;
   }
 
   Position? get gpsPosition => _gpsPosition;
   Map<String, BluetoothData> get bluetoothData => _bluetoothData;
+  WifiData? get wifiData => _wifiData;
 
   List<BluetoothData> getBluetoothValues() {
     List<BluetoothData> rslt = [];

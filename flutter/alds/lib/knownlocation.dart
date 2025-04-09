@@ -33,6 +33,7 @@
 
 import 'package:geolocator/geolocator.dart';
 import 'normallocationdata.dart';
+import 'wifidata.dart';
 import 'dart:math';
 import 'dart:convert';
 import 'globals.dart' as globals;
@@ -50,6 +51,8 @@ class KnownLocation {
       _samples.add(nloc);
     }
   }
+
+  String get name => _locationName;
 
   void addLocation(
     NormalLocationData nld, [
@@ -71,6 +74,10 @@ class KnownLocation {
     }
     _updateAverage(nld);
     _count++;
+  }
+
+  double computeAverageScore(NormalLocationData nld) {
+    return _averageLocation.computeScore(nld);
   }
 
   void _updateAverage(NormalLocationData nld) {
@@ -118,12 +125,17 @@ class KnownLocation {
     } else if (p1 != null) {
       npos = p1;
     }
-    _averageLocation = NormalLocationData.update(npos, btmap);
+    WifiData? w0 = _averageLocation.wifiData;
+    WifiData? w1 = nld.wifiData;
+    if (w1 != w0) w0 = null;
+
+    _averageLocation = NormalLocationData.update(npos, btmap, w0);
   }
 
   Map toJson() {
     return {
       "samples": jsonEncode(_samples),
+      "average": jsonEncode(_averageLocation),
       "location": _locationName,
       "count": _count,
     };
@@ -133,5 +145,6 @@ class KnownLocation {
     _count = json['count'];
     _locationName = json['location'] as String;
     _samples = jsonDecode(json['samples']);
+    _averageLocation = jsonDecode(json['average']);
   }
 }

@@ -76,10 +76,6 @@ Future<void> initialize(bool flag) async {
   loc.setup();
 
   Timer.periodic(
-    const Duration(seconds: globals.recheckEverySeconds),
-    _handleRecheck,
-  );
-  Timer.periodic(
     const Duration(seconds: globals.pingEverySeconds),
     _handleDevice,
   );
@@ -89,10 +85,6 @@ Future<void> initialize(bool flag) async {
 
 Future handlePhone() async {
   PhoneState.stream.forEach(handlePhoneStream);
-}
-
-void _handleRecheck(Timer timer) async {
-  await recheck.recheck();
 }
 
 void _handleDevice(Timer timer) async {
