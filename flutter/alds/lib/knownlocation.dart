@@ -32,30 +32,32 @@
  ********************************************************************************/
 
 import 'package:geolocator/geolocator.dart';
-import 'normallocationdata.dart';
+import 'locationdata.dart';
 import 'wifidata.dart';
 import 'dart:math';
 import 'dart:convert';
 import 'globals.dart' as globals;
 
 class KnownLocation {
-  late NormalLocationData _averageLocation;
+  late LocationData _averageLocation;
   late String _locationName;
   int _count = 1;
-  List<NormalLocationData> _samples = [];
+  List<LocationData> _samples = [];
   final Random _rand = Random();
+  double score = 0;
 
-  KnownLocation(this._locationName, NormalLocationData nloc) {
+  KnownLocation(this._locationName, LocationData nloc) {
     _averageLocation = nloc;
     for (int i = 0; i < globals.numberLocationEntries; ++i) {
       _samples.add(nloc);
     }
+    score = 1.0;
   }
 
   String get name => _locationName;
 
   void addLocation(
-    NormalLocationData nld, [
+    LocationData nld, [
     bool force = false,
   ]) {
     if (_count < globals.numberLocationEntries) {
@@ -76,20 +78,30 @@ class KnownLocation {
     _count++;
   }
 
-  double computeAverageScore(NormalLocationData nld) {
+  double computeAverageScore(LocationData nld) {
     return _averageLocation.computeScore(nld);
   }
 
-  void _updateAverage(NormalLocationData nld) {
+  void _updateAverage(LocationData nld) {
     Map<String, double> btmap = {};
     double ct = _count.toDouble();
     double kct = 1;
     double tct = ct + kct;
+    double totsq = 0;
     for (MapEntry<String, double> ent
         in _averageLocation.bluetoothMap.entries) {
       double dv = nld.bluetoothMap[ent.key] ?? 0;
-      btmap[ent.key] = (ent.value * ct + dv * kct) / tct;
+      double v = (ent.value * ct + dv * kct) / tct;
+      btmap[ent.key] = v;
+      totsq += v * v;
     }
+    if (totsq != 0 && totsq != 1) {
+      totsq = sqrt(totsq);
+      for (MapEntry<String, double> dent in btmap.entries) {
+        btmap[dent.key] = dent.value / totsq;
+      }
+    }
+
     for (MapEntry<String, double> ent in nld.bluetoothMap.entries) {
       if (btmap[ent.key] == null) {
         btmap[ent.key] = ent.value * kct / tct;
@@ -129,7 +141,7 @@ class KnownLocation {
     WifiData? w1 = nld.wifiData;
     if (w1 != w0) w0 = null;
 
-    _averageLocation = NormalLocationData.update(npos, btmap, w0);
+    _averageLocation = LocationData.update(npos, btmap, w0);
   }
 
   Map toJson() {

@@ -37,7 +37,7 @@ import '../storage.dart' as storage;
 import '../util.dart' as util;
 import '../globals.dart' as globals;
 import '../widgets.dart' as widgets;
-import "../locator.dart";
+import "../locationmanager.dart";
 import '../recheck.dart' as recheck;
 import "logindialog.dart";
 import "locationpage.dart";
@@ -66,8 +66,8 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
 
   @override
   void initState() {
-    Locator loc = Locator();
-    _curController.text = loc.lastLocation ?? "";
+    LocationManager loc = LocationManager();
+    _curController.text = loc.currentLocationName ?? "";
     super.initState();
     Timer.periodic(
       const Duration(seconds: globals.recheckEverySeconds),
@@ -82,6 +82,16 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
   }
 
   Widget _getWidget() {
+    LocationManager loc = LocationManager();
+    double score = loc.score;
+    Color light = Colors.white;
+    if (score < 0.33) {
+      light = Colors.red;
+    } else if (score < 0.67) {
+      light = Colors.amber;
+    } else {
+      light = Colors.green;
+    }
     Widget w = Scaffold(
       appBar: AppBar(
         title: const Text("Check Location"),
@@ -132,6 +142,15 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
                       controller: _curController,
                       readOnly: true,
                     )),
+                    Container(
+                      width: 20,
+                      height: 20,
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: light,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
                   ],
                 ),
                 Text("Last Updated: ${_getLastTime()}"),
@@ -176,8 +195,8 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
     BuildContext? ctx = dcontext;
     await recheck.recheck();
     if (ctx != null && ctx.mounted) {
-      Locator loc = Locator();
-      await _locationSelected(loc.lastLocation);
+      LocationManager loc = LocationManager();
+      await _locationSelected(loc.currentLocationName);
     }
   }
 
@@ -215,25 +234,26 @@ class _AldsSelectWidgetState extends State<AldsSelectWidget> {
       'Do you really want to clear location data?',
     );
     if (!fg) return;
-    Locator loc = Locator();
+    LocationManager loc = LocationManager();
     await loc.clear();
   }
 
   void _handleValidate() async {
     String txt = _curController.text;
-    Locator loc = Locator();
+    LocationManager loc = LocationManager();
     loc.noteLocation(txt);
     util.log("VALIDATE location as $txt");
   }
 
   Future<void> _handleUpdate([dynamic details]) async {
-    Locator loc = Locator();
-    String? where = await loc.findLocation();
+    LocationManager loc = LocationManager();
+    await loc.recheckLocation();
+    String? where = loc.currentLocationName;
     await _locationSelected(where);
   }
 
   String _getLastTime() {
-    Locator loc = Locator();
+    LocationManager loc = LocationManager();
     DateTime dt = loc.lastTime;
     DateTime now = DateTime.now();
     DateTime yday = now.add(const Duration(

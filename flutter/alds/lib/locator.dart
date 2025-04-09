@@ -74,7 +74,11 @@ class Locator {
   }
 
   LocationData updateLocation(
-      Position? pos, List<BluetoothData> btdata) {
+    Position? pos,
+    List<BluetoothData> btdata, [
+    dynamic wifi,
+    dynamic user,
+  ]) {
     LocationData nloc = LocationData(pos, btdata);
     LocationData? cloc = _curLocationData;
     if (cloc != null) {
@@ -98,8 +102,10 @@ class Locator {
   }) async {
     String? rslt;
     LocationData? ld = location;
-    if (update) ld = await recheck.recheck();
-    ld ??= _curLocationData;
+    if (update) {
+      await recheck.recheck();
+      ld = _curLocationData;
+    }
     util.log("FIND ${ld?._bluetoothData} ${ld?._gpsPosition}");
 
     if (ld == null) return rslt;
@@ -157,11 +163,12 @@ class Locator {
   }
 
   Future<void> noteLocation(String loc) async {
-    LocationData ld = await recheck.recheck();
+    await recheck.recheck();
+    LocationData? ld = _curLocationData;
     String? s = await findLocation(location: ld, userset: true);
     if (s == loc) {
       findLocation(); // merge
-    } else {
+    } else if (ld != null) {
       KnownLocation nloc = KnownLocation(ld, loc);
       _knownLocations.add(nloc);
       _changeLocation(loc);

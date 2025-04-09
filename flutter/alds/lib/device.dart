@@ -37,7 +37,7 @@ import 'util.dart' as util;
 import 'globals.dart' as globals;
 import 'package:http/http.dart' as http;
 import 'package:mutex/mutex.dart';
-import 'locator.dart';
+import 'locationmanager.dart';
 
 const String noAuth = '*';
 
@@ -92,8 +92,8 @@ class Cedes {
       _doingPing.release();
     }
     if (_authCode != noAuth && _lastLoc == null) {
-      Locator loc = Locator();
-      String? lloc = loc.lastLocation;
+      LocationManager loc = LocationManager();
+      String? lloc = loc.currentLocationName;
       if (lloc != null) updateLocation(lloc);
     }
     if (_authCode != noAuth && _lastPhone) {

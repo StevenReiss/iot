@@ -35,16 +35,18 @@ import 'dart:io';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'locator.dart';
+import 'locationmanager.dart';
+import 'bluetoothdata.dart';
 import 'package:mutex/mutex.dart';
 import 'util.dart' as util;
 import 'package:flutter/foundation.dart';
 import 'wifidata.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 bool _checkLocation = false;
 bool _checkBluetooth = false;
+bool _checkWifi = false;
 bool _haveBluetooth = false;
-Locator _locator = Locator();
 final _doingRecheck = Mutex();
 dynamic _subscription;
 bool _geolocEnabled = false;
@@ -57,23 +59,41 @@ Future<void> initialize() async {
     util.log(s);
   });
 
-  _geolocEnabled = await Geolocator.isLocationServiceEnabled();
-  LocationPermission perm = LocationPermission.denied;
-  if (_geolocEnabled) {
-    perm = await Geolocator.checkPermission();
-    if (perm == LocationPermission.denied) {
-      perm = await Geolocator.requestPermission();
+  await _doingRecheck.acquire();
+  try {
+    bool fg0 = await Permission.locationWhenInUse.request().isGranted;
+    bool fg = await Permission.locationAlways.request().isGranted;
+    bool fg1 = await Permission.locationAlways.serviceStatus.isEnabled;
+    bool fg2 = await Permission.bluetoothScan.isGranted;
+    util.log("PERMISSIONS $fg0 $fg $fg1 $fg2");
+    _geolocEnabled = await Geolocator.isLocationServiceEnabled();
+    LocationPermission perm = LocationPermission.denied;
+    if (_geolocEnabled) {
+      perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        try {
+          perm = await Geolocator.requestPermission();
+        } catch (e) {
+          util.log("Problem getting permission: $e");
+        }
+      }
+      if (perm != LocationPermission.denied &&
+          perm != LocationPermission.deniedForever) {
+        _checkLocation = true;
+      }
+      _checkWifi = true;
     }
-    if (perm != LocationPermission.denied) _checkLocation = true;
-  }
-  util.log("CHECK GEOLOCATION $perm $_checkLocation");
-  _haveBluetooth = await FlutterBluePlus.isSupported;
-  _subscription = FlutterBluePlus.adapterState.listen(_bluetoothSub);
+    util.log("CHECK GEOLOCATION $perm $_checkLocation");
 
-  if (_haveBluetooth && !kIsWeb && Platform.isAndroid) {
-    await FlutterBluePlus.turnOn();
-  }
+    _haveBluetooth = await FlutterBluePlus.isSupported;
+    _subscription = FlutterBluePlus.adapterState.listen(_bluetoothSub);
 
+    if (_haveBluetooth && !kIsWeb && Platform.isAndroid) {
+      await FlutterBluePlus.turnOn();
+    }
+  } finally {
+    _doingRecheck.release();
+  }
   String state = _adapterState.toString().split(".").last;
   util.log(
       "CHECK BT $_checkBluetooth $_haveBluetooth $_checkBluetooth $state");
@@ -94,7 +114,7 @@ void _bluetoothSub(BluetoothAdapterState state) {
   }
 }
 
-Future<LocationData> recheck([String? userLocation]) async {
+Future<void> recheck([String? userLocation]) async {
   await _doingRecheck.acquire();
   try {
     util.log("START RECHECK");
@@ -141,11 +161,18 @@ Future<LocationData> recheck([String? userLocation]) async {
 
     // no way to scan wifi access points on ios
 
-    _wifiData.update();
+    if (_checkWifi) {
+      await _wifiData.update();
+    }
 
-    LocationData rslt = _locator.updateLocation(curpos, btdata);
+    LocationManager loc = LocationManager();
+    loc.updateLocation(
+      curpos,
+      btdata,
+      _wifiData,
+      userLocation,
+    );
     util.log("FINISHED RECHECK");
-    return rslt;
   } finally {
     _doingRecheck.release();
   }

@@ -56,7 +56,8 @@ class AuthData {
 Future<void> setupStorage() async {
   await Hive.initFlutter();
   var appbox = await Hive.openBox('appData');
-  // appbox.clear(); // REMOVE IN PRODUCTION
+//   appbox.clear(); // REMOVE IN PRODUCTION
+//   appbox.delete("locdata"); // REMOVE IN PRODUTION
   bool setup = await appbox.get(
     "setup",
     defaultValue: false,
@@ -73,6 +74,7 @@ Future<void> setupStorage() async {
     "userset",
     defaultValue: false,
   );
+
   _authData = AuthData(uid, upa, uset);
   _locations = appbox.get(
     "locations",
@@ -83,12 +85,14 @@ Future<void> setupStorage() async {
     defaultValue: "ALDS_${util.randomString(20)}",
   );
   if (!setup) {
-    await saveData();
+    await saveData(appbox);
   }
 }
 
-Future<void> saveData() async {
-  var appbox = Hive.box('appData');
+Future<void> saveData([
+  dynamic appbox,
+]) async {
+  appbox ??= Hive.box('appData');
   await appbox.put('setup', true);
   if (_authData.userId == '*') {
     await appbox.delete('userid');

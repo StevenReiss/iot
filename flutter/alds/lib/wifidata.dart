@@ -1,8 +1,8 @@
 /********************************************************************************/
 /*                                                                              */
-/*              main.dart                                                       */
+/*              recheck.dart                                                    */
 /*                                                                              */
-/*      Main program for ALDS: Abstract Location Determination Service?         */
+/*      Code to recompute the location periodially                              */
 /*                                                                              */
 /********************************************************************************/
 /*      Copyright 2023 Brown University -- Steven P. Reiss                      */
@@ -31,80 +31,38 @@
  *                                                                               *
  ********************************************************************************/
 
-import 'package:flutter/material.dart';
-import 'package:phone_state/phone_state.dart';
-import 'pages/selectpage.dart';
-import 'pages/loginpage.dart';
-import 'storage.dart' as storage;
-import 'globals.dart' as globals;
-import 'recheck.dart' as recheck;
-import 'device.dart' as device;
-import 'util.dart' as util;
-import "locationmanager.dart";
-import 'dart:async';
+import 'package:network_info_plus/network_info_plus.dart';
 
-void main() {
-  initialize(false).then(_startApp);
-//   Widget w = storage.isAuthUserSet()
-//       ? const AldsSelectPage()
-//       : const AldsLoginPage();
-//   runApp(
-//     MaterialApp(
-//       title: "ALDS Location Selector",
-//       home: w,
-//     ),
-//   );
-}
+Map<String, int> _wifiIds = {};
 
-FutureOr<dynamic> _startApp(void x) async {
-  Widget w = storage.isAuthUserSet()
-      ? const AldsSelectPage()
-      : const AldsLoginPage();
-  runApp(
-    MaterialApp(
-      title: "ALDS Location Selector",
-      home: w,
-    ),
-  );
-}
+class WifiData {
+  String? _bssId;
+  final _networkInfo = NetworkInfo();
 
-Future<void> initialize(bool flag) async {
-  await util.setup();
-  await storage.setupStorage();
-  recheck.initialize();
-  LocationManager loc = LocationManager();
-  await loc.setup();
+  WifiData();
 
-  Timer.periodic(
-    const Duration(seconds: globals.pingEverySeconds),
-    _handleDevice,
-  );
+  WifiData.fromJson(Map<String, dynamic> json) {
+    _bssId = json['bssId'];
+  }
 
-  handlePhone();
-}
+  String? get bssId => _bssId;
+  int get wifiId => _bssId == null ? 0 : _wifiIds[bssId] as int;
 
-Future handlePhone() async {
-  PhoneState.stream.forEach(handlePhoneStream);
-}
+  Future<void> update() async {
+    String? newid = await _networkInfo.getWifiBSSID();
+    if (newid != null) {
+      int? idx = _wifiIds[newid];
+      if (idx == null) {
+        idx = _wifiIds.length + 1;
+        _wifiIds[newid] = idx;
+      }
+      _bssId = newid;
+    }
+  }
 
-void _handleDevice(Timer timer) async {
-  device.Cedes cedes = device.Cedes();
-  await cedes.ping();
-}
-
-void handlePhoneStream(PhoneState state) {
-  PhoneStateStatus sts = state.status;
-  sts != PhoneStateStatus.NOTHING;
-
-  switch (sts) {
-    case PhoneStateStatus.CALL_STARTED:
-      device.Cedes().updatePhoneState(true);
-      break;
-    case PhoneStateStatus.CALL_ENDED:
-      device.Cedes().updatePhoneState(false);
-      break;
-    case PhoneStateStatus.CALL_INCOMING:
-    case PhoneStateStatus.NOTHING:
-      break;
+  Map<String, dynamic> toJson() {
+    return {
+      "bssId": _bssId,
+    };
   }
 }
