@@ -116,7 +116,7 @@ String getContents(String url,long delay)
     }
    catch (IOException | URISyntaxException e) { }
 
-   if (cnts != null &&delay > 5000) {
+   if (cnts != null && delay > 5000) {
       ci = new CacheItem(now,now+delay-5000,cnts);
       cache_map.put(url,ci);
     }

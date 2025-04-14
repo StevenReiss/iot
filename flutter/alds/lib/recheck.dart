@@ -81,7 +81,7 @@ Future<void> initialize() async {
           perm != LocationPermission.deniedForever) {
         _checkLocation = true;
       }
-      _checkWifi = true;
+      _checkWifi = false; // not working on mac
     }
     util.log("CHECK GEOLOCATION $perm $_checkLocation");
 

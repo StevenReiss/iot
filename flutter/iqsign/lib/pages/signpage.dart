@@ -1,36 +1,36 @@
 /********************************************************************************/
-/*                                                                              */
-/*              signpage.dart                                                   */
-/*                                                                              */
-/*      Main page for setting and displaying the current sign                   */
-/*                                                                              */
+/*										*/
+/*		signpage.dart							*/
+/*										*/
+/*	Main page for setting and displaying the current sign			*/
+/*										*/
 /********************************************************************************/
-/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
+/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
 /*********************************************************************************
- *  Copyright 2023, Brown University, Providence, RI.                            *
- *                                                                               *
- *                        All Rights Reserved                                    *
- *                                                                               *
- *  Permission to use, copy, modify, and distribute this software and its        *
- *  documentation for any purpose other than its incorporation into a            *
- *  commercial product is hereby granted without fee, provided that the          *
- *  above copyright notice appear in all copies and that both that               *
- *  copyright notice and this permission notice appear in supporting             *
- *  documentation, and that the name of Brown University not be used in          *
- *  advertising or publicity pertaining to distribution of the software          *
- *  without specific, written prior permission.                                  *
- *                                                                               *
- *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
- *  OF THIS SOFTWARE.                                                            *
- *                                                                               *
+ *  Copyright 2023, Brown University, Providence, RI.				 *
+ *										 *
+ *			  All Rights Reserved					 *
+ *										 *
+ *  Permission to use, copy, modify, and distribute this software and its	 *
+ *  documentation for any purpose other than its incorporation into a		 *
+ *  commercial product is hereby granted without fee, provided that the 	 *
+ *  above copyright notice appear in all copies and that both that		 *
+ *  copyright notice and this permission notice appear in supporting		 *
+ *  documentation, and that the name of Brown University not be used in 	 *
+ *  advertising or publicity pertaining to distribution of the software 	 *
+ *  without specific, written prior permission. 				 *
+ *										 *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
+ *  OF THIS SOFTWARE.								 *
+ *										 *
  ********************************************************************************/
-
+i
 import '../signdata.dart';
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
@@ -105,109 +105,109 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_signData.getName(),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            )),
-        actions: [
-          widgets.topMenuAction(
-            <widgets.MenuAction>[
-              widgets.MenuAction(
-                "Create or Edit Saved Sign",
-                _gotoEdit,
-                "Create a new basic sign or edit this one",
-              ),
-              widgets.MenuAction(
-                "Change Sign Size",
-                _changeSignSize,
-                "Change the size or shape of this sign",
-              ),
-              widgets.MenuAction(
-                "Change Sign Name",
-                _changeSignName,
-                "Rename this sign",
-              ),
-              widgets.MenuAction(
-                "View Sign and Image URL",
-                _viewSignUrl,
-                "View the URL for the sign and its image and copy them "
-                    "to the clipboard if desired.",
-              ),
-              widgets.MenuAction(
-                "Generate Login Key for Sherpa",
-                _generateLoginKey,
-                "Create a login key so that your sign can be set from Sherpa",
-              ),
-              widgets.MenuAction(
-                "Delete this Sign",
-                _deleteSign,
-                "Remove this sign.  This can't be undone",
-              ),
-              widgets.MenuAction(
-                "Log Out",
-                _logoutAction,
-              ),
-            ],
-          ),
-        ],
+	title: Text(_signData.getName(),
+	    style: const TextStyle(
+	      fontWeight: FontWeight.bold,
+	      color: Colors.black,
+	    )),
+	actions: [
+	  widgets.topMenuAction(
+	    <widgets.MenuAction>[
+	      widgets.MenuAction(
+		"Create or Edit Saved Sign",
+		_gotoEdit,
+		"Create a new basic sign or edit this one",
+	      ),
+	      widgets.MenuAction(
+		"Change Sign Size",
+		_changeSignSize,
+		"Change the size or shape of this sign",
+	      ),
+	      widgets.MenuAction(
+		"Change Sign Name",
+		_changeSignName,
+		"Rename this sign",
+	      ),
+	      widgets.MenuAction(
+		"View Sign and Image URL",
+		_viewSignUrl,
+		"View the URL for the sign and its image and copy them "
+		    "to the clipboard if desired.",
+	      ),
+	      widgets.MenuAction(
+		"Generate Login Key for Sherpa",
+		_generateLoginKey,
+		"Create a login key so that your sign can be set from Sherpa",
+	      ),
+	      widgets.MenuAction(
+		"Delete this Sign",
+		_deleteSign,
+		"Remove this sign.  This can't be undone",
+	      ),
+	      widgets.MenuAction(
+		"Log Out",
+		_logoutAction,
+	      ),
+	    ],
+	  ),
+	],
       ),
       body: widgets.topLevelPage(
-        context,
-        FutureBuilder<List<String>>(
-          future: _signNamesFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              _signNames = snapshot.data!;
-              String url = _signData.getLocalImageUrl(_preview);
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  widgets.fieldSeparator(),
-                  getSignWidget(context, url),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        widgets.largeText("Set Sign to:  ",
-                            scaler: 1.5),
-                        _createNameSelector(),
-                      ]),
-                  widgets.fieldSeparator(),
-                  widgets.textFormField(
-                    hint: "Additional text for the sign",
-                    label: "Additional Text",
-                    controller: _extraControl,
-                    maxLines: 3,
-                    onChanged: _handleOtherText,
-                    enabled: _canHaveOtherText(),
-                    tooltip:
-                        "Enter additional text to display on the sign, "
-                        "for example, the time you will be back.",
-                  ),
-                  widgets.fieldSeparator(),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        widgets.submitButton(
-                          "Reset",
-                          _resetAction,
-                          enabled: _preview,
-                        ),
-                        widgets.submitButton(
-                          "Update",
-                          _updateAction,
-                          enabled: _isSignValid(),
-                        ),
-                      ])
-                ],
-              );
-            }
-          },
-        ),
+	context,
+	FutureBuilder<List<String>>(
+	  future: _signNamesFuture,
+	  builder: (context, snapshot) {
+	    if (snapshot.connectionState == ConnectionState.waiting) {
+	      return const CircularProgressIndicator();
+	    } else if (snapshot.hasError) {
+	      return Text('Error: ${snapshot.error}');
+	    } else {
+	      _signNames = snapshot.data!;
+	      String url = _signData.getLocalImageUrl(_preview);
+	      return Column(
+		mainAxisAlignment: MainAxisAlignment.center,
+		children: <Widget>[
+		  widgets.fieldSeparator(),
+		  getSignWidget(context, url),
+		  Row(
+		      mainAxisAlignment: MainAxisAlignment.center,
+		      children: <Widget>[
+			widgets.largeText("Set Sign to:  ",
+			    scaler: 1.5),
+			_createNameSelector(),
+		      ]),
+		  widgets.fieldSeparator(),
+		  widgets.textFormField(
+		    hint: "Additional text for the sign",
+		    label: "Additional Text",
+		    controller: _extraControl,
+		    maxLines: 3,
+		    onChanged: _handleOtherText,
+		    enabled: _canHaveOtherText(),
+		    tooltip:
+			"Enter additional text to display on the sign, "
+			"for example, the time you will be back.",
+		  ),
+		  widgets.fieldSeparator(),
+		  Row(
+		      mainAxisAlignment: MainAxisAlignment.end,
+		      children: <Widget>[
+			widgets.submitButton(
+			  "Reset",
+			  _resetAction,
+			  enabled: _preview,
+			),
+			widgets.submitButton(
+			  "Update",
+			  _updateAction,
+			  enabled: _isSignValid(),
+			),
+		      ])
+		],
+	      );
+	    }
+	  },
+	),
       ),
     );
   }
@@ -216,17 +216,17 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     return Container(
       padding: const EdgeInsets.all(24),
       child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 3,
-            color: (_preview ? Colors.blue : Colors.black),
-          ),
-        ),
-        child: Image.network(
-          url,
-          width: MediaQuery.of(context).size.width * 0.4,
-          //                    height: MediaQuery.of(context).size.height * 0.4,
-        ),
+	decoration: BoxDecoration(
+	  border: Border.all(
+	    width: 3,
+	    color: (_preview ? Colors.blue : Colors.black),
+	  ),
+	),
+	child: Image.network(
+	  url,
+	  width: MediaQuery.of(context).size.width * 0.4,
+	  //			height: MediaQuery.of(context).size.height * 0.4,
+	),
       ),
     );
   }
@@ -234,7 +234,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
   dynamic _gotoLogin(bool fg) {
     if (!fg) return;
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const IQSignLogin()));
+	MaterialPageRoute(builder: (context) => const IQSignLogin()));
   }
 
   dynamic _gotoHome(dynamic fg) {
@@ -250,12 +250,12 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
 
   dynamic _gotoEdit() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => IQSignSignEditWidget(
-                  _signData,
-                  _signNames,
-                )));
+	context,
+	MaterialPageRoute(
+	    builder: (context) => IQSignSignEditWidget(
+		  _signData,
+		  _signNames,
+		)));
   }
 
   void _changeSignSize() async {
@@ -291,16 +291,16 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     for (String line in lines) {
       line = line.trim();
       if (_baseSign == null && line.startsWith(RegExp(r'=\w+'))) {
-        int idx = line.indexOf('=');
-        if (idx > 0) line = line.substring(0, idx).trim();
-        line = line.substring(1);
-        _baseSign = line;
+	int idx = line.indexOf('=');
+	if (idx > 0) line = line.substring(0, idx).trim();
+	line = line.substring(1);
+	_baseSign = line;
       } else if (_baseSign != null) {
-        if (_extraControl.text.isEmpty) {
-          _extraControl.text = line;
-        } else {
-          _extraControl.text += "\n$line";
-        }
+	if (_extraControl.text.isEmpty) {
+	  _extraControl.text = line;
+	} else {
+	  _extraControl.text += "\n$line";
+	}
       }
     }
   }
@@ -354,7 +354,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     );
     if (js['status'] == 'OK') {
       setState(() {
-        _preview = true;
+	_preview = true;
       });
     }
   }
@@ -384,7 +384,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     );
     if (js['status'] == "OK") {
       setState(() {
-        _preview = false;
+	_preview = false;
       });
     }
   }
@@ -400,7 +400,7 @@ class _IQSignSignPageState extends State<IQSignSignPage> {
     Map<String, dynamic> js = await util.postJson(
       "/rest/removersign",
       body: {
-        "signid": _signData.getSignId(),
+	"signid": _signData.getSignId(),
       },
     );
     if (js['status'] != "OK") return false;

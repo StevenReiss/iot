@@ -39,6 +39,7 @@ import 'package:sherpa/levels.dart' as levels;
 import 'package:sherpa/models/catremodel.dart';
 import 'package:sherpa/pages/authorizationpage.dart';
 import 'package:sherpa/pages/devicepage.dart';
+import 'package:sherpa/pages/addweatherpage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
 import 'package:sherpa/lookandfeel.dart' as laf;
@@ -102,6 +103,11 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
               'Show Device Status',
               _showStates,
               "Show the current status of the device",
+            ),
+            widgets.MenuAction(
+              'Create Weather Device',
+              _showAddWeatherPage,
+              "Create a device for the weather at a given location",
             ),
             widgets.MenuAction('Remove Device', _handleRemoveDevice,
                 "Remove a device from your universe."),
@@ -281,6 +287,10 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
           ));
     }
     setState(() {});
+  }
+
+  void _showAddWeatherPage() async {
+    await widgets.gotoThen(context, const SherpaAddWeatherPage());
   }
 
   Widget? _createPriorityView(levels.PriorityLevel lvl, bool optional) {

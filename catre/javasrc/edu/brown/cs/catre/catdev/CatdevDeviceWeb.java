@@ -57,10 +57,7 @@ private TimerTask timer_task;
 private long	poll_rate;
 private long	cache_rate;
 
-private static CatdevWebCache web_cache = new CatdevWebCache();
-
-
-
+ 
 
 /********************************************************************************/
 /*										*/
@@ -116,8 +113,8 @@ protected void setPollRate(long rate)
 @Override protected  void updateCurrentState()
 {
    String cnts = null;
-   cnts = web_cache.getContents(getUrl(),cache_rate);
-   handleContents(cnts);
+   cnts = WEB_CACHE.getContents(getUrl(),cache_rate); 
+   handleContents(cnts); 
 }
 
 

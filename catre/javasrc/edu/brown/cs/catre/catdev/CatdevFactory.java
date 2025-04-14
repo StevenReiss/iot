@@ -85,6 +85,9 @@ public CatreDevice createDevice(CatreStore cs,Map<String,Object> map)
          case "Weather" :
             device = new CatdevWeatherDevice(for_universe,cs,map);
             break;
+         case "OpenMeteo" :
+            device = new CatdevMeteoDevice(for_universe,cs,map); 
+            break;
          default : 
             CatreLog.logE("CATDEV","Unknown device type " + typ);
             break;

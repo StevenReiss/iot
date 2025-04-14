@@ -236,6 +236,7 @@ protected JSONObject sendCedesMessage(String cmd,Map<String,Object> data)
          CatreLog.logD("CATBRIDGE","Device not found for parameter ref " + ref);
          continue;
        }
+      if (cd.getBridge() == null) continue;
       CatreLog.logD("CATBRIDGE","Check sensor " + cd.getName() + " " + cd.getBridge().getName());
       if (!getName().equals(cd.getBridge().getName())) continue;
       CatreParameter cp = ref.getParameter();

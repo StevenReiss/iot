@@ -145,7 +145,15 @@ class LocationManager {
   }
 
   KnownLocation? _findBestLocation(LocationData nld) {
-    // probably should do K-nearest-neighbor search here
+    bool smartsearch = true;
+    int ct = _knownLocations.length;
+    for (KnownLocation kl in _knownLocations.values) {
+      if (kl.count < 100) smartsearch = false;
+    }
+    if (ct < 4) smartsearch = false;
+    if (smartsearch) {
+      // should do K-nearest-neighbor search here
+    }
     return _bestAverageLocation(nld);
   }
 

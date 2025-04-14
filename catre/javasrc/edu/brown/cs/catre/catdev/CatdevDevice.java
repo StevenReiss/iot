@@ -338,7 +338,7 @@ public CatreTransition addTransition(CatreTransition t)
 @Override public void updateParameterValues()
 {
    if (for_bridge != null) {
-      JSONObject rslt =for_bridge.updateParameterValues(this); 
+      JSONObject rslt = for_bridge.updateParameterValues(this); 
       CatreLog.logD("CATDEV","RESULT OF UPDATE PARAMETERS: " + rslt.toString(2));
       for (String key : rslt.keySet()) {
          Object v = rslt.get(key);

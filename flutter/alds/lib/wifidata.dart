@@ -34,6 +34,10 @@
 import 'package:network_info_plus/network_info_plus.dart';
 
 Map<String, int> _wifiIds = {};
+//  This should probably use wifi_scan and set up an array of items
+//    similar to that used by bluetooth.   However, this will not
+//    work on current mac and possibly future android, so its not
+//    worth it for now.
 
 class WifiData {
   String? _bssId;

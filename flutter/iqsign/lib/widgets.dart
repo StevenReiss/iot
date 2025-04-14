@@ -99,6 +99,7 @@ Widget textField({
   String? label,
   TextEditingController? controller,
   ValueChanged<String>? onChanged,
+
   VoidCallback? onEditingComplete,
   ValueChanged<String>? onSubmitted,
   TapRegionCallback? onTapOutside,
@@ -171,6 +172,9 @@ Widget loginTextField(
   String? label,
   TextEditingController? controller,
   ValueChanged<String>? onChanged,
+  VoidCallback? onEditingComplete,
+  ValueChanged<String>? onSubmitted,
+  String? Function(String?)? onSaved,
   String? Function(String?)? validator,
   TextInputType? keyboardType,
   bool obscureText = false,
@@ -183,6 +187,9 @@ Widget loginTextField(
     label: label,
     controller: controller,
     onChanged: onChanged,
+    onEditingComplete: onEditingComplete,
+    onSubmitted: onSubmitted,
+    onSaved: onSaved,
     validator: validator,
     context: context,
     fraction: fraction,
@@ -218,11 +225,7 @@ Widget itemWithMenu<T>(
   wt = tooltipWidget(tooltip, wt);
   Widget w = Row(
     mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[
-      btn,
-      wt,
-      const Spacer(flex: 10),
-    ],
+    children: <Widget>[btn, wt, const Spacer(flex: 10)],
   );
 
   onDoubleTap ??= onTap;
@@ -500,12 +503,13 @@ Widget dropDown(
   Widget w = DropdownButton<String>(
     value: value,
     onChanged: onChanged,
-    items: items.map<DropdownMenuItem<String>>((String value) {
-      return DropdownMenuItem<String>(
-        value: value,
-        child: Text(value, textAlign: textAlign),
-      );
-    }).toList(),
+    items:
+        items.map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value, textAlign: textAlign),
+          );
+        }).toList(),
   );
   w = tooltipWidget(tooltip, w);
   return w;
@@ -525,8 +529,8 @@ Widget dropDownMenu(
     onSelected: onChanged,
     dropdownMenuEntries:
         items.map<DropdownMenuEntry<String>>((String value) {
-      return DropdownMenuEntry<String>(value: value, label: value);
-    }).toList(),
+          return DropdownMenuEntry<String>(value: value, label: value);
+        }).toList(),
   );
   w = tooltipWidget(tooltip, w);
   return w;
@@ -1051,9 +1055,10 @@ Future<void> displayDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title),
-        content: description.isNotEmpty
-            ? Text(description, maxLines: 10)
-            : null,
+        content:
+            description.isNotEmpty
+                ? Text(description, maxLines: 10)
+                : null,
         actions: <Widget>[
           TextButton(
             child: const Text("OK"),
@@ -1077,9 +1082,10 @@ Future<bool> getValidation(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title),
-        content: description.isNotEmpty
-            ? Text(description, maxLines: 10)
-            : null,
+        content:
+            description.isNotEmpty
+                ? Text(description, maxLines: 10)
+                : null,
         actions: <Widget>[
           TextButton(
             child: const Text("YES"),

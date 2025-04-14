@@ -206,6 +206,7 @@ private void setupKeys()
    
    rslt.put("CITY",city_name);
    rslt.put("UNITS",unit_type);
+   
    return rslt;
 }
 

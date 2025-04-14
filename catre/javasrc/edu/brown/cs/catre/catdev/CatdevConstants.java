@@ -65,6 +65,8 @@ long T_HOUR = 60 * T_MINUTE;
 long T_DAY = 24 * T_HOUR;
 
 
+CatdevWebCache WEB_CACHE = new CatdevWebCache();
+
 }       // end of interface CatdevConstants
 
 

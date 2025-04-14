@@ -55,6 +55,7 @@ class KnownLocation {
   }
 
   String get name => _locationName;
+  int get count => _count;
 
   void addLocation(
     LocationData nld, [
