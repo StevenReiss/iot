@@ -480,8 +480,11 @@ private String handleAddVirtualDevice(HttpExchange e,CatserveSessionImpl cs)
    CatreUniverse cu = cs.getUniverse(catre_control);
    
    JSONObject dev = getJson(e,"DEVICE");
+   CatreDevice cd = null;
    
-   CatreDevice cd = cu.createVirtualDevice(cu.getCatre().getDatabase(),dev.toMap());
+   if (dev != null) {
+      cd = cu.createVirtualDevice(cu.getCatre().getDatabase(),dev.toMap());
+    }
    
    if (cd == null) {
       return BowerRouter.errorResponse(e,cs,400,"Bad device definition");

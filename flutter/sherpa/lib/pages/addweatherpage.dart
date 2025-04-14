@@ -297,7 +297,7 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
 
   Future<void> _createDevice() async {
     BuildContext dcontext = context;
-    Map<String, String?> body = {
+    Map<String, String?> dev = {
       "VTYPE": "OpenMeteo",
       "UNITS": _units,
       "LATITUDE": _latControl.text,
@@ -307,9 +307,13 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
       "DESCRIPTION": _descControl.text,
       "USERDESC": _descSet.toString(),
     };
-    Map<String, dynmic> rslt =
+    Map<String, String?> body = {
+      "DEVICE": convert.jsonEncode(dev),
+    };
+    Map<String, dynamic> rslt =
         await util.postJson("/universe/addvirtual", body);
     // might want to check the result
+    if (rslt["STATUS"] != "OK") {}
     if (dcontext.mounted) {
       Navigator.pop(dcontext, "OK");
     }

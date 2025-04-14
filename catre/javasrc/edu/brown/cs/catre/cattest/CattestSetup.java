@@ -185,16 +185,6 @@ private void runSetup()
        sid = rslt1.getString("CATRESESSION");
     }
 
-// JSONObject t1 = CattestUtil.sendJson("POST","/universe/addvirtual",
-//       "VTYPE","OpenMeteo","UNITS","Imperial",
-//       "LATITUDE","41.84038",
-//       "LONGITUDE","-71.24949",
-//       "LOCATION","Rehoboth, MA",
-//       "NAME","Rehoboth, MA Weather",
-//       "DESCRIPTION", "Weather for Rehoboth, Massachusetts, Bristol, US",
-//       "USERDESC", "false");
-// 
-   
    JSONObject rslt5 = CattestUtil.sendJson("POST","/bridge/add",
 	 "CATRESESSION",sid,"BRIDGE","generic",
 	 "AUTH_UID",genuid,

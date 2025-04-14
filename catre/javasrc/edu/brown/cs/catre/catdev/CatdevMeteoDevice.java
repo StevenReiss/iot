@@ -210,6 +210,17 @@ private void update(JSONObject data)
 
 private double convertTemperature(double v,String unit)
 {
+   if (unit_type.equalsIgnoreCase("imperial")) {
+      if (unit.contains("C")) {
+         v = v * 9.0 / 5.0 + 32;
+       }
+    }
+   else {
+      if (unit.contains("F")) {
+         v = (v-32) * 5.0 / 9.0;
+       }
+      
+    }
    return v;
 }
 
