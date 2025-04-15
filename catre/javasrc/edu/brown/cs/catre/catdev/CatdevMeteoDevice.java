@@ -156,7 +156,11 @@ private void initialize()
 	 -100,160);
    pp.setIsSensor(true);
    addParameter(pp);
-   CatreParameter pp1 = for_universe.createStringParameter("WeatherCondition");
+   
+   List<String> vals = List.of("Clear","Partly Cloudy","Cloudy",
+         "Fog", "Drizzle", "Rain", "Snow", "Rain Showers",
+         "Snow Showers", "Thunderstorm","Unknown");
+   CatreParameter pp1 = for_universe.createEnumParameter("WeatherCondition",vals);
    pp1.setIsSensor(true);
    addParameter(pp1);
    // might want to add other weather conditions
@@ -223,6 +227,8 @@ private double convertTemperature(double v,String unit)
     }
    return v;
 }
+
+
 
 /********************************************************************************/
 /*										*/

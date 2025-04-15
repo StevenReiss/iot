@@ -104,14 +104,6 @@ CatmodelCalendarEvent(CatreStore cs,Map<String,Object> map)
 
 
 
-private void normalizeTimes() 
-{
-   if (to_datetime == null && from_datetime != null) {
-      to_datetime = (Calendar) from_datetime.clone();
-      to_datetime.add(Calendar.HOUR,1);
-    }
-}
-
 
 /********************************************************************************/
 /*										*/
@@ -131,53 +123,6 @@ private String calTime(Calendar c)
 }
 
 
-public void makeAllDay(boolean fg)
-{
-   all_day = fg;
-   if (all_day) {
-      from_datetime = CatreTimeSlotEvent.startOfDay(from_datetime);
-      to_datetime = CatreTimeSlotEvent.startOfNextDay(from_datetime);
-    }
-}
-
-
-
-public void setRepeat(int dayinterval)
-{
-   repeat_interval = dayinterval;
-}
-
-
-public void setDays(String days)
-{
-   day_set = getDaySet(days);
-}
-
-
-public void setDays(BitSet days)
-{
-   days = (BitSet) days.clone();
-}
-
-
-
-public static BitSet getDaySet(String days)
-{
-   if (days == null || days.length() == 0) return null;
-   
-   BitSet dayset = new BitSet();
-   days = days.toUpperCase();
-   if (days.contains("MON")) dayset.set(Calendar.MONDAY);
-   if (days.contains("TUE")) dayset.set(Calendar.TUESDAY);
-   if (days.contains("WED")) dayset.set(Calendar.WEDNESDAY);
-   if (days.contains("THU")) dayset.set(Calendar.THURSDAY);
-   if (days.contains("FRI")) dayset.set(Calendar.FRIDAY);
-   if (days.contains("SAT")) dayset.set(Calendar.SATURDAY);
-   if (days.contains("SUN")) dayset.set(Calendar.SUNDAY);
-   if (dayset.isEmpty()) dayset = null;
-   
-   return dayset;
-}
 
 String getDays()
 {
@@ -197,18 +142,6 @@ String getDays()
    return s;
 }
 
-
-
-void addImpliedProperties(CatrePropertySet ups)
-{
-   Date d0 = new Date(from_datetime.getTimeInMillis());
-   ups.put("*FROMDATE",date_format.format(d0));
-   ups.put("*FROMTIME",time_format.format(d0));
-   d0 = new Date(to_datetime.getTimeInMillis());
-   ups.put("*TODATE",date_format.format(d0));
-   ups.put("*TOTIME",time_format.format(d0));
-   if (day_set != null) ups.put("*DAYS",getDays());
-}
 
 
 
@@ -456,7 +389,7 @@ private boolean isNextDay(Calendar c0,Calendar c1)
 
 /********************************************************************************/
 /*										*/
-/*	Output Methods								*/
+/*	JSON Methods								*/
 /*										*/
 /********************************************************************************/
 
@@ -498,7 +431,7 @@ private boolean isNextDay(Calendar c0,Calendar c1)
    repeat_interval = getSavedInt(map,"INTERVAL",0);
    exclude_dates = null;
    String days = getSavedString(map,"DAYS",null);
-   setDays(days);
+   day_set = getDaySet(days);
    List<?> exc = (List<?>) getSavedValue(map,"EXCLUDE",null);
    if (exc != null) {
       for (Object o : exc) {
@@ -513,6 +446,45 @@ private boolean isNextDay(Calendar c0,Calendar c1)
 }
 
 
+private void normalizeTimes() 
+{
+   if (to_datetime == null && from_datetime != null) {
+      to_datetime = (Calendar) from_datetime.clone();
+      if (repeat_interval > 0) {
+         to_datetime.add(Calendar.MAY,7);
+       }
+      else {
+         to_datetime.add(Calendar.HOUR,1);
+       }
+    }
+}
+
+
+private BitSet getDaySet(String days)
+{
+   if (days == null || days.length() == 0) return null;
+   
+   BitSet dayset = new BitSet();
+   days = days.toUpperCase();
+   if (days.contains("MON")) dayset.set(Calendar.MONDAY);
+   if (days.contains("TUE")) dayset.set(Calendar.TUESDAY);
+   if (days.contains("WED")) dayset.set(Calendar.WEDNESDAY);
+   if (days.contains("THU")) dayset.set(Calendar.THURSDAY);
+   if (days.contains("FRI")) dayset.set(Calendar.FRIDAY);
+   if (days.contains("SAT")) dayset.set(Calendar.SATURDAY);
+   if (days.contains("SUN")) dayset.set(Calendar.SUNDAY);
+   if (dayset.isEmpty()) dayset = null;
+   
+   return dayset;
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Output methods                                                          */
+/*                                                                              */
+/********************************************************************************/
 
 @Override public String toString()
 {

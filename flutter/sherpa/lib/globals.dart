@@ -49,5 +49,7 @@ const num maxPriority = 999;
 
 const int numRulesToDisplay = 8;
 
+DateTime forEverDate = DateTime(2050);
+
 // Global variables
 String? sessionId;

@@ -34,6 +34,7 @@
 import 'package:flutter/material.dart';
 import 'package:sherpa/widgets.dart' as widgets;
 import 'package:sherpa/util.dart' as util;
+import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/models/catremodel.dart';
 import 'package:day_picker/day_picker.dart';
 // import 'package:flutter_spinbox/material.dart';
@@ -350,6 +351,12 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     List<Widget> rslt = [];
     DateTime starttime = _forCondition.getTimeSlot().getFromDateTime();
     DateTime? endtime = _forCondition.getTimeSlot().getToDateTime();
+    int repeat =
+        _forCondition.getTimeSlot().getRepeatInterval().toInt();
+    bool forever = false;
+    if (endtime!.compareTo(widgets.forEverDate) >= 0) {
+      forever = true;
+    }
 
     rslt.add(widgets.fieldSeparator());
 
@@ -363,6 +370,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       ],
     );
     rslt.add(r);
+    rslt.add(widgets.fieldSeparator());
 
     widgets.DateFormField dffs = widgets.DateFormField(
       context,
@@ -387,6 +395,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       startDate: starttime,
       initialDate: endtime,
       onChanged: _setEndDate,
+      allowForever: true,
     );
     rslt.add(dffe.widget);
     rslt.add(widgets.fieldSeparator());
