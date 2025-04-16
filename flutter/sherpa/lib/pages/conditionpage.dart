@@ -389,7 +389,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       startDate: starttime,
       initialDate: endtime,
       onChanged: _setEndDate,
-      allowForever: repeat > 0,
+      allowForever: repeat != 0,
     );
     rslt.add(dffe.widget);
     rslt.add(widgets.fieldSeparator());

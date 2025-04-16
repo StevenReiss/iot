@@ -50,7 +50,6 @@ import java.util.Set;
 import edu.brown.cs.catre.catre.CatreTimeSlotEvent;
 import edu.brown.cs.catre.catre.CatreDescribableBase;
 import edu.brown.cs.catre.catre.CatreLog;
-import edu.brown.cs.catre.catre.CatrePropertySet;
 import edu.brown.cs.catre.catre.CatreStore;
 
  
@@ -144,19 +143,6 @@ String getDays()
 
 
 
-
-public void addExcludedDate(Calendar date)
-{
-   if (date == null) exclude_dates = null;
-   else {
-      date = CatreTimeSlotEvent.startOfDay(date);
-      if (exclude_dates == null) exclude_dates = new HashSet<>();
-      exclude_dates.add(date);
-    }
-}
-
-
-
 /********************************************************************************/
 /*										*/
 /*	Methods to query the event						*/
@@ -220,6 +206,9 @@ public void addExcludedDate(Calendar date)
    
    return rslt;
 }
+
+
+
 @Override public boolean isActive(long when)
 {
    CatreLog.logD("CATMODEL","Check time active: " +
@@ -477,6 +466,18 @@ private BitSet getDaySet(String days)
    
    return dayset;
 }
+
+
+private void addExcludedDate(Calendar date)
+{
+   if (date == null) exclude_dates = null;
+   else {
+      date = CatreTimeSlotEvent.startOfDay(date);
+      if (exclude_dates == null) exclude_dates = new HashSet<>();
+      exclude_dates.add(date);
+    }
+}
+
 
 
 
