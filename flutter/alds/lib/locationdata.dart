@@ -36,6 +36,7 @@ import 'bluetoothdata.dart';
 import 'wifidata.dart';
 import 'dart:math';
 import 'util.dart' as util;
+import 'globals.dart' as globals;
 
 class LocationData {
   Map<String, double> _bluetoothMap = {};
@@ -75,9 +76,15 @@ class LocationData {
   );
 
   LocationData.fromJson(Map<String, dynamic> json) {
-    _bluetoothMap = json["bluetoothData"];
-    _gpsPosition = json['gpsPosition'];
-    _wifiData = json['wifiData'];
+    Map<String, dynamic> m1 = json["bluetoothData"];
+    _bluetoothMap = {};
+    for (MapEntry<String, dynamic> ent in m1.entries) {
+      _bluetoothMap[ent.key] = ent.value as double;
+    }
+    _gpsPosition = Position.fromMap(json['gpsPosition']);
+    if (WifiData.useWifi) {
+      _wifiData = WifiData.fromJson(json['wifiData']);
+    }
   }
 
   Position? get gpsPosition => _gpsPosition;
@@ -87,11 +94,11 @@ class LocationData {
   double computeScore(LocationData nld) {
     double score0 = _btScore(nld);
     double score1 = _posScore(nld);
-    double score2 = _wifiScore(nld);
-    double btpart = 0.6;
+    double score2 = (WifiData.useWifi ? _wifiScore(nld) : 0);
+    double btpart = globals.btFraction;
     double geopart = 0.2;
     double wifipart = 0.2;
-    if (score2 == 0) {
+    if (!WifiData.useWifi) {
       btpart += wifipart / 2;
       geopart += wifipart / 2;
       wifipart = 0;

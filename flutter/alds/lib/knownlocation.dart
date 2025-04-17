@@ -61,6 +61,8 @@ class KnownLocation {
     LocationData nld, [
     bool force = false,
   ]) {
+    int tot =
+        globals.numberLocationEntries + globals.numberSampleEntries;
     if (_count < globals.numberLocationEntries) {
       _samples[_count] = nld;
     } else {
@@ -69,8 +71,7 @@ class KnownLocation {
       int idx = _rand.nextInt(max);
       if (idx < _samples.length) {
         _samples[idx] = nld;
-      } else if (idx <
-          globals.numberLocationEntries + globals.numberSampleEntries) {
+      } else if (idx < tot || _samples.length < tot) {
         _samples.add(nld);
       }
       // still gathering original sample set
@@ -145,19 +146,40 @@ class KnownLocation {
     _averageLocation = LocationData.update(npos, btmap, w0);
   }
 
-  Map toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      "samples": jsonEncode(_samples),
-      "average": jsonEncode(_averageLocation),
+      // "samples": jsonEncode(_samples),
+      // "average": jsonEncode(_averageLocation),
+      "samples": _samples,
+      "average": _averageLocation,
       "location": _locationName,
       "count": _count,
+      "score": score,
     };
   }
 
   KnownLocation.fromJson(Map<String, dynamic> json) {
     _count = json['count'];
     _locationName = json['location'] as String;
-    _samples = jsonDecode(json['samples']);
-    _averageLocation = jsonDecode(json['average']);
+    score = 0.0;
+
+    List<dynamic> sams = [];
+    if (json['samples'].runtimeType == String) {
+      sams = jsonDecode(json['samples']);
+    } else {
+      sams = json['samples'];
+    }
+    _samples = [];
+    for (var x in sams) {
+      _samples.add(LocationData.fromJson(x));
+    }
+
+    Map<String, dynamic> v = {};
+    if (json['average'].runtimeType == String) {
+      v = jsonDecode(json['average']);
+    } else {
+      v = json['average'];
+    }
+    _averageLocation = LocationData.fromJson(v);
   }
 }

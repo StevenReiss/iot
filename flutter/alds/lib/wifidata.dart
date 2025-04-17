@@ -32,6 +32,7 @@
  ********************************************************************************/
 
 import 'package:network_info_plus/network_info_plus.dart';
+import 'dart:io' show Platform;
 
 Map<String, int> _wifiIds = {};
 //  This should probably use wifi_scan and set up an array of items
@@ -62,6 +63,11 @@ class WifiData {
       }
       _bssId = newid;
     }
+  }
+
+  static bool get useWifi {
+    if (Platform.isIOS) return false;
+    return true;
   }
 
   Map<String, dynamic> toJson() {

@@ -31,9 +31,6 @@
  *                                                                               *
  ********************************************************************************/
 
-
-library alds.util;
-
 import 'dart:convert' as convert;
 import 'package:crypto/crypto.dart' as crypto;
 import 'device.dart' as device;
@@ -52,13 +49,16 @@ String hasher(String msg) {
 String randomString(int len) {
   var r = Random();
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-  return List.generate(len, (index) => chars[r.nextInt(chars.length)]).join();
+  return List.generate(len, (index) => chars[r.nextInt(chars.length)])
+      .join();
 }
 
 // distance in meters
 double calculateDistance(lat1, lon1, lat2, lon2) {
   var p = 0.017453292519943295;
-  var a = 0.5 - cos((lat2 - lat1) * p) / 2 + cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
+  var a = 0.5 -
+      cos((lat2 - lat1) * p) / 2 +
+      cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
   return 12742 * asin(sqrt(a)) * 1000;
 }
 

@@ -68,10 +68,12 @@ class LocationManager {
     String? s = await storage.readLocationData();
     _knownLocations = {};
     if (s != null) {
-      var x = jsonDecode(s) as List;
-      for (var xv in x) {
-        KnownLocation kl = KnownLocation.fromJson(xv);
-        _knownLocations[kl.name] = kl;
+      Map<String, dynamic> map = jsonDecode(s);
+      for (MapEntry<String, dynamic> x in map.entries) {
+        String nm = x.key;
+        Map<String, dynamic> v = x.value;
+        KnownLocation kl = KnownLocation.fromJson(v);
+        _knownLocations[nm] = kl;
       }
     }
   }
@@ -91,6 +93,10 @@ class LocationManager {
 
   Future<void> clear() async {
     _knownLocations.clear();
+    _lastLocation = null;
+    _nextLocation = null;
+    _nextCount = 0;
+    _lastTime = DateTime.now();
     await recheckLocation();
     await _saveData();
   }
@@ -121,6 +127,9 @@ class LocationManager {
 
     if (_lastLocation == null || userloc != null) {
       await _changeLocation(kl);
+    } else if (kl == _lastLocation) {
+      _nextLocation = null;
+      _nextCount = 0;
     } else if (kl == _nextLocation) {
       if (++_nextCount >= globals.stableCount ||
           globals.stableCount == 1) {
@@ -133,14 +142,21 @@ class LocationManager {
       }
     }
 
-    if (kl != null && !used && kl.score > 0.6) {
+    if (kl != null && !used && kl.score > globals.useThreshold) {
       kl.addLocation(nld);
       used = true;
     }
 
     if (used) {
-      String data = jsonEncode(_knownLocations);
-      storage.saveLocatorData(data);
+      _saveData();
+      device.Cedes().rawData({
+        "sample": nld,
+        "location": kl?.name,
+        "set": userloc,
+        "next": _nextLocation?.name,
+        "nextCount": _nextCount,
+        "data": _knownLocations,
+      });
     }
   }
 
@@ -148,7 +164,10 @@ class LocationManager {
     bool smartsearch = true;
     int ct = _knownLocations.length;
     for (KnownLocation kl in _knownLocations.values) {
-      if (kl.count < 100) smartsearch = false;
+      if (kl.count < globals.significantNumber) {
+        smartsearch = false;
+        break;
+      }
     }
     if (ct < 4) smartsearch = false;
     if (smartsearch) {

@@ -42,7 +42,7 @@ const int accessEverySeconds = 60;
 const List<String> defaultLocations = [
   'Office',
   'Home',
-  'Dining',
+  'Meals',
   'Meeting',
   'Class',
   'Driving',
@@ -53,11 +53,12 @@ const List<String> defaultLocations = [
   'Other',
 ];
 
-const btFraction = 0.7;
-const locFraction = 0.15;
-const altFraction = 0.15;
-const useThreshold = 0.50;
-const stableCount = 3;
+const btFraction = 0.6;
+const locFraction = 0.2;
+const wifiFraction = 0.2;
+const useThreshold = 0.65;
+const stableCount = 1;
+const int significantNumber = 100;
 
 const int numberLocationEntries = 20; // 100?
 const int numberSampleEntries = 10; // 50?

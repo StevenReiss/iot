@@ -100,8 +100,8 @@ class SherpaLoginWidget extends StatefulWidget {
 
 class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String? _curUser;
-  String? _curPassword;
+  String _curUser = '';
+  String _curPassword = '';
   String _loginError = '';
   final TextEditingController _userController = TextEditingController();
   final TextEditingController _pwdController = TextEditingController();
@@ -158,13 +158,15 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
                   widgets.fieldSeparator(),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
-                      hint: "Username",
-                      label: "Username",
-                      validator: _validateUserName,
-                      controller: _userController,
-                      fraction: 0.8,
-                      tooltip: "Enter your username",
-                      context: context),
+                    hint: "Username",
+                    label: "Username",
+                    validator: _validateUserName,
+                    controller: _userController,
+                    fraction: 0.8,
+                    tooltip: "Enter your username",
+                    onChanged: _updateUserName,
+                    context: context,
+                  ),
                   widgets.fieldSeparator(),
                   widgets.textFormField(
                     hint: "Password",
@@ -174,6 +176,8 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
                     obscureText: true,
                     fraction: 0.8,
                     tooltip: "Enter your password",
+                    onChanged: _updatePassword,
+                    onSubmitted: _tryLogin,
                     context: context,
                   ),
                   widgets.errorField(_loginError),
@@ -212,13 +216,10 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
 
   void _handleLogin() async {
     _loginValid = false;
-    setState(() {
-      _loginError = '';
-    });
+    _clearError();
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      _HandleLogin login =
-          _HandleLogin(_curUser as String, _curPassword as String);
+      _HandleLogin login = _HandleLogin(_curUser, _curPassword);
       String? rslt = await login.authUser();
       if (rslt == "TEMPORARY") {
         _loginValid = true;
@@ -235,20 +236,44 @@ class _SherpaLoginWidgetState extends State<SherpaLoginWidget> {
     }
   }
 
+  void _clearError() {
+    setState(() {
+      _loginError = '';
+    });
+  }
+
+  String? _validateUserName(String? value) {
+    _curUser = value ?? "";
+    if (value == null || value.isEmpty) {
+      return "Username must not be null";
+    }
+    return null;
+  }
+
+  void _updateUserName(String? value) {
+    _clearError();
+    if (value != null) _curUser = value;
+  }
+
   String? _validatePassword(String? value) {
-    _curPassword = value;
+    _curPassword = value ?? "";
     if (value == null || value.isEmpty) {
       return "Password must not be null";
     }
     return null;
   }
 
-  String? _validateUserName(String? value) {
-    _curUser = value;
-    if (value == null || value.isEmpty) {
-      return "Username must not be null";
+  void _updatePassword(String? value) {
+    _clearError();
+    if (value != null) _curPassword = value;
+  }
+
+  void _tryLogin([
+    String value = '',
+  ]) {
+    if (_curUser.isNotEmpty && _curPassword.isNotEmpty) {
+      _handleLogin();
     }
-    return null;
   }
 
   void _handleRememberMe(bool? fg) async {
