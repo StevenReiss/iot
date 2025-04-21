@@ -123,7 +123,12 @@ class LocationData {
         score += kval * ent.value;
       }
     }
-    return score;
+    double score1 = score / globals.btTopScore;
+    if (score1 > 1.0) score1 = 1.0;
+
+    util.log("BT SCORE $score $score1");
+
+    return score1;
   }
 
   double _posScore(LocationData nld) {

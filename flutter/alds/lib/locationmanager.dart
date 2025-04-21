@@ -99,6 +99,7 @@ class LocationManager {
     _lastTime = DateTime.now();
     await recheckLocation();
     await _saveData();
+    util.log("DATA CLEARED");
   }
 
   Future<void> updateLocation(
@@ -109,6 +110,8 @@ class LocationManager {
   ) async {
     LocationData nld = LocationData(gps, btdata, wifi);
     _lastTime = DateTime.now();
+
+    util.log("Update location at $_lastTime to $userloc");
 
     bool used = false;
     KnownLocation? kl;

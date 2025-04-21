@@ -56,9 +56,10 @@ const List<String> defaultLocations = [
 const btFraction = 0.6;
 const locFraction = 0.2;
 const wifiFraction = 0.2;
-const useThreshold = 0.65;
+const useThreshold = 0.90;
 const stableCount = 1;
 const int significantNumber = 100;
+const btTopScore = 0.55;
 
 const int numberLocationEntries = 20; // 100?
 const int numberSampleEntries = 10; // 50?

@@ -51,7 +51,8 @@ final _doingRecheck = Mutex();
 dynamic _subscription;
 bool _geolocEnabled = false;
 BluetoothAdapterState _adapterState = BluetoothAdapterState.unknown;
-final _wifiData = WifiData();
+WifiData? _wifiData;
+Set<String> _knownDevices = {};
 
 Future<void> initialize() async {
   FlutterBluePlus.setLogLevel(LogLevel.warning, color: false);
@@ -151,6 +152,7 @@ Future<void> recheck([String? userLocation]) async {
         .first;
 
     await FlutterBluePlus.startScan(
+      oneByOne: true,
       timeout: const Duration(seconds: 6),
     );
 
@@ -162,7 +164,8 @@ Future<void> recheck([String? userLocation]) async {
     // no way to scan wifi access points on ios
 
     if (_checkWifi) {
-      await _wifiData.update();
+      _wifiData ??= WifiData();
+      await _wifiData?.update();
     }
 
     LocationManager loc = LocationManager();
@@ -193,8 +196,10 @@ void _btscan1(ScanResult r) async {
   int rssi = r.rssi;
   BluetoothDevice dev = r.device;
 
-  String name = dev.platformName;
   String mac = dev.remoteId.str;
+  if (!_knownDevices.add(mac)) return;
+
+  String name = dev.platformName;
   String typ = dev.advName;
   String svd = r.advertisementData.serviceData.toString();
   String mfd = r.advertisementData.manufacturerData.toString();

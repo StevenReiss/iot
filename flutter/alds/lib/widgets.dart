@@ -99,7 +99,6 @@ Widget textField({
   String? label,
   TextEditingController? controller,
   ValueChanged<String>? onChanged,
-
   VoidCallback? onEditingComplete,
   ValueChanged<String>? onSubmitted,
   TapRegionCallback? onTapOutside,
@@ -503,13 +502,12 @@ Widget dropDown(
   Widget w = DropdownButton<String>(
     value: value,
     onChanged: onChanged,
-    items:
-        items.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value, textAlign: textAlign),
-          );
-        }).toList(),
+    items: items.map<DropdownMenuItem<String>>((String value) {
+      return DropdownMenuItem<String>(
+        value: value,
+        child: Text(value, textAlign: textAlign),
+      );
+    }).toList(),
   );
   w = tooltipWidget(tooltip, w);
   return w;
@@ -529,8 +527,8 @@ Widget dropDownMenu(
     onSelected: onChanged,
     dropdownMenuEntries:
         items.map<DropdownMenuEntry<String>>((String value) {
-          return DropdownMenuEntry<String>(value: value, label: value);
-        }).toList(),
+      return DropdownMenuEntry<String>(value: value, label: value);
+    }).toList(),
   );
   w = tooltipWidget(tooltip, w);
   return w;
@@ -702,10 +700,12 @@ Widget listBox<T>(
 /*                                                                              */
 /********************************************************************************/
 
+DateTime forEverDate = DateTime(2050);
+
 class DateFormField {
   late final BuildContext context;
   late final TextEditingController _editControl;
-  late TextFormField _textField;
+  late Widget _textField;
   final void Function(DateTime)? onChanged;
   late final DateTime _startDate;
   late final DateTime _endDate;
@@ -718,6 +718,8 @@ class DateFormField {
     DateTime? startDate,
     DateTime? endDate,
     DateTime? initialDate,
+    bool allowForever = false,
+    String tooltip = "",
     this.onChanged,
   }) {
     _editControl = TextEditingController();
@@ -726,7 +728,7 @@ class DateFormField {
     _helpText = label;
     initialDate ??= DateTime.now();
     startDate ??= DateTime(2020);
-    endDate ??= DateTime(2030);
+    endDate ??= forEverDate;
     _startDate = startDate;
     _endDate = endDate;
     _editControl.text = _formatDate(initialDate);
@@ -737,6 +739,25 @@ class DateFormField {
       onTap: _handleTap,
       onChanged: _handleChange,
     );
+    if (allowForever) {
+      ButtonStyle style = ElevatedButton.styleFrom(
+        backgroundColor: laf.topLevelBackground,
+        foregroundColor: laf.submitForegroundColor,
+        textStyle: const TextStyle(fontWeight: FontWeight.bold),
+        //  overlayColor: Colors.brown,
+      );
+      _textField = Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(child: _textField),
+            ElevatedButton(
+              onPressed: _handleForever,
+              style: style,
+              child: const Icon(Icons.all_inclusive),
+            ),
+          ]);
+    }
+    _textField = tooltipWidget(tooltip, _textField);
   }
 
   Widget get widget => _textField;
@@ -760,19 +781,30 @@ class DateFormField {
   }
 
   void _handleChange(String s) {
-    DateTime? newd = DateTime.tryParse(_editControl.text);
+    DateTime? newd;
+    if (s.toLowerCase() == 'forever') {
+      newd = forEverDate;
+    } else {
+      newd = DateTime.tryParse(_editControl.text);
+    }
     if (newd != null) {
       onChanged!(newd);
     }
   }
 
   static String _formatDate(DateTime t) {
+    if (t.compareTo(forEverDate) >= 0) {
+      return "Forever";
+    }
     t = t.toLocal();
     intl.DateFormat dfmt = intl.DateFormat("EEE MMM d, yyyy");
     return dfmt.format(t);
   }
 
   static DateTime? _decodeDate(String txt) {
+    if (txt.toLowerCase() == "forever") {
+      return forEverDate;
+    }
     intl.DateFormat dfmt = intl.DateFormat("EEE MMM d, yyyy");
     try {
       DateTime t = dfmt.parseLoose(txt);
@@ -781,6 +813,12 @@ class DateFormField {
     } catch (e) {
       return null;
     }
+  }
+
+  void _handleForever() {
+    DateTime dt = forEverDate;
+    _editControl.text = _formatDate(dt);
+    onChanged!(dt);
   }
 }
 
@@ -1055,10 +1093,9 @@ Future<void> displayDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title),
-        content:
-            description.isNotEmpty
-                ? Text(description, maxLines: 10)
-                : null,
+        content: description.isNotEmpty
+            ? Text(description, maxLines: 10)
+            : null,
         actions: <Widget>[
           TextButton(
             child: const Text("OK"),
@@ -1082,10 +1119,9 @@ Future<bool> getValidation(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title),
-        content:
-            description.isNotEmpty
-                ? Text(description, maxLines: 10)
-                : null,
+        content: description.isNotEmpty
+            ? Text(description, maxLines: 10)
+            : null,
         actions: <Widget>[
           TextButton(
             child: const Text("YES"),

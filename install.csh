@@ -73,6 +73,7 @@ echo npm status $status
 
 ssh sherpa.cs.brown.edu '(cd /vol/iot/jiqsign; start.csh)'
 echo jiqsign start status $status
+ssh sherpa.cs.brown.edu '(cd /vol/iot/cedes; rm alds.log aldsdata.json)'
 ssh sherpa.cs.brown.edu '(cd /vol/iot/cedes; start.csh)'
 echo cedes start status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/signmaker; start.csh)'
@@ -99,3 +100,4 @@ flutter clean
 flutter build ios
 # flutter install
 popd
+
