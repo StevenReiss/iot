@@ -76,6 +76,7 @@ class _AldsLoginPageState extends State<AldsLoginPage> {
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
+          widgets.fieldSeparator(),
           widgets.textField(
             hint: "Generic User Id",
             controller: idcontrol,
