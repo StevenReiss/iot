@@ -58,6 +58,7 @@ class SherpaActionWidget extends StatefulWidget {
 class _SherpaActionWidgetState extends State<SherpaActionWidget> {
   late CatreAction _forAction;
   late CatreDevice _forDevice;
+  // ignore: unused_field
   late CatreRule _forRule;
 
   final TextEditingController _labelControl =
@@ -161,20 +162,10 @@ class _SherpaActionWidgetState extends State<SherpaActionWidget> {
   }
 
   List<CatreTransition> findValidTransitions() {
-    bool trig = _forRule.isTrigger();
-
     List<CatreTransition> rslt = [];
     for (CatreTransition ct in _forDevice.getTransitions()) {
-      String typ = ct.getTransitionType();
-      switch (typ) {
-        case "STATE_CHANGE":
-        case "TEMPORARY_CHANGE":
-          if (trig) continue;
-          break;
-        case "TRIGGER":
-          if (!trig) continue;
-          break;
-      }
+      // check if transition can only be used as a trigger and
+      //   ignore if that doesn't match current rule type
       rslt.add(ct);
     }
 

@@ -41,6 +41,10 @@ import java.util.Collection;
 /**
  *	A transition describes a potential action or change request for a
  *	particular entity.
+ *
+ *      There should be a way of designating a transition as only suitable
+ *      for a trigger rule?
+ *
  **/
 
 public interface CatreTransition extends CatreDescribable, CatreSubSavable
@@ -72,8 +76,6 @@ CatreParameter findParameter(String nm);
  **/
 
 CatreParameterSet getDefaultParameters();
-
-
 
 
 

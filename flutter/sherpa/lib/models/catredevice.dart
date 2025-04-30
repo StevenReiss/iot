@@ -31,11 +31,9 @@
  *                                                                               *
  ********************************************************************************/
 
-
 import 'catredata.dart';
 import 'catreparameter.dart';
 import 'catreuniverse.dart';
-
 
 /********************************************************************************/
 /*                                                                              */
@@ -48,14 +46,20 @@ class CatreDevice extends CatreData {
   late List<CatreTransition> _transitions;
   late CatreTransition _defaultTransition;
 
-  CatreDevice.build(CatreUniverse cu, dynamic d) : super(cu, d as Map<String, dynamic>) {
+  CatreDevice.build(CatreUniverse cu, dynamic d)
+      : super(cu, d as Map<String, dynamic>) {
     setup();
   }
 
   CatreDevice.dummy(CatreUniverse cu, String id)
       : _parameters = [],
         _transitions = [],
-        super(cu, <String, dynamic>{"UID": id, "ENABLED": false, "VTYPE": "UNKNOWN", "LABEL": "Unknown device"}) {
+        super(cu, <String, dynamic>{
+          "UID": id,
+          "ENABLED": false,
+          "VTYPE": "UNKNOWN",
+          "LABEL": "Unknown device"
+        }) {
     setup();
   }
 
@@ -63,20 +67,9 @@ class CatreDevice extends CatreData {
   void setup() {
     _parameters = buildList("PARAMETERS", CatreParameter.build);
     _transitions = buildList("TRANSITIONS", CatreTransition.build);
-    CatreTransition? dct;
-    for (CatreTransition ct in _transitions) {
-      if (ct.getTransitionType() == 'Dummy') {
-        dct = ct;
-        break;
-      }
-    }
-    if (dct == null) {
-      _defaultTransition = CatreTransition.doNothing(this);
-      if (_transitions.isNotEmpty) {
-        _transitions.insert(0, _defaultTransition);
-      }
-    } else {
-      _defaultTransition = dct;
+    _defaultTransition = CatreTransition.doNothing(this);
+    if (_transitions.isNotEmpty) {
+      _transitions.insert(0, _defaultTransition);
     }
   }
 
@@ -131,7 +124,6 @@ class CatreDevice extends CatreData {
   }
 } // end of CatreDevice
 
-
 /********************************************************************************/
 /*                                                                              */
 /*      CatreTransition -- transition for a device                              */
@@ -164,7 +156,6 @@ class CatreTransition extends CatreData {
     _parameters = buildItem("DEFAULTS", CatreParameterSet.build);
   }
 
-  String getTransitionType() => getString("TYPE");
   List<CatreParameter> getParameters() => _parameters.getParameters();
   CatreParameterSet getParameterSet() => _parameters;
 }     // end of CatreTransition
