@@ -61,10 +61,24 @@ public interface CatreTimeSlotEvent extends CatreDescribable, CatreSubSavable
 boolean isActive(long when);
 
 
+/**
+ *      Get a list of time slots (from-to pairs) for this event
+ **/
+
 List<Calendar> getSlots(Calendar from,Calendar to);
+
+
+/**
+ *      Determine if this event can overlap with another event
+ **/
 
 boolean canOverlap(CatreTimeSlotEvent evt);
 
+
+/**
+ *      Get the calendar corresponding to the start of the day of the
+ *      given calendar.
+ **/ 
 
 static Calendar startOfDay(Calendar c)
 {
@@ -81,7 +95,10 @@ static Calendar startOfDay(Calendar c)
 }
 
 
-
+/**
+ *      Get the calendar corresponding to the start of the next day for
+ *      the given calendar
+ **/
 
 static Calendar startOfNextDay(Calendar c)
 {

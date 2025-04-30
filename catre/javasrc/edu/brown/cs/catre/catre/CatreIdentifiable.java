@@ -38,9 +38,16 @@ package edu.brown.cs.catre.catre;
 
 
 
+/**
+ *      Interface for objects that have a unique ID saved in the data store.
+ **/
+
 public interface CatreIdentifiable
 {
 
+/**
+ *      Return the unique ID for this object
+ **/
 
 String getDataUID();
 

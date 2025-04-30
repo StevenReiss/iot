@@ -272,7 +272,7 @@ private double convertTemperature(double v,String unit)
 
 @Override public void programUpdated()
 {
-   // might want to check if this devices is needed by a program
+   // might want to check if this device is needed by a program
    is_used = false;
    Set<CatreParameterRef> refs = getUniverse().getProgram().getActiveSensors();
    for (CatreParameterRef ref : refs) {
@@ -299,9 +299,8 @@ private static synchronized void addMeteoDevice(CatdevMeteoDevice md)
     }
    known_locations.add(md);
    updateData(List.of(md));
-  //  updateSingle(md);
-
 }
+
 
 
 private static void updateData(List<CatdevMeteoDevice> devs)

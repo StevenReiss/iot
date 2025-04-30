@@ -38,6 +38,11 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Map;
 
+/**
+ *      Base implementation of a CatreDescribable -- hold the name, label,
+ *      and description for an object, allow it to be saved and retrieved.
+ **/
+
 public class CatreDescribableBase extends CatreSubSavableBase 
         implements CatreDescribable, CatreSubSavable
 {

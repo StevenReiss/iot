@@ -42,6 +42,12 @@ import java.util.Map;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 
+/**
+ *      Interface noting that an object can be store in the data store
+ *      but not directly in a collection, i.e., it has to be a subobject
+ *      of another saved object.
+ **/
+
 public interface CatreSubSavable extends CatreJson
 {
 

@@ -44,38 +44,111 @@ import java.util.concurrent.ScheduledFuture;
 
 
 /**
- *      The universe is the container for everything for all users.  It is the
- *      basis for the global controller that handles triggering rule evaluation.
+ *      This calls represents the main control for CATRE.  It provides a set of
+ *      operations that are generally useful for multiple portions of the system.
  **/
       
 public interface CatreController 
 {
 
 
+/********************************************************************************/
+/*                                                                              */
+/*      Background processes                                                    */
+/*                                                                              */
+/********************************************************************************/
+
+/**
+ *      Schedule a timer-based task to run once after a given delay.
+ **/
+
 ScheduledFuture<?> schedule(Runnable task,long delay);
+
+
+/**
+ *      Schedule a timer-based task to run periodically after a delay with
+ *      a given interval period.
+ **/
+
 ScheduledFuture<?> schedule(Runnable task,long delay,long period);
 
 
+/**
+ *      Submit a task to be run whenever possible
+ **/
+
 Future<?> submit(Runnable task);
+
+
+/**
+ *      Submit a Runnable task that will return a result via a Java Future.
+ **/
+
 <T> Future<T> submit(Runnable task,T result);
+
+
+/**
+ *      Submit a Callable task that will return a result via a Java future.
+ **/
+
 <T> Future<T> submit(Callable<T> task);
 
 
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+/**
+ *      Return the active data store.
+ **/
+
 CatreStore getDatabase();
+
+
+/**
+ *      Register a database table (Mongo collection) with the data store.
+ **/
+
 void register(CatreTable tbl);
 
 
+
+/**
+ *      Return the set of active bridges for the current universe.
+ **/
+
 Collection<CatreBridge> getAllBridges(CatreUniverse universe);
+
+
+/**
+ *      Create a new bridge for the current universe (i.e., user) of
+ *      a given type. 
+ **/
+
 CatreBridge createBridge(String name,CatreUniverse universe);
 
 
+
+/**
+ *      Create a new universe for the given user
+ **/
+
 CatreUniverse createUniverse(String name,CatreUser user);
 
-//TODO -- add this back in once figure out HTTP transition
-// void addRoute(String method,String url,BiFunction<IHTTPSession,CatreSession,Response> f);
-// void addPreRoute(String method,String url,BiFunction<IHTTPSession,CatreSession,Response> f);
+
+/**
+ *      Return the base directory so we can find various resources as needed
+ **/
 
 File findBaseDirectory();
+
+
+/**
+ *      Return the URL prefix that should be used for external requests to CATRE.
+ **/
 
 String getUrlPrefix();
 

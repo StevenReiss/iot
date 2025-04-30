@@ -38,9 +38,22 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Map;
 
+/**
+ *      Set of properties (name-value) pairs (all strings).  
+ *      This is used to gather information from a set of conditions
+ *      that can be used in specifying an action.  For example,
+ *      a calendar condition that matches a particular event
+ *      will add valies items to this set based on the properties
+ *      of the matched event; and a time event will add the end
+ *      time as a property.
+ **/
+
 public interface CatrePropertySet extends Map<String,String>
 {
 
+/**
+ *      General put routine that converts the value to a string.
+ **/
 
 void put(String key,Object value);
 

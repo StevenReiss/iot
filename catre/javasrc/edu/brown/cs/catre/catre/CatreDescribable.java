@@ -38,10 +38,12 @@ package edu.brown.cs.catre.catre;
 
 
 
+/*  
+ *      Interface for an object with a name and description
+ **/
+
 public interface CatreDescribable
 {
-
-
 
 
 /**

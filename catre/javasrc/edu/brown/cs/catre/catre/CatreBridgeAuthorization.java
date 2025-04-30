@@ -37,14 +37,46 @@
 package edu.brown.cs.catre.catre;
 
 
+/**
+ *      This represents the authorization information for a particular
+ *      user for a particular bridge.  The fields in the authorization
+ *      are specific to the bridge and are listed as part of the bridge
+ *      information.  Multiple authorizations for a particular user are
+ *      allowed for a bridge.
+ **/
+
 public interface CatreBridgeAuthorization extends CatreSubSavable
 {
 
+/**
+ *      Return the name of the bridge.
+ **/
+
 String getBridgeName();
+
+
+/*  
+ *      In the case where the user has multiple authorizations for a
+ *      bridge (for example accessing multiple Google calendars), this 
+ *      retrns the index of the calendar.  If there is only one 
+ *      authorization, it returns 0;
+ **/
 
 int getAuthorizationCount();
 
+
+/*
+ *      Return the value of a given authorization parameter for a given
+ *      index for this user/bridge.
+ **/
+
 String getValue(int idx,String key);
+
+
+/**
+ *      Return the value of a given authoriuzation parameter for this 
+ *      user/bridge.
+ **/
 
 default String getValue(String key)     { return getValue(0,key); }
 

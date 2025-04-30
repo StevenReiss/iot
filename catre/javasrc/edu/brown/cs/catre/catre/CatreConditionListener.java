@@ -38,6 +38,11 @@ package edu.brown.cs.catre.catre;
 
 import java.util.EventListener;
 
+/**
+ *      Interface for callbacks when a condition changes state or
+ *      becomes valid or invalid.
+ **/
+
 public interface CatreConditionListener extends EventListener
 {
 
@@ -70,6 +75,10 @@ default void conditionOff(CatreCondition cc)                                { }
 
 default void conditionError(CatreCondition cc,Throwable cause)              { }
 
+
+/**
+ *      Handle changes to the conditions validation state.
+ **/
 
 default void conditionValidated(CatreCondition cc,boolean valid)            { }
 

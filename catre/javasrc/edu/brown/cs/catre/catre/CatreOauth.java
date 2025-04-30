@@ -38,6 +38,21 @@ package edu.brown.cs.catre.catre;
 
 import org.json.JSONObject;
 
+/**
+ *      This interface defines the OAUTH services that Catre
+ *      provides for other components (e.g. CEDES) to act as
+ *      an OAUTH authenticator.  This could be used, for example,
+ *      to let iQsign be a device for SmartThings.  Note that
+ *      this is not currently usedf as iQsign has its own OAUTH
+ *      client written in Node.JS.
+ *
+ *      This should probably either be used directly by iQsign,
+ *      or we should think of a way of using it to let others talk
+ *      directly to Catre, or it should be removed from Catre.
+ *
+ **/
+
+
 public interface CatreOauth
 {
 

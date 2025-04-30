@@ -39,6 +39,10 @@ package edu.brown.cs.catre.catre;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *      Badsic implementation of a subsaveable object.
+ **/
+
 public abstract class CatreSubSavableBase implements CatreSubSavable, CatreIdentifiable
 {
 

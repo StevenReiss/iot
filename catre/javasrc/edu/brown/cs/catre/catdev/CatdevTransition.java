@@ -49,7 +49,6 @@ import edu.brown.cs.catre.catre.CatreParameterSet;
 import edu.brown.cs.catre.catre.CatrePropertySet;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreTransition;
-import edu.brown.cs.catre.catre.CatreTransitionType;
 import edu.brown.cs.catre.catre.CatreUniverse;
 
 public class CatdevTransition extends CatreDescribableBase
@@ -65,7 +64,7 @@ public class CatdevTransition extends CatreDescribableBase
 
 private CatreParameterSet	default_parameters;
 private CatreDevice		for_device;
-private CatreTransitionType	transition_type;
+
 
 
 
@@ -122,10 +121,7 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
 @Override public CatreUniverse getUniverse()	{ return for_device.getUniverse(); }
 
 
-@Override public CatreTransitionType getTransitionType()
-{
-   return transition_type;
-}
+
 
 
 @Override public CatreParameterSet getDefaultParameters()
@@ -213,7 +209,6 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
 {
    Map<String,Object> rslt = super.toJson();
 
-   rslt.put("TYPE",transition_type);
    rslt.put("DEFAULTS",default_parameters.toJson());
 
    return rslt;
@@ -224,7 +219,6 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
 {
    super.fromJson(cs,map);
    
-   transition_type = getSavedEnum(map,"TYPE",CatreTransitionType.STATE_CHANGE);
    default_parameters = getSavedSubobject(cs,map,"DEFAULTS",
 	 getUniverse()::createSavedParameterSet,default_parameters);
 
@@ -237,10 +231,7 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
 {
    CatdevTransition ct = (CatdevTransition) ct0;
    boolean chng = super.update(ct);
-   if (transition_type != ct.transition_type) {
-      chng = true;
-      transition_type = ct.transition_type;
-    }
+   
    // might want to update the parameters one by one
    default_parameters = ct.default_parameters;
    

@@ -45,6 +45,10 @@ import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.Random;
 
+/**
+ *      A set up utility routines for use in Catre
+ **/
+
 public class CatreUtil
 {
 
@@ -67,6 +71,10 @@ private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJ
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Return a random string of len characters
+ **/
+
 public static String randomString(int len)
 {
    StringBuffer buf = new StringBuffer();
@@ -86,6 +94,10 @@ public static String randomString(int len)
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Return a string representing the SHA-512 hash of a string
+ **/
+
 public static String secureHash(String s)
 {
    try {
@@ -99,6 +111,11 @@ public static String secureHash(String s)
     }
 }
 
+
+/**
+ *      Return a short (16 chaacter) string representing the MD5 hash
+ *      of a string
+ **/
 
 public static String shortHash(String s)
 {
@@ -116,6 +133,10 @@ public static String shortHash(String s)
 
 
 
+/**
+ *      Decode a URL encoded string
+ **/
+
 public static String unescape(String s) {
    if (s == null) return null;
    try {
@@ -126,6 +147,11 @@ public static String unescape(String s) {
     }
 }
 
+
+
+/**
+ *      Encode a string as part of a URL
+ **/
 
 public static String escape(String s) {
    if (s == null) return null;
@@ -144,6 +170,10 @@ public static String escape(String s) {
 /*      Email methods                                                           */
 /*                                                                              */
 /********************************************************************************/
+
+/**
+ *      Send email from CATRE to a user
+ **/
 
 public static boolean sendEmail(String sendto,String subj,String body)
 {

@@ -38,6 +38,16 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Map;
 
+/**     
+ *      A table is a description of a collection or relation in the
+ *      data store for a particular type of saveable object.  It provides
+ *      the name of the collection as well as a prefix for the unique
+ *      ID of objects in the table.  The prefix can then be used to find
+ *      the particular collection associated with an ID.  A table also
+ *      provides the basic call to create the appropriate object from its
+ *      data store representation.
+ **/
+
 public interface CatreTable
 {
 
@@ -59,6 +69,7 @@ boolean useFor(CatreSavable cs);
  **/
 
 String getTablePrefix();
+
 
 /**
  *      Create an appropriate object using table data

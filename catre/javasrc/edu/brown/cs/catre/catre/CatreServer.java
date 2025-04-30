@@ -37,10 +37,23 @@ package edu.brown.cs.catre.catre;
 
 import java.io.IOException;
 
+/**    
+ *      Interface to the http server supported by Catre.
+ **/
+
 public interface CatreServer
 {
 
+/**
+ *      Return the https://... prefix for requests to the server.
+ **/
+
 String getUrlPrefix();
+
+
+/**
+ *      Start the server running
+ **/
 
 void start() throws IOException;
 

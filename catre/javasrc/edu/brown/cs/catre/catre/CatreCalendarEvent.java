@@ -38,11 +38,35 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Map;
 
+/**
+ *      Represent an event from a calendar, e.g. Google Calendar
+ **/
+
 public interface CatreCalendarEvent
 {
 
+/**
+ *      Return the start time of the event
+ **/
+
 long getStartTime();
+
+
+/**
+ *      Return the end time of the event
+ **/
+
 long getEndTime();
+
+
+/*
+ *      Return a map of other properties associated with the event, for example
+ *      The ID, the STATUS, the TRANSPARENCY, the VISIBILITY, the CONTENT, the
+ *      WHERE (location), the CALENDAR (calendar name), LINKS associated with the
+ *      event, and a boolbean ALLDAY flag.  (These might vary for different calendars.)
+ *      These can be used as values to pass to actions or as items to test for
+ *      checking conditions.
+ **/
 
 Map<String,String> getProperties();
 

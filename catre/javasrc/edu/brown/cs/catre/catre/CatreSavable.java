@@ -40,6 +40,11 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+/**
+ *      Interface indicating that an object can be saved in the data store
+ *      directly in a top-level collection.
+ **/
+
 public interface CatreSavable extends CatreSubSavable, CatreIdentifiable, CatreJson
 {
 
@@ -62,6 +67,10 @@ void fromJson(CatreStore store,Map<String,Object>  o);
 
 String getDataUID(); 
 
+
+/**
+ *      return the JSON for this saveable.
+ **/
 
 default JSONObject getJsonObject()
 {

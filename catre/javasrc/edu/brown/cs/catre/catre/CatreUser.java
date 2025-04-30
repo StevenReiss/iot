@@ -38,6 +38,14 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Map;										
 
+/**
+ *      Representation of a particular user.  Note that for the same
+ *      person to work with multiple universes, they neeed to be separate
+ *      users.  While this might be non-intuitive, it avoids having to 
+ *      continually check which universe the user is talking about and
+ *      ensures that different universes don't conflict.
+ **/
+
 public interface CatreUser extends CatreSavable
 {
 
@@ -63,22 +71,70 @@ CatreUniverse getUniverse();
  *	Get authorization information for a bridge
  **/
 
-CatreBridgeAuthorization getAuthorization(String name);
+CatreBridgeAuthorization getAuthorization(String bridge);
 
 
-boolean addAuthorization(String name,Map<String,String> map);
+/**
+ *      Add an authorization for a particular bridge.
+ **/
 
+boolean addAuthorization(String bridge,Map<String,String> map);
+
+
+/**
+ *      Set the universe currently associated with the user
+ **/
 
 void setUniverse(CatreUniverse cu);
 
+
+/**
+ *      Change the password for this user
+ **/
+
 void setNewPassword(String pwd);
 
+
+/**
+ *      Check whether the password is temporary or not
+ **/
+
 boolean isTemporary();
+
+
+/**
+ *      Indicate if the current passwrod is temporary or not.  This
+ *      is mainly used to clear the temporary flag for a password.
+ **/
+
 void setTemporary(boolean fg);
+
+
+/**
+ *      Set a temporary password for the user.
+ **/
+
 void setTemporaryPassword(String  pwd);
 
+
+/**
+ *      Validate a user by code (useful for one id login)
+ **/
+
 boolean validateUser(String code);
+
+
+/**
+ *      Setup a validator for this user/universe
+ **/
+
 String setupValidator();
+
+
+/**
+ *      Check if this user has been validated
+ **/
+
 boolean isValidated();
 
 

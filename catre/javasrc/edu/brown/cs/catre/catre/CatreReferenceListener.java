@@ -38,8 +38,18 @@ package edu.brown.cs.catre.catre;
 
 import java.util.EventListener;
 
+/**
+ *      Listener that can detect when a parameter reference
+ *      changes its validity status.
+ **/
+
 public interface CatreReferenceListener extends EventListener
 {
+
+/**
+ *      Called whtn a reference changes from valid to invalid
+ *      or invalid to valid.
+ **/
 
 default void referenceValid(boolean fg)   { }
 

@@ -43,15 +43,12 @@ import java.util.Set;
 import org.json.JSONObject;
 
 /**
- *	The user interface might want to create hypothetical situations to
- *	determine if there are conflicts or to show the user what would happen
- *	under different conditions.  This interface represents such a state.
+ *      Representation of a the program (set of rules with conditions and
+ *      actions) associated with a given universe.
  **/
 
 public interface CatreProgram extends CatreSubSavable
 {
-
-
 
 
 /**
@@ -61,7 +58,19 @@ public interface CatreProgram extends CatreSubSavable
 List<CatreRule> getRules();
 
 
+/**
+ *      Add a shared condition for the program.  A shared condition can
+ *      be used in multiple rules.
+ **/
+
 void addSharedCondition(CatreCondition cc);
+
+
+/**
+ *      Remove a shared condition from the program.  Any rule that is using
+ *      this condition will then have its own unshared copy.
+ **/
+
 void removeSharedCondition(String name);
 
 /**
@@ -90,7 +99,6 @@ JSONObject errorCheckRule(CatreRule cr);
 
 
 
-
 /**
  *	Run the current program once on the current world.  This function
  *	returns true if a rule is triggered.
@@ -107,15 +115,37 @@ boolean runOnce(CatreTriggerContext ctx,Set<CatreDevice> relevant);
 Set<CatreParameterRef> getActiveSensors();
 
 
+/**
+ *      Return the universe associated with this program
+ **/
+
 CatreUniverse getUniverse();
 
 
+/**
+ *      Create a new rule from it data store Map representation
+ **/
 
 CatreRule createRule(CatreStore cs,Map<String,Object> map);
 
+/**
+ *      Create a new condition from its data store Map representation
+ **/
+
 CatreCondition createCondition(CatreStore cs,Map<String,Object> map);
 
+
+/**
+ *      Add a listener to handle changes in the program
+ **/
+
 void addProgramListener(CatreProgramListener listener);
+
+
+/**
+ *      Remove a program listener.
+ **/
+
 void removeProgramListener(CatreProgramListener listener);
 
 

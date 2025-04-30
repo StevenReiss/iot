@@ -38,6 +38,10 @@ package edu.brown.cs.catre.catre;
 
 import java.util.EventListener;
 
+/**
+ *      Callback interface to handle changes to a device state.
+ **/
+
 public interface CatreDeviceListener extends EventListener
 {
 

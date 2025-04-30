@@ -48,6 +48,10 @@ public class CatreLog extends IvyLog
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Setup up logging for Catre
+ **/
+
 public static void setup()
 {
    setupLogging("CATRE",true);

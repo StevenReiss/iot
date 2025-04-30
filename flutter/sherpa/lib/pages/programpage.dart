@@ -40,6 +40,7 @@ import 'package:sherpa/models/catremodel.dart';
 import 'package:sherpa/pages/authorizationpage.dart';
 import 'package:sherpa/pages/devicepage.dart';
 import 'package:sherpa/pages/addweatherpage.dart';
+import 'package:sherpa/pages/addrsspage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
 import 'package:sherpa/lookandfeel.dart' as laf;
@@ -56,8 +57,7 @@ class SherpaProgramWidget extends StatefulWidget {
   const SherpaProgramWidget(this._theUniverse, {super.key});
 
   @override
-  State<SherpaProgramWidget> createState() =>
-      _SherpaProgramWidgetState();
+  State<SherpaProgramWidget> createState() => _SherpaProgramWidgetState();
 }
 
 class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
@@ -107,6 +107,11 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
             widgets.MenuAction(
               'Create Weather Device',
               _showAddWeatherPage,
+              "Create a device for the weather at a given location",
+            ),
+            widgets.MenuAction(
+              'Create RSS Device',
+              _showAddRssPage,
               "Create a device for the weather at a given location",
             ),
             widgets.MenuAction('Remove Device', _handleRemoveDevice,
@@ -180,22 +185,20 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
                   "Select the device you wish to remove from your universe. "
                   "This cannot be undone easily.",
             ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  SimpleDialogOption(
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    child: const Text("Remove"),
-                  ),
-                  SimpleDialogOption(
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                    child: const Text("Cancel"),
-                  ),
-                ]),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text("Remove"),
+              ),
+              SimpleDialogOption(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                child: const Text("Cancel"),
+              ),
+            ]),
           ],
         );
       },
@@ -293,6 +296,10 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     await widgets.gotoThen(context, const SherpaAddWeatherPage());
   }
 
+  void _showAddRssPage() async {
+    await widgets.gotoThen(context, const SherpaAddRssPage());
+  }
+
   Widget? _createPriorityView(levels.PriorityLevel lvl, bool optional) {
     CatreProgram pgm = _theUniverse.getProgram();
     int ct = 0;
@@ -371,3 +378,4 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     return w2;
   }
 }
+

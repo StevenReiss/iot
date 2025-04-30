@@ -37,8 +37,18 @@ package edu.brown.cs.catre.catre;
 
 import java.util.EventListener;
 
+/**
+ *      Listener to allow others to act then the program is changed.
+ **/
+
 public interface CatreProgramListener extends EventListener
 {
+
+
+/**
+ *      Invoked when the program is changed (rules added, removed,
+ *      or modified.)
+ **/
 
 default void programUpdated()                        { }
 

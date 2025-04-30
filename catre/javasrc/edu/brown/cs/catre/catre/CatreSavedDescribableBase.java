@@ -38,6 +38,11 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Map;
 
+/**
+ *      Base implementation of a CatreSaveable that is also a Catre Describable.
+ *      This adds the basic methods for accessing the name, label, and description.
+ **/
+
 public class CatreSavedDescribableBase extends CatreSavableBase
       implements CatreDescribable, CatreSavable
 {
@@ -90,11 +95,19 @@ protected CatreSavedDescribableBase(CatreStore cs,Map<String,Object> map)
 /*                                                                              */
 /********************************************************************************/
 
+/**
+ *      Return the name
+ **/
+
 @Override public String getName()
 {
    return base_name;
 }
 
+
+/**
+ *      Set the name of the object.
+ **/
 
 protected void setName(String nm)
 {
@@ -102,7 +115,9 @@ protected void setName(String nm)
 }
 
 
-
+/**
+ *      Return the label
+ **/
 
 @Override public String getLabel()
 {
@@ -115,12 +130,19 @@ protected void setName(String nm)
 }
 
 
+/**
+ *      Set the label of the object
+ **/
+
 protected void setLabel(String lbl)
 {
    base_label = lbl;
 }
 
 
+/**
+ *      Get the description of the object
+ **/
 
 @Override public String getDescription()
 {
@@ -131,6 +153,9 @@ protected void setLabel(String lbl)
    return base_description;
 }
 
+/**
+ *      Set the description of the object
+ **/
 
 public  void setDescription(String d)
 {
@@ -145,6 +170,11 @@ public  void setDescription(String d)
 /*                                                                              */
 /********************************************************************************/
 
+/**
+ *      Convert the object to a Map so it can be saved in the data store.  Normally
+ *      called from a subclass.
+ **/
+
 @Override public Map<String,Object> toJson()
 {
    Map<String,Object> rslt = super.toJson();
@@ -155,6 +185,10 @@ public  void setDescription(String d)
    return rslt;
 }
 
+/**
+ *      Set up the object based on its saved implmentation.  Normally called from
+ *      a subclass
+ **/
 
 @Override public void fromJson(CatreStore cs,Map<String,Object> map)
 {

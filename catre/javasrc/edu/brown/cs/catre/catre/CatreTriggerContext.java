@@ -38,13 +38,33 @@ package edu.brown.cs.catre.catre;
 
 
 
+/**
+ *      Hold information needed when evaluating a rule, especially
+ *      a trigger-based rule
+ **/
+
 public interface CatreTriggerContext
 {
 
+/**
+ *      Return the properties associated with a condition 
+ *      for this evaluation.
+ **/
 
 CatrePropertySet checkCondition(CatreCondition c);
 
+
+/**
+ *      Add a valid condition to the context
+ **/
+
 void addCondition(CatreCondition cc,CatrePropertySet ps);
+
+
+
+/**
+ *      Add a subcontext to the context
+ **/
 
 void addContext(CatreTriggerContext ctx);
 

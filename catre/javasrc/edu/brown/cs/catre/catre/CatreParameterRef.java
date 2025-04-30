@@ -38,19 +38,58 @@ package edu.brown.cs.catre.catre;
 
 
 
+/**
+ *      This interface represents a reference to a parameter in
+ *      some device.  This is used both inside devices (where one
+ *      parameter defines the range of values for another as an
+ *      example) and in rules where a condition or action can refer
+ *      to a parameter.  Linking directly to a parameter might not
+ *      be safe as devices can come and go and can go off-line.  
+ *      Instead, Catre uses a CatreParameterRef that provides an
+ *      indirect link that needs to be validated and can be checked
+ *      for validity
+ **/
+
 public interface CatreParameterRef extends CatreSubSavable
 {
 
+/**
+ *      Check if this reference is valid
+ **/
 
 boolean isValid();
 
+
+/**
+ *      Return the device associated with a valid reference
+ **/
+
 CatreDevice getDevice();
+
+
+/**
+ *      Return the parameter associated with a valid reference
+ **/
 
 CatreParameter getParameter();
 
+/**
+ *      Return the device ID for this parameter reference.
+ **/
+
 String getDeviceId();
 
+/**
+ *      Return the parameter name for this reference.
+ **/
+
 String getParameterName();
+
+
+/**
+ *      Initialize the reference and try to validate.  This also
+ *      sets up callbacks to detect changes in validity.
+ **/
 
 void initialize();              // check if valid initially
 

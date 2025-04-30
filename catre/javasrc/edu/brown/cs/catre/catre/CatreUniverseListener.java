@@ -38,11 +38,32 @@ package edu.brown.cs.catre.catre;
 
 import java.util.EventListener;
 
+/**
+ *      Listener for changes to a universe
+ **/
+
 public interface CatreUniverseListener extends EventListener
 {
 
+
+/**
+ *      Invoked when a device is added to the universe
+ **/
+
 default void deviceAdded(CatreDevice ue)                { }
+
+
+/**
+ *      Invoked when a device is removed from a universe
+ **/
+
 default void deviceRemoved(CatreDevice ue)              { }
+
+
+/**
+ *      Invoked after a universe has been completely initializaed.
+ **/
+
 default void universeSetup()                            { }
 
 

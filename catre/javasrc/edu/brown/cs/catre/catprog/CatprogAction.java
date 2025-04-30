@@ -142,10 +142,7 @@ private void setActionName()
 }
 
 
-@Override public void setIsTriggerAction(boolean fg)
-{
-   is_trigger = fg;
-}
+
 
 
 @Override public CatreDevice getDevice()		{ return transition_ref.getDevice(); }

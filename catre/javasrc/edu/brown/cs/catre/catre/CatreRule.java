@@ -63,15 +63,16 @@ List<CatreAction> getActions();
 
 
 /**
- *      Return the device or device ID associated with this rule.
+ *      Return the device ID associated with this rule.
  **/
 
 String getTargetDeviceId();
 
+/**
+ *      Return the device ID associated with this rule.
+ **/
+
 CatreDevice getTargetDevice();
-
-
-
 
 
 /**

@@ -41,13 +41,11 @@ class SherpaAddWeatherPage extends StatefulWidget {
   const SherpaAddWeatherPage({super.key});
 
   @override
-  State<SherpaAddWeatherPage> createState() =>
-      _SherpaAddWeatherPageState();
+  State<SherpaAddWeatherPage> createState() => _SherpaAddWeatherPageState();
 }
 
 class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
-  final TextEditingController _locationControl =
-      TextEditingController();
+  final TextEditingController _locationControl = TextEditingController();
   final TextEditingController _nameControl = TextEditingController();
   final TextEditingController _descControl = TextEditingController();
   final TextEditingController _latControl = TextEditingController();
@@ -68,16 +66,14 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
   Widget build(BuildContext context) {
     Widget w1 = widgets.textField(
       label: "Location",
-      hint:
-          "Enter location (e.g., city state or city country or postal code)",
+      hint: "Enter location (e.g., city state or city country or postal code)",
       controller: _locationControl,
       maxLines: 0,
       enabled: true,
       onChanged: (String s) {
         _locChanged = true;
       },
-      tooltip:
-          "Enter location name.  Either click elsewhere or click the "
+      tooltip: "Enter location name.  Either click elsewhere or click the "
           "Locate button to convert this to latitude and longitude.  If the location "
           "might be ambiguous, check the other fields for correctness. "
           "State postal codes might not work.  Use part of the state name instead",
@@ -246,8 +242,7 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
     return ", $v";
   }
 
-  Map<String, dynamic> _findBestMatch(
-      List<dynamic> items, String? check) {
+  Map<String, dynamic> _findBestMatch(List<dynamic> items, String? check) {
     if (check == null || check.isEmpty || items.length == 1) {
       return items.first;
     }
@@ -335,3 +330,4 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
     return false;
   }
 }
+

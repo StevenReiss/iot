@@ -39,27 +39,81 @@ package edu.brown.cs.catre.catre;
 
 import com.sun.net.httpserver.HttpExchange;
 
+/**
+ *      Representation of a session for use in the RESTful
+ *      web service provided by Catre.
+ **/
+
 public interface CatreSession extends CatreSavable { 
 
-   CatreUser getUser(CatreController cc);
+/**
+ *      Return the user associated with the session
+ **/
 
-   CatreUniverse getUniverse(CatreController cc);
-   
-   boolean isValid();
+CatreUser getUser(CatreController cc);
 
-   String getSessionId();
 
-   void setupSession(CatreUser user);
+/**
+ *      Return the universe associated with the session
+ **/
 
-   void saveSession(CatreController cc);
+CatreUniverse getUniverse(CatreController cc);
 
-   void setValue(String key,String val);
 
-   String getStringValue(String key);
+/**
+ *      Determine if the session is currently valid.
+ **/
 
-   String jsonResponse(Object... val);
+boolean isValid();
 
-   String getParameter(HttpExchange e,String id);
+
+/**
+ *      Get the session ID
+ **/
+
+String getSessionId();
+
+
+/**
+ *      Set up the session for a particular user
+ **/
+
+void setupSession(CatreUser user);
+
+
+/**
+ *      Save the session in case Catre crashes and restarts
+ **/
+
+void saveSession(CatreController cc);
+
+
+/**
+ *      Set the value of a session parameter
+ **/
+
+void setValue(String key,String val);
+
+
+/**
+ *      Get the value of a session parameter
+ **/
+
+String getStringValue(String key);
+
+
+/**
+ *      Generate a JSON response from a set of key-value pairs
+ **/
+
+String jsonResponse(Object... val);
+
+
+/**
+ *      Get the value of a parameter associated with the session.
+ **/
+
+String getParameter(HttpExchange e,String id);
 
 }	// end of class CatreSession
 

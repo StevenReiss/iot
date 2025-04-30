@@ -75,6 +75,10 @@ public CatdevFactory(CatreUniverse cu)
 /*                                                                              */
 /********************************************************************************/
 
+/**
+ *      Create an internal (virtual) device from a JSON description
+ **/
+
 public CatreDevice createDevice(CatreStore cs,Map<String,Object> map)
 {
    CatdevDevice device = null;
@@ -88,6 +92,10 @@ public CatreDevice createDevice(CatreStore cs,Map<String,Object> map)
          case "OpenMeteo" :
             device = new CatdevMeteoDevice(for_universe,cs,map); 
             break;
+         case "RssFeed" :
+            device = new CatdevDeviceRssFeed(for_universe,cs,map); 
+            break;
+            
          default : 
             CatreLog.logE("CATDEV","Unknown device type " + typ);
             break;

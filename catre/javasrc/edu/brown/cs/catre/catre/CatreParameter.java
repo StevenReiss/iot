@@ -39,6 +39,14 @@ package edu.brown.cs.catre.catre;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ *      Interface representing a device or transition parameter.  A
+ *      parameter has a name (it is a describable), can be saved in
+ *      the data store (but not at the top level), has a data type,
+ *      and has an associated value.  The value might be a range or
+ *      an enumeration and might have associated units.
+ **/
+
 public interface CatreParameter extends CatreSubSavable, CatreDescribable
 {
 
@@ -127,13 +135,11 @@ boolean isSensor();
 
 
 
-
+/**
+ *      Set whether the parameter is a sensor parameter.
+ **/
 
 void setIsSensor(boolean fg);
-
-
-
-String getDefaultUnits();
 
 
 /**
@@ -147,10 +153,33 @@ String getParameterData();
 CatreParameterRef getActiveSensor();
 
 
+/**
+ *      Get the default (current) unit name for this parameter.
+ **/
+
+String getDefaultUnits();
+
+/**
+ *      Get all possible unit names for this parameter.
+ **/
+
 Collection<String> getAllUnits();
 
+
+/**
+ *      Change the label associated with this paramter
+ **/
+
 void setLabel(String label);
+
+
+/**
+ *      Change the description associated with this parameter.
+ **/
+
 void setDescription(String description);
+
+
 
 /**
  *      Update this parameter based on new device description

@@ -52,7 +52,7 @@ import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreUniverse;
 import edu.brown.cs.ivy.xml.IvyXml;
 
-public abstract class CatdevDeviceRssFeed extends CatdevDeviceWeb
+public final class CatdevDeviceRssFeed extends CatdevDeviceWeb
 {
 
 
@@ -67,6 +67,7 @@ private long		last_hash;
 private CatreParameter	title_parameter;
 private CatreParameter	description_parameter;
 private CatreParameter	link_parameter;
+private String          rss_url;
 
 private static DateFormat rss_date = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ");
 
@@ -80,20 +81,12 @@ private static long UPDATE_RATE = 5 * T_MINUTE;
 /*										*/
 /********************************************************************************/
 
-protected CatdevDeviceRssFeed(CatreUniverse uu,String name)
+CatdevDeviceRssFeed(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 {
    super(uu,UPDATE_RATE);
-
-   setName(name);
-
-   initialize();
-}
-
-
-protected CatdevDeviceRssFeed(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
-{
-   super(uu,UPDATE_RATE);
-
+   
+   last_update = System.currentTimeMillis();
+   
    fromJson(cs,map);
 
    initialize();
@@ -102,13 +95,25 @@ protected CatdevDeviceRssFeed(CatreUniverse uu,CatreStore cs,Map<String,Object> 
 
 private void initialize()
 {
-   last_update = System.currentTimeMillis();
    last_hash = 0;
 
    CatreParameter bp0 = getUniverse().createStringParameter("last_title");
    CatreParameter bp1 = getUniverse().createStringParameter("last_description");
    title_parameter = addParameter(bp0);
    description_parameter = addParameter(bp1);
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+@Override public String getUrl()
+{
+   return rss_url;
 }
 
 
@@ -185,6 +190,12 @@ private long dateAfter(String lbd)
 @Override public Map<String,Object> toJson()
 {
    Map<String,Object> rslt = super.toJson();
+   
+   rslt.put("VTYPE","RssFeed");
+   
+   rslt.put("URL",rss_url);
+   rslt.put("LASTUPDATE",last_update);
+
    return rslt;
 }
 
@@ -192,6 +203,9 @@ private long dateAfter(String lbd)
 @Override public void fromJson(CatreStore cs,Map<String,Object> map)
 {
    super.fromJson(cs,map);
+   
+   rss_url = getSavedString(map,"URL",rss_url);
+   last_update = getSavedLong(map,"LASTUPDATE",last_update);
 }
 
 

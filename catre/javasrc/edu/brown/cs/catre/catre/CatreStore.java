@@ -38,6 +38,12 @@ package edu.brown.cs.catre.catre;
 
 import java.util.List;
 
+/**
+ *      Interface representing the Catre data store.  Currently this is
+ *      implemented using MONGODB, but it could be done otherwise as long as
+ *      this interface is maintained.
+ **/
+
 public interface CatreStore
 {
 
@@ -82,6 +88,10 @@ CatreUser findUserByEmail(String email);
 List<CatreUser> findAllUsers();
 
 
+/**
+ *      Attempt to validate a Google calendar.
+ **/
+
 Boolean validateCalendar(CatreUser cu,String id,String pwd);
 
 
@@ -91,15 +101,42 @@ Boolean validateCalendar(CatreUser cu,String id,String pwd);
 /*                                                                              */
 /********************************************************************************/
 
+/**
+ *      Save an object into the store
+ **/
+
 String saveObject(CatreSavable obj);
+
+
+/**
+ *      Load a saveable object from the store
+ **/
 
 CatreSavable loadObject(String iid);
 
+/**
+ *      Remove an object from the store
+ **/
+
 void removeObject(String iid);
+
+/**
+ *      Note that an object is in the store or was retrieved from the store.
+ **/
 
 void recordObject(CatreSavable object);
 
+
+/**
+ *      Return the controller associated with this store
+ **/
+
 CatreController getCatre();
+
+
+/**
+ *      Return the Oauth server associated with the store.
+ **/
 
 CatreOauth getOauth();
 

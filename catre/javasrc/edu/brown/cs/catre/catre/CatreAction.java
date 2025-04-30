@@ -56,11 +56,18 @@ public interface CatreAction extends CatreDescribable, CatreSavable
 
 
 /**
- *	Return the entity associated with this action.	Each action refers to
+ *	Return the device associated with this action.	Each action refers to
  *	setting a particular state of a particular entity.
  **/
 
 CatreDevice getDevice();
+
+
+
+/**
+ *      Return the transition associated with this action.
+ **/
+
 CatreTransition getTransition();
 
 
@@ -71,12 +78,21 @@ CatreTransition getTransition();
  **/
 
 boolean isTriggerAction();
-void setIsTriggerAction(boolean fg);
+
+
+/**
+ *      Check if the action is valid
+ **/ 
 
 boolean isValid();
 
 
+/**
+ *      Add a set of implied properties to the action
+ **/
+
 default void addImpliedProperties(CatrePropertySet props)               { }
+
 
 /**
  *	Get the current parameters.  The returned map is live in that it can

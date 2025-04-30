@@ -688,7 +688,7 @@ class SamsungDevice {
             value.minimum = 60;
             value.maximum = 100;
             break;
-         case "headingSetpointRange" :
+         case "heatingSetpointRange" :
             value.minimum = 40;
             value.maximum = 80;
             break;

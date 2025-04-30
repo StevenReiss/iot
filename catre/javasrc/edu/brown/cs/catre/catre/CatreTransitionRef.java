@@ -38,18 +38,54 @@ package edu.brown.cs.catre.catre;
 
 
 
+/**
+ *      Represent a reference to a transition.  Rules will generally
+ *      have such a reference when a transition is needed to account
+ *      for changes to the underlying devices.  This is similar to
+ *      a parameter reference.
+ **/
+
 public interface CatreTransitionRef extends CatreSubSavable
 {
 
+/**
+ *      Set up the transition reference, making it valid if possible.
+ **/
+
 void initialize();
+
+/**
+ *      Test if the reference is valid
+ **/
 
 boolean isValid();
 
+
+/**
+ *      Return the device associated with the reference if valid.
+ **/
+
 CatreDevice getDevice();
+
+
+/**
+ *      Return the actual transition associed with the reference if valid.
+ **/
 
 CatreTransition getTransition();
 
+
+
+/**
+ *      Return the device ID being referred to
+ **/
+
 String getDeviceId();
+
+
+/**
+ *      Return the name of the transition being referred to.
+ **/
 
 String getTransitionName();
 

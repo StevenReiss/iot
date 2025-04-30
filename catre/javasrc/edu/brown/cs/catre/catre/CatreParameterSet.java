@@ -38,6 +38,11 @@ package edu.brown.cs.catre.catre;
 
 import java.util.Collection;
 
+/**
+ *      Representation of a set of parameters, for example the
+ *      set of values associated with an action.
+ **/
+
 public interface CatreParameterSet extends CatreSubSavable
 {
 
@@ -68,8 +73,26 @@ void addParameter(CatreParameter p);
  **/
 
 Object putValue(CatreParameter param,Object value);
+
+
+/**
+ *      Set value of a single parameter
+ **/
+
 Object putValue(String nm,Object value);
+
+
+/**
+ *      Set value of a single parameter
+ **/
+
 void putValues(CatreParameterSet ps);
+
+
+/**
+ *      Clear all parameters values in the set.
+ **/
+
 void clearValues();
 
 /**
@@ -77,6 +100,12 @@ void clearValues();
  **/
 
 Object getValue(CatreParameter parameter);
+
+
+/**
+ *      Get value of a single parameter as a string.
+ **/
+
 String getStringValue(CatreParameter parameter);
 
 

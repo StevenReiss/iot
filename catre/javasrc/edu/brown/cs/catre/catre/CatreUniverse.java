@@ -50,9 +50,16 @@ public interface CatreUniverse extends CatreSavable, CatreDescribable
 
 
 
-
+/**
+ *      Find a device by id
+ **/
 
 CatreDevice findDevice(String id);
+
+
+/**
+ *      Create a virtual device based on a JSON representation
+ **/
 
 CatreDevice createVirtualDevice(CatreStore cs,Map<String,Object> map);
 
@@ -87,52 +94,220 @@ void start();
 
 CatreController getCatre();
 
+
+
+/**
+ *      Return the user associated with the universe
+ **/
+
 CatreUser getUser();
+
+
+/**
+ *      Return the program associated with the universe
+ **/
 
 CatreProgram getProgram();
 
 
+/**
+ *      Create an empty parameter set
+ **/
 
 CatreParameterSet createParameterSet();
-CatreParameterSet createParameterSet(CatreStore cs,Map<String,Object> map);
+
+
+/**
+ *      Create a parameter set from a JSON representation
+ **/
+
 CatreParameterSet createSavedParameterSet(CatreStore cs,Map<String,Object> map);
+
+
+/**
+ *      Create empty parameter set
+ **/
+
 CatrePropertySet createPropertySet();
+
+
+/**
+ *      Create a set of action values for a transition
+ **/
+
 CatreActionValues createActionValues(CatreParameterSet ps);
 
 
-
+/**
+ *      Create a parameter representation from a JSON representation
+ **/
 
 CatreParameter createParameter(CatreStore cs,Map<String,Object> map);
 
 
+/**
+ *      Find a bridge by name
+ **/
 
 CatreBridge findBridge(String name);
+
+
+/**
+ *      Create a universe-specific instance of a generic bridge.
+ **/
+
 void addBridge(String name);
 
+
+
+/**
+ *      Update the devices for a particular bridge
+ **/
+
 void updateDevices(CatreBridge bridge,boolean disable);
+
+
+/**
+ *      Update all devices of the universe.
+ **/
+
 void updateDevices(boolean disable);
+
+
+/**
+ *      Add a new device to the universe.
+ **/
+
 void addDevice(CatreDevice device);
+
+
+/**
+ *      Remove a device from the univsere
+ **/
+
 void removeDevice(CatreDevice device);
 
+
+/**
+ *      Create a boolean parameter for an internal device.
+ **/
+
 CatreParameter createBooleanParameter(String name,boolean issensor,String label);
+
+
+/**
+ *      Create an enum parameter for an internal device.
+ **/
+
 CatreParameter createEnumParameter(String name,Enum<?> e);
+
+
+/**
+ *      Create an enum parameter for an internal device.
+ **/
+
 CatreParameter createEnumParameter(String name,Iterable<String> vals);
-CatreParameter createSetParameter(String name,Iterable<String> vals);
+
+
+/**
+ *      Create an enum parameter for an internal device.
+ **/
+
 CatreParameter createEnumParameter(String name,String [] v);
+
+/**
+ *      Create a set parameter for an internal device.
+ **/
+
+CatreParameter createSetParameter(String name,Iterable<String> vals);
+
+
+
+/**
+ *      Create an int parameter for an internal device.
+ **/
+
 CatreParameter createIntParameter(String name,int min,int max);
+
+
+
+/**
+ *      Create a real parameter for an internal device.
+ **/
+
 CatreParameter createRealParameter(String name,double min,double max);
+
+
+
+/**
+ *      Create a real parameter for an internal device.
+ **/
+
 CatreParameter createRealParameter(String name);
+
+
+
+/**
+ *      Create a color parameter for an internal device.
+ **/
+
 CatreParameter createColorParameter(String name);
+
+
+
+/**
+ *      Create a string parameter for an internal device.
+ **/
+
 CatreParameter createStringParameter(String name);
+
+
+/**
+ *      Create an events parameter (Calendar event) for an internal device.
+ **/
+
 CatreParameter createEventsParameter(String name);
 
+
+/**
+ *      Create a new trigger context
+ **/
+
 CatreTriggerContext createTriggerContext();
+
+
+/**
+ *      Create a time slot event from its stored JSON representation
+ **/
+
 CatreTimeSlotEvent createTimeSlotEvent(CatreStore cs,Map<String,Object> map);
 
+
+/**
+ *      Create a new parameter reference
+ **/
+
 CatreParameterRef createParameterRef(CatreReferenceListener ref,String device,String parameter);
+
+
+/**
+ *      Create a parameter reference from its stored JSON representation
+ **/
+
 CatreParameterRef createParameterRef(CatreReferenceListener ref,CatreStore cs,Map<String,Object> map);
 
+
+/**
+ *      Create a new transition reference
+ **/
+
 CatreTransitionRef createTransitionRef(CatreReferenceListener ref,String device,String transition);
+
+
+/**
+ *      Create a transition reference from its stored representation
+ **/
+
 CatreTransitionRef createTransitionRef(CatreReferenceListener ref,CatreStore cs,Map<String,Object> map);
 
 
@@ -142,20 +317,82 @@ CatreTransitionRef createTransitionRef(CatreReferenceListener ref,CatreStore cs,
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Lock this universe for update
+ **/
+
 void updateLock();
+
+
+/**
+ *      Release the universe update lock
+ **/
+
 void updateUnlock();
+
+
+/**
+ *      Indicate we are starting to update the universe
+ **/
+
 void startUpdate();
+
+
+/**
+ *      Indicate we are done updating the universe
+ **/
+
 void endUpdate();
+
+
+/**
+ *      Wait for the universe update to be completed
+ **/
+
 CatreTriggerContext waitForUpdate();
+
+
+/**
+ *      Get the current time in the universe
+ **/
+
 long getTime();
-void setValue(CatreParameter parameter,Object value);
-Object getValue(CatreParameter parameter);
+
+
+/**
+ *      Add a trigger condition with a set of properties.  The universe
+ *      keeps track of conditions that have triggered for the next time the
+ *      program is evaluated.  Note that a trigger condition (e.g., at 3:00pm)
+ *      will generally not be true when the rule is actually evaluated even 
+ *      though it might have been triggered moments before.
+ **/
+
 void addTrigger(CatreCondition condition,CatrePropertySet properties);
 
+/********************************************************************************/
+/*                                                                              */
+/*      Parameter methods                                                       */
+/*                                                                              */
+/********************************************************************************/
+
+
+/**
+ *      Set the value of a given parameter for this universe
+ **/
+
+void setValue(CatreParameter parameter,Object value);
+
+
+/**
+ *      Get the value of a given parameter for this universe
+ **/
+
+Object getValue(CatreParameter parameter);
 
 
 
-}	// end of interface CatreHome
+
+}	// end of interface CatreUniverse
 
 
 

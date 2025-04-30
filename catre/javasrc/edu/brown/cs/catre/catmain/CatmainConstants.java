@@ -41,7 +41,7 @@ package edu.brown.cs.catre.catmain;
 public interface CatmainConstants
 {
 
-int     THREAD_POOL_SIZE = 8;
+int     THREAD_POOL_SIZE = 16;
 
 
 

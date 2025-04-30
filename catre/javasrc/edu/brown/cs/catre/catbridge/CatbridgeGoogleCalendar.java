@@ -355,8 +355,16 @@ private void setupService() throws IOException, GeneralSecurityException
          calendar_service.getServicePath() + " " + 
          calendar_service.getSuppressPatternChecks());
    
-   CalendarList cl = calendar_service.calendarList().list().execute();
-   CatreLog.logD("CATBRIDGE","FOUND Calendars " + cl.size() + " " + cl);
+   try {
+      CalendarList cl = calendar_service.calendarList().list()
+         .setPageToken(null)
+         .setMaxResults(200)
+         .execute();
+      CatreLog.logD("CATBRIDGE","FOUND Calendars " + cl.size() + " " + cl);
+    }
+   catch (Exception e) {
+      CatreLog.logD("CATBRIDGE","Problem getting list of calendars",e);
+    }
 }
 
 
@@ -510,7 +518,7 @@ private class CalEvent implements CatreCalendarEvent {
       property_set = new HashMap<>();
       property_set.put("ID",evt.getICalUID());
       setProperty("STATUS",evt.getStatus(),true);
-      setProperty("TRANS",evt.getTransparency(),true);
+      setProperty("TRANSPARENCY",evt.getTransparency(),true);
       setProperty("VISIBILITY",evt.getVisibility(),true);
       setProperty("CONTENT",evt.getDescription(),false);
       setProperty("WHERE",evt.getLocation(),false);

@@ -76,7 +76,7 @@ public class CatbridgeFactory implements CatbridgeConstants
 /*										*/
 /********************************************************************************/
 
-private List<CatbridgeBase> all_bridges;
+private List<CatbridgeBase> template_bridges;
 private Map<String,CatbridgeBase> actual_bridges;
 private CatreController catre_control;
 private Set<String> active_keys;
@@ -94,14 +94,14 @@ private static String bridge_key = null;
 public CatbridgeFactory(CatreController cc)
 {
    catre_control = cc;
-   all_bridges = new ArrayList<>();
+   template_bridges = new ArrayList<>();
    actual_bridges = new HashMap<>();
    active_keys = new HashSet<>();
 
-   all_bridges.add(new CatbridgeGeneric(cc));
-   all_bridges.add(new CatbridgeIQsign(cc));
-   all_bridges.add(new CatbridgeGoogleCalendar(cc));
-   all_bridges.add(new CatbridgeSamsung(cc));
+   template_bridges.add(new CatbridgeGeneric(cc));
+   template_bridges.add(new CatbridgeIQsign(cc));
+   template_bridges.add(new CatbridgeGoogleCalendar(cc));
+   template_bridges.add(new CatbridgeSamsung(cc));
 
    ServerThread sthrd = new ServerThread();
    sthrd.start();
@@ -114,13 +114,24 @@ public CatbridgeFactory(CatreController cc)
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Return all the bridges.  If universe is null, return the template bridges;
+ *      otherwise return the bridges for the current universe, creating new ones
+ *      if needed
+ **/ 
+
 public Collection<CatreBridge> getAllBridges(CatreUniverse cu)
 {
    List<CatreBridge> rslt = new ArrayList<>();
-   for (CatbridgeBase base : all_bridges) {
+   for (CatbridgeBase base : template_bridges) {
       if (cu == null) rslt.add(base);
       else {
-         CatreBridge bridge = base.createBridge(cu);
+         // find existing universe bridge for this base if there is one
+         CatreBridge bridge = cu.findBridge(base.getName());
+         if (bridge == null) {
+            // otherwise create one 
+            bridge = base.createBridge(cu);
+          }
          if (bridge != null) rslt.add(bridge);
        }
     }
@@ -128,12 +139,17 @@ public Collection<CatreBridge> getAllBridges(CatreUniverse cu)
 }
 
 
+
+/**
+ *      Create a universe-specific bridge from the corresponding template
+ **/
+
 public CatreBridge createBridge(String name,CatreUniverse cu)
 {
    CatreLog.logD("CATBRIDGE","CREATE BRIDGE " + name + " " +
          cu.getUser().getUserName());
 
-   for (CatbridgeBase base : all_bridges) {
+   for (CatbridgeBase base : template_bridges) {
       if (base.getName().equals(name)) {
 	 CatbridgeBase cb = base.createBridge(cu);
 	 if (cb == null) continue;
@@ -149,6 +165,10 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
 
 
 
+/**
+ *      Set up a bridge for the given user
+ **/
+
 public void setupForUser(CatreUser cu)
 {
    CatreLog.logD("CATBRIDGE","SETUP " + cu.getUserName());
@@ -158,7 +178,7 @@ public void setupForUser(CatreUser cu)
 
    CatreLog.logD("CATBRIDGE","SETUP FOR USER " + univ.getName());
 
-   for (CatbridgeBase base : all_bridges) {
+   for (CatbridgeBase base : template_bridges) {
       CatreBridge cb = createBridge(base.getName(),univ);
       if (cb != null) {
 	 CatreLog.logD("CATBRIDGE","Setup bridge " + cb.getName() + " FOR " + cu.getUserName() + " " +

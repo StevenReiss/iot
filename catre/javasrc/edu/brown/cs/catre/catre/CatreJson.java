@@ -49,6 +49,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
+/**
+ *      JSON utility package.  This interface contains a set of routines
+ *      for encoding and decoding objects into and out of JSON.  In particular
+ *      It has routines that generate and decode items to be store in the
+ *      data store.
+ **/
+
 public interface CatreJson
 {
 
@@ -58,6 +65,12 @@ public interface CatreJson
 /*	Methods to create JSON objects						*/
 /*										*/
 /********************************************************************************/
+
+
+/**
+ *      Get an array of identifiers from an array of identifiable objects to 
+ *      put into the data store.
+ **/
 
 default String [] getUIDArrayToSave(List<? extends CatreIdentifiable> elts)
 {
@@ -70,6 +83,11 @@ default String [] getUIDArrayToSave(List<? extends CatreIdentifiable> elts)
 }
 
 
+/**
+ *      Get a list of JSON representations of a list of savable objects to store
+ *      in the data store.
+ **/
+
 default List<Object> getSubObjectArrayToSave(Collection<? extends CatreSubSavable> elts)
 {
    List<Object> rslt = new ArrayList<>();
@@ -79,6 +97,10 @@ default List<Object> getSubObjectArrayToSave(Collection<? extends CatreSubSavabl
    return rslt;
 }
 
+
+/**
+ *      Get the Unique ID in the data store for an identifiable object.
+ **/
 
 default String getUIDToSave(CatreIdentifiable e)
 {
@@ -95,6 +117,10 @@ default String getUIDToSave(CatreIdentifiable e)
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Return a string from JSON represented as a Map
+ **/
+
 default String getSavedString(Map<String,Object> map,String key,String dflt)
 {
    Object ov = map.get(key);
@@ -103,6 +129,11 @@ default String getSavedString(Map<String,Object> map,String key,String dflt)
 
    return ov.toString();
 }
+
+
+/**
+ *      Return a long from JSON represented as a Map
+ **/
 
 default long getSavedLong(Map<String,Object> map,String key,Number v)
 {
@@ -114,6 +145,10 @@ default long getSavedLong(Map<String,Object> map,String key,Number v)
    return v.longValue();
 }
 
+
+/**
+ *      Return an enumeration constant from JSON represented as a Map.
+ **/
 
 @SuppressWarnings("unchecked")
 default <T extends Enum<T>> T getSavedEnum(Map<String,Object> map,String key,T dflt)
@@ -136,6 +171,10 @@ default <T extends Enum<T>> T getSavedEnum(Map<String,Object> map,String key,T d
 }
 
 
+/**
+ *      Return an int from JSON represented as a Map
+ **/
+
 default int getSavedInt(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
@@ -146,6 +185,11 @@ default int getSavedInt(Map<String,Object> map,String key,Number v)
    return v.intValue();
 }
 
+
+/**
+ *      Return an int from JSON represented as a Map handling 
+ *      various edge cases.
+ **/
 
 default Integer getOptSavedInt(Map<String,Object> map,String key,Number v)
 {
@@ -162,6 +206,10 @@ default Integer getOptSavedInt(Map<String,Object> map,String key,Number v)
 }
 
 
+/**
+ *      Return a double from JSON represented as a Map.
+ **/
+
 default double getSavedDouble(Map<String,Object> map,String key,Number v)
 {
    Object ov = map.get(key);
@@ -171,6 +219,13 @@ default double getSavedDouble(Map<String,Object> map,String key,Number v)
     }
    return v.doubleValue();
 }
+
+
+
+/**
+ *      Return a double from JSON represented as a Map handling missing
+ *      items.
+ **/
 
 default Double getOptSavedDouble(Map<String,Object> map,String key,Number v)
 {
@@ -188,6 +243,12 @@ default Double getOptSavedDouble(Map<String,Object> map,String key,Number v)
    
    return v.doubleValue();
 }
+
+
+
+/**
+ *      Return a boolean from JSON represented as a Map.
+ **/
 
 default Boolean getSavedBool(Map<String,Object> map,String key,Boolean v)
 {
@@ -208,6 +269,11 @@ default Boolean getSavedBool(Map<String,Object> map,String key,Boolean v)
 }
 
 
+
+/**
+ *      Return a Date from JSON represented as a Map.
+ **/
+
 default Date getSavedDate(Map<String,Object> map,String key,Date v)
 {
    Object ov = map.get(key);
@@ -218,6 +284,10 @@ default Date getSavedDate(Map<String,Object> map,String key,Date v)
 }
 
 
+/**
+ *      Return an arbitrary object from JSON represented as a Map.
+ **/
+
 default Object getSavedValue(Map<String,Object> map,String key,Object dflt)
 {
    Object ov = map.get(key);
@@ -225,6 +295,10 @@ default Object getSavedValue(Map<String,Object> map,String key,Object dflt)
    return ov;
 }
 
+
+/**
+ *      Return a Map (JSON internal representaion) from JSON represented as a Map.
+ **/
 
 @SuppressWarnings("unchecked")
 default Map<String,Object> getSavedJson(Map<String,Object> map,String key,Map<String,Object> dflt)
@@ -241,6 +315,11 @@ default Map<String,Object> getSavedJson(Map<String,Object> map,String key,Map<St
    return dflt;
 }
 
+
+/**
+ *      Return a MAP from either a Map or from a JSON object
+ **/
+
 @SuppressWarnings("unchecked")
 default Map<String,Object> getSavedObject(Object ov,Map<String,Object> dflt)
 {
@@ -256,6 +335,9 @@ default Map<String,Object> getSavedObject(Object ov,Map<String,Object> dflt)
 }
 
 
+/**
+ *      Return a List from either a List or a JSON array.
+ **/
 
 default List<?> getSavedList(Map<String,Object> map,String key,List<?> dflt)
 {
@@ -274,6 +356,9 @@ default List<?> getSavedList(Map<String,Object> map,String key,List<?> dflt)
 }
 
 
+/**
+ *      Return a Set of strings from JSON represented as a Map.
+ **/ 
 default Set<String> getSavedStringSet(CatreStore cs,Map<String,Object> map,String key,Set<String> dflt)
 {
    List<?> data = getSavedList(map,key,null);
@@ -285,6 +370,10 @@ default Set<String> getSavedStringSet(CatreStore cs,Map<String,Object> map,Strin
 
 
 
+
+/**
+ *      Return a List of strings from JSON represented as a Map.
+ **/ 
 
 default List<String> getSavedStringList(Map<String,Object> map,String key,List<String> dflt)
 {
@@ -303,6 +392,10 @@ default List<String> getSavedStringList(Map<String,Object> map,String key,List<S
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Return a savable object from its data store representation
+ **/ 
+
 @SuppressWarnings("unchecked")
 default <T extends CatreSavable> T getSavedObject(CatreStore cs,Map<String,Object> map,String id,T dflt)
 {
@@ -313,6 +406,11 @@ default <T extends CatreSavable> T getSavedObject(CatreStore cs,Map<String,Objec
 
    return (T) cs.loadObject(key);
 }
+
+
+/**
+ *      Return a list of savable objects from their data store representation.
+ **/
 
 @SuppressWarnings("unchecked")
 default <T extends CatreSavable> List<T> getSavedObjectList(CatreStore cs,
@@ -331,6 +429,10 @@ default <T extends CatreSavable> List<T> getSavedObjectList(CatreStore cs,
 }
 
 
+/**
+ *      Return a Map representing a savable object.
+ **/ 
+
 default Map<String,Object> getSavedSubobject(CatreSubSavable e)
 {
    if (e == null) return null;
@@ -348,6 +450,10 @@ default Map<String,Object> getSavedSubobject(CatreSubSavable e)
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Load a savable object from JSON represented as a Map.
+ **/
+
 default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String,Object> map,
       String id,Creator<T> c,T dflt)
 {
@@ -355,6 +461,9 @@ default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String
    return createSubObject(cs,obj,c,dflt);
 }
 
+/**
+ *      Load a savable object from JSON represented as a Map.
+ **/
 
 default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String,Object> map,
       String id,Finder<T> c,T dflt)
@@ -364,6 +473,10 @@ default <T extends CatreSubSavable> T getSavedSubobject(CatreStore cs,Map<String
    return c.find(uid);
 }
 
+
+/**
+ *      Load a List of savable objects from JSON represented as a Map.
+ **/
 
 default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
       Map<String,Object> map,String key,Creator<T> c,List<T> dflt)
@@ -381,6 +494,9 @@ default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
 }
 
 
+/**
+ *      Load a List of savable objects from JSON represented as a Map.
+ **/
 
 default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
       Map<String,Object> map,String key,Finder<T> c,List<T> dflt)
@@ -396,6 +512,10 @@ default <T extends CatreSubSavable> List<T> getSavedSubobjectList(CatreStore cs,
    return rslt;
 }
 
+
+/**
+ *      Load a Set of savable objects from JSON represented as a Map.
+ **/
 
 default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
       Map<String,Object> map,String key,Creator<T> c,Set<T> dflt)
@@ -413,6 +533,9 @@ default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
 }
 
 
+/**
+ *      Load a Set of savable objects from JSON represented as a Map.
+ **/
 
 default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
       Map<String,Object> map,String key,Finder<T> c,Set<T> dflt)
@@ -434,6 +557,10 @@ default <T extends CatreSubSavable> Set<T> getSavedSubobjectSet(CatreStore cs,
 /*	Create a subobject from scratch 					*/
 /*										*/
 /********************************************************************************/
+
+/**
+ *      Create saveable object from its stored representation, either JSON or a Map
+ **/
 
 @SuppressWarnings("unchecked")
 private static <T extends CatreSubSavable> T createSubObject(CatreStore cs,Object data,Creator<T> creator,T dflt)
@@ -467,12 +594,20 @@ private static <T extends CatreSubSavable> T createSubObject(CatreStore cs,Objec
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Interface for creating a saveable object
+ **/ 
+
 interface Creator<T extends CatreSubSavable> {
 
    T create(CatreStore cs,Map<String,Object> map);
 
 }      // end of subinterface Creator
 
+
+/**
+ *      Interface for looking up a savable object from its ID
+ **/
 
 interface Finder<T extends CatreSubSavable> {
 
@@ -489,6 +624,10 @@ interface Finder<T extends CatreSubSavable> {
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Create a JSON object from a set of Key-Value pairs.
+ **/
+
 default JSONObject buildJson(Object... val)
 {
    JSONObject rslt = new JSONObject();
@@ -503,6 +642,11 @@ default JSONObject buildJson(Object... val)
 
    return rslt;
 }
+
+
+/**
+ *      Create a JSONArray from a list of values
+ **/
 
 default JSONArray buildJsonArray(Object... val)
 {

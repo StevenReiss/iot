@@ -39,6 +39,12 @@ package edu.brown.cs.catre.catre;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ *      Abstract representation of a device (sensor or output or both) within Catre.  Devices
+ *      have a set of parameters which they set as a sensor.  They also have a set of 
+ *      transactions which represent the actions they can perform.  
+ **/
+
 public interface CatreDevice extends CatreDescribable, CatreIdentifiable, CatreSubSavable 
 {
 
@@ -178,14 +184,38 @@ boolean isDependentOn(CatreDevice device);
 CatreBridge getBridge();
 
 
+/**
+ *      Return a unique id for this device
+ **/
+
 String getDeviceId();
 
 
+/**
+ *      Check if the device is valid, forcing a behavioral check if needed.
+ **/
+
 boolean validateDevice();
+
+
+/**
+ *      Create a new transition for this device from the JSON describing it.
+ **/
 
 CatreTransition createTransition(CatreStore cs,Map<String,Object> map);
 
+
+/**
+ *      Mark the device as either enabled or disabled.
+ **/
+
 void setEnabled(boolean fg);
+
+
+/**
+ *      Take a new description of the device and update any parameters or values
+ *      that have changed.
+ **/
 
 boolean update(CatreDevice newdev);
 
@@ -194,6 +224,7 @@ boolean update(CatreDevice newdev);
  **/
 
 void startDevice();
+
 
 }       // end of interface CatreDevice
 

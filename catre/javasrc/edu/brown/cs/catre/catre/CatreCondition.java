@@ -87,27 +87,41 @@ void addConditionHandler(CatreConditionListener hdlr);
 void removeConditionHandler(CatreConditionListener hdlr);
 
 
-
-
-
-
-
-
-
-
-
-
-
 /**
  *	Check if the condition is a trigger or	not
  **/
 
 boolean isTrigger();
 
+
+
+/**
+ *      Check if the condition is currently valid (e.g. if all devices for
+ *      all parameters used are on-line
+ **/
+
 boolean isValid();
 
+
+/**
+ *      Check if the condition is shared.  Shared conditions can be used in 
+ *      multiple rules.
+ **/
+
 boolean isShared();
+
+
+/**
+ *      Set the current condition to be a shared condition so it can be reused
+ *      in another rule.
+ **/
+
 void noteIsShared();
+
+
+/**
+ *      Return the universe associated with this conditions
+ **/
 
 CatreUniverse getUniverse();
 
@@ -118,15 +132,12 @@ CatreUniverse getUniverse();
 
 CatreCondition cloneCondition();
 
+
 /**
  *      Ensure the condition is active
  **/
 
 void activate();
-
-
-
-
 
 
 

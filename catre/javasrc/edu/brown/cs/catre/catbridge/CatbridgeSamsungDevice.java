@@ -92,8 +92,11 @@ CatbridgeSamsungDevice(CatbridgeBase bridge,CatreStore cs,Map<String,Object> map
 {
    super(bridge.getUniverse(),bridge);
    
-   JSONObject predev = new JSONObject(map);
-   JSONObject dev = fixupSamsungDevice(predev);
+   JSONObject dev = new JSONObject(map);
+   
+   // the device cleanup is now done in CEDES
+// JSONObject predev = new JSONObject(map);
+// JSONObject dev = fixupSamsungDevice(predev);
    
    fromJson(cs,dev.toMap());
 }
@@ -142,6 +145,8 @@ private CatbridgeSamsungDevice()
 /********************************************************************************/
 /*                                                                              */
 /*      Fixup samsung device based on presentation                              */
+/*                                                                              */
+/*      Note that this is now done inside CEDES and can be removed from here    */
 /*                                                                              */
 /********************************************************************************/
 

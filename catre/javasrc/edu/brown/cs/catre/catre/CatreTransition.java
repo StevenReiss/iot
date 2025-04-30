@@ -75,14 +75,18 @@ CatreParameterSet getDefaultParameters();
 
 
 
+
+
 /**
- *      Indicate whether this transition is a trigger or a more permanent setting
+ *      Return the device associated with this transition
  **/
 
-CatreTransitionType getTransitionType();
-
-
 CatreDevice getDevice();
+
+
+/**
+ *      Return the universe associated with this transition
+ **/
 
 CatreUniverse getUniverse();
 

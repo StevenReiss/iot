@@ -188,13 +188,10 @@ protected void registerBridge()
    CatreLog.logD("CATBRIDGE","Register bridge " + getBridgeId());
    
    Map<String,Object> authdata = getAuthData();
-   Map<String,Object> data = new HashMap<>();
-   data.put("bridge",getName());
-   data.put("bridgeid",getBridgeId());
-   data.put("authdata",new JSONObject(authdata));
 
    if (useCedes()) {
-      JSONObject rslt = sendCedesMessage("catre/addBridge",data);
+      JSONObject rslt = sendCedesMessage("catre/addBridge",
+            "authdata",new JSONObject(authdata));
       CatreLog.logD("CATBRIDGE","Registration result: " + rslt);
     }
 }
@@ -207,14 +204,23 @@ protected Map<String,Object> getAuthData()
 
 
 
-protected JSONObject sendCedesMessage(String cmd,Map<String,Object> data)
+protected JSONObject sendCedesMessage(String cmd,Object... data)
 {
+   Map<String,Object> map = new HashMap<>();
+   map.put("bridge",getName());
+   map.put("bridgetId",getBridgeId());
+   for (int i = 0; i < data.length-1; i += 2) {
+      String key = data[i].toString();
+      Object val = data[i+1];
+      map.put(key,val);
+    }
+   
    if (!cmd.contains("/")) {
       String nm = getName().toLowerCase();
       cmd = nm + "/" + cmd;
     }
-
-   return CatbridgeFactory.sendCedesMessage(cmd,data,this);
+   
+   return CatbridgeFactory.sendCedesMessage(cmd,map,this);
 }
 
 
@@ -248,12 +254,7 @@ protected JSONObject sendCedesMessage(String cmd,Map<String,Object> data)
    CatreLog.logD("CATBRIDGE","Update sensor for " + getName() + " " + use.toString(2));
    if (use.isEmpty()) return;
    
-   Map<String,Object> data = new HashMap<>();
-   data.put("bridge",getName());
-   data.put("bridgeId",getBridgeId());
-   data.put("active",use);
-   data.put("uid",getUserId());
-   sendCedesMessage("catre/activesensors",data);
+   sendCedesMessage("catre/activesensors","active",use,"uid",getUserId());
 }
 
 
@@ -291,14 +292,6 @@ protected void handleDevicesFound(JSONArray devs)
       CatreLog.logD("CATBRIDGE","WORK ON DEVICE " + devobj.toString(2));
       CatreDevice newcd = createDevice(cs,devmap);
       if (newcd != null && !newcd.validateDevice()) newcd = null;
-      
-//    String uid = devobj.getString("UID");
-//    CatreDevice cd = findDevice(uid); 	// use existing device if there
-//    if (cd == null) {
-// 	 cd = createDevice(cs,devmap);  
-// 	 if (cd != null && !cd.validateDevice()) 
-//          cd = null;
-//     }
       
       if (newcd != null) {
 	 CatreLog.logD("CATBRIDGE","ADD DEVICE " + newcd.getDeviceId());
@@ -341,14 +334,9 @@ protected boolean useCedes()                    { return true; }
 
 @Override public JSONObject updateParameterValues(CatreDevice dev) 
 {
-   Map<String,Object> data = new HashMap<>();
-   
-   data.put("deviceid",dev.getDeviceId());
-   data.put("uid",getUserId());
-   data.put("bridge",getName());
-   data.put("bridgeid",getBridgeId());
-   
-   JSONObject rslt = sendCedesMessage("catre/parameter",data);
+   JSONObject rslt = sendCedesMessage("catre/parameter",
+         "deviceid",dev.getDeviceId(),
+         "uid",getUserId());
    
    return rslt;
 }
@@ -427,16 +415,11 @@ private class EventHandler implements Runnable {
 @Override public void applyTransition(CatreDevice dev,CatreTransition t,Map<String,Object> values)
 	throws CatreActionException
 {
-   Map<String,Object> data = new HashMap<>();
-
-   data.put("deviceid",dev.getDeviceId());
-   data.put("uid",getUserId());
-   data.put("command",t.getName());
-   data.put("values",values);
-   data.put("bridge",getName());
-   data.put("bridgeid",getBridgeId());
-
-   sendCedesMessage("catre/command",data);
+   sendCedesMessage("catre/command",
+         "deviceid",dev.getDeviceId(),
+         "uid",getUserId(),
+         "command",t.getName(),
+         "values",values);
 }
 
 

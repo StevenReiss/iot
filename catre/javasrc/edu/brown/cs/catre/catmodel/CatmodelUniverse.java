@@ -521,14 +521,7 @@ private void setupBridges()
 }
 
 
-@Override public CatreParameterSet createParameterSet(CatreStore cs,Map<String,Object> map)
-{
-   CatmodelParameterSet ps = new CatmodelParameterSet(this);
 
-   ps.fromJson(cs,map);
-
-   return ps;
-}
 
 
 @Override public CatreParameterSet createSavedParameterSet(CatreStore cs,Map<String,Object> map)

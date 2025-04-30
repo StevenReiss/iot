@@ -48,12 +48,10 @@ class SherpaConditionWidget extends StatefulWidget {
   final CatreRule _forRule;
   final CatreCondition _forCondition;
 
-  const SherpaConditionWidget(this._forRule, this._forCondition,
-      {super.key});
+  const SherpaConditionWidget(this._forRule, this._forCondition, {super.key});
 
   @override
-  State<SherpaConditionWidget> createState() =>
-      _SherpaConditionWidgetState();
+  State<SherpaConditionWidget> createState() => _SherpaConditionWidgetState();
 }
 
 class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
@@ -205,8 +203,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       CatreCondition? ccnm = shared[cnm];
       if (ccnm == null && !cnm.startsWith("Undefined")) {
         w0 = widgets.submitButton("Share", _shareCondition);
-      } else if (ccnm != _forCondition &&
-          !cnm.startsWith("Undefined")) {
+      } else if (ccnm != _forCondition && !cnm.startsWith("Undefined")) {
         w0 = widgets.submitButton("Update Shared", _updateShared);
       }
     }
@@ -349,8 +346,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     List<Widget> rslt = [];
     DateTime starttime = _forCondition.getTimeSlot().getFromDateTime();
     DateTime? endtime = _forCondition.getTimeSlot().getToDateTime();
-    int repeat =
-        _forCondition.getTimeSlot().getRepeatInterval().toInt();
+    int repeat = _forCondition.getTimeSlot().getRepeatInterval().toInt();
 
     rslt.add(widgets.fieldSeparator());
 
@@ -526,8 +522,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     if (sensors.isEmpty) return rslt;
 
     _SensorParameter sp = sensors.firstWhere(
-      (_SensorParameter sp) =>
-          sp.parameter == _forCondition.getParameter(),
+      (_SensorParameter sp) => sp.parameter == _forCondition.getParameter(),
       orElse: () => sensors[0],
     );
     Widget w1 = widgets.dropDownWidget(
@@ -945,8 +940,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
   void _setResetTime(TimeOfDay td) {
     setState(() {
       _forCondition.setOffAfter(0);
-      _forCondition
-          .setResetTime((td.hour * 60 + td.minute * 60) * 60 * 1000);
+      _forCondition.setResetTime((td.hour * 60 + td.minute * 60) * 60 * 1000);
     });
   }
 
@@ -1193,6 +1187,7 @@ class _SensorParameter {
 
   void _dummySet(dynamic) {}
 }       // end of class _SensorParameter
+
 
 
 

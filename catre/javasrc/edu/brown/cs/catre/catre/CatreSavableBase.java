@@ -39,6 +39,11 @@ package edu.brown.cs.catre.catre;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *      Basic implementation of a CatreSaveable object.  This provides
+ *      a default implementation of the various needed methods.
+ **/
+
 public abstract class CatreSavableBase implements CatreSavable
 {
  
@@ -87,18 +92,40 @@ protected CatreSavableBase(CatreStore store,Map<String,Object> map)
 /*										*/
 /********************************************************************************/
 
+/**
+ *      Return the unique ID
+ **/
+
 @Override public String getDataUID()			{ return data_uid; }
+
+
+/**
+ *      Indicate whether the object is currently in the data store.
+ **/
 
 public boolean isStored()				{ return is_stored; }
 
+
+/**
+ *      Set the flag noting the object is now in the data store.
+ **/
+
 public void setStored() 				{ is_stored = true; }
 
+
+/**
+ *      Try to set the unique ID.  This will normally fail
+ **/
 
 public void setDataUID(String uid) throws CatreException
 {
    throw new CatreException("Can't set uid");
 }
 
+/**
+ *      Return the Map representing the JSON form of this object.  This is usually
+ *      called from a subclass before adding fields that are specific to the subclass.
+ **/
 
 @Override public Map<String,Object> toJson()
 {
@@ -106,6 +133,13 @@ public void setDataUID(String uid) throws CatreException
    obj.put("_id",data_uid);
    return obj;
 }
+
+
+/**
+ *      Set up fields based on the Map representation of the JSON form of the 
+ *      object.  This is usally called from a subclass as part of setting up the
+ *      actual object from the Map representation.
+ **/
 
 @Override public void fromJson(CatreStore cs,Map<String,Object> map)
 {
