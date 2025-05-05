@@ -74,7 +74,7 @@ private volatile RuleRunner active_rule;
 private long		creation_time;
 private boolean         force_trigger;
 private Set<CatreCondition> use_conditions;
-
+private boolean         is_disabled;
 
 
 
@@ -97,6 +97,7 @@ CatprogRule(CatreProgram pgm,CatreStore cs,Map<String,Object> map)
    force_trigger = false;
    device_id = null;
    use_conditions = null;
+   is_disabled = false;
 
    fromJson(cs,map);
    
@@ -149,6 +150,8 @@ private boolean validateRule()
 
 @Override public boolean isTrigger()                    { return force_trigger; }
 
+@Override public boolean isDisabled()                   { return is_disabled; } 
+
 @Override public CatreDevice getTargetDevice()         
 {
    return for_program.getUniverse().findDevice(device_id);
@@ -193,6 +196,8 @@ Set<CatreCondition> getUsedConditions()
 	throws CatreConditionException, CatreActionException
 {
    CatreLog.logD("CATPROG","Start to apply rule " + getName());
+   
+   if (is_disabled) return false;
    
    CatrePropertySet ps = null;
    for (CatreCondition cc : for_conditions) {
@@ -296,8 +301,6 @@ private class RuleRunner implements Runnable {
 }
 
 
-
-
 /********************************************************************************/
 /*										*/
 /*	Output methods								*/
@@ -314,6 +317,7 @@ private class RuleRunner implements Runnable {
    rslt.put("CONDITIONS",getSubObjectArrayToSave(for_conditions));
    rslt.put("ACTIONS",getSubObjectArrayToSave(for_actions));
    rslt.put("DEVICEID",device_id);
+   rslt.put("DISABLED",is_disabled);
 
    return rslt;
 }
@@ -330,6 +334,7 @@ private class RuleRunner implements Runnable {
    for_actions = getSavedSubobjectList(cs,map,"ACTIONS",
 	 for_program::createAction,for_actions);
    device_id = getSavedString(map,"DEVICEID",device_id);
+   is_disabled = getSavedBool(map,"DISABLED",false);
 
    creation_time = getSavedLong(map,"CREATED",System.currentTimeMillis());
    

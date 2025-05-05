@@ -168,6 +168,7 @@ class CatreRule extends CatreData {
           "CONDITIONS": [],
           "ACTIONS": [],
           "TRIGGER": trigger,
+          "DISABLED": false,
         }) {
     _conditions = [CatreCondition.empty(cu, trigger)];
     _forceTrigger = trigger;
@@ -196,6 +197,7 @@ class CatreRule extends CatreData {
   num getPriority() => getNum("PRIORITY");
   bool isTrigger() => _forceTrigger;
   CatreDevice getDevice() => _forDevice;
+  bool isDisabled() => getBool("DISABLED");
 
   List<CatreCondition> getConditions() => _conditions;
 
@@ -235,6 +237,10 @@ class CatreRule extends CatreData {
     setField("PRIORITY", p);
   }
 
+  void setDisabled(bool fg) {
+    setField("DISABLED", fg);
+  }
+
   List<CatreAction> getActions() => _actions;
 
   void setActions(List<CatreAction> acts) {
@@ -255,7 +261,7 @@ class CatreRule extends CatreData {
   }
 
   Future<void> addOrEditRule() async {
-    String? rid = optString("RULEID");
+    String? rid = optString("_id");
     Map<String, dynamic>? data;
     if (rid == null) {
       data = await issueCommand("/rule/add", "RULE");

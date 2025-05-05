@@ -84,7 +84,7 @@ public static void main(String... args)
 /********************************************************************************/
 
 enum ZoomOption { ON_ZOOM, NOT_ON_ZOOM };
-enum WorkOption { WORKING, IDLE, AWAY };
+enum WorkOption { WORKING, IDLE, AWAY, OFF };
 enum PhoneOption { PRESENT, NOT_PRESENT };
 
 private long    last_idle;
@@ -376,7 +376,7 @@ private boolean checkCommand(String rslt,String... cmd)
          "TYPE","ENUM",
          "ISSENSOR",true,
          "ISTARGET",false,
-         "NOPING",WorkOption.IDLE,
+         "NOPING",WorkOption.OFF,
          "VALUES",List.of(WorkOption.values()));
    
    JSONObject param1 = buildJson("NAME","ZoomStatus",
@@ -385,7 +385,8 @@ private boolean checkCommand(String rslt,String... cmd)
          "ISTARGET",false,
          "NOPING",ZoomOption.NOT_ON_ZOOM,
          "VALUES",List.of(ZoomOption.values()));
-   JSONObject param2 = buildJson("NAME","Presence",
+   
+   JSONObject param2 = buildJson("NAME","Presence-Phone",
          "TYPE","ENUM",
          "ISSENSOR",true,
          "ISTARGET",false,

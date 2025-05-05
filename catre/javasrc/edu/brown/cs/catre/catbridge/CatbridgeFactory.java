@@ -49,6 +49,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -331,7 +332,8 @@ private class ClientThread extends Thread {
       try {
          String args = IvyFile.loadFile(client_socket.getInputStream());
          JSONObject argobj = new JSONObject(args);
-         CatreLog.logD("CATBRIDGE","BRIDGE COMMAND: " + argobj.toString(2));
+         CatreLog.logD("CATBRIDGE","BRIDGE COMMAND at " + 
+               (new Date()).toString() + ": " + argobj.toString(2));
          
          result.put("status","OK");
          String cmd = argobj.getString("command");

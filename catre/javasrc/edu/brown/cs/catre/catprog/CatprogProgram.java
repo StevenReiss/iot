@@ -646,6 +646,7 @@ private final class RuleConditionHandler implements CatreConditionListener {
    CatreLog.logI("CATPROG","CHECK RULES at " + new Date()); 
 
    for (CatreRule r : rules) {
+      if (r.isDisabled()) continue;
       CatreDevice rent = r.getTargetDevice();
       if (entities.contains(rent)) continue;
       if (relevant != null && !relevant.contains(rent)) {

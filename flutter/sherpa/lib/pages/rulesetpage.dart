@@ -117,6 +117,11 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
         () => _removeRule(cr),
         "Remove this rule from your program",
       ),
+      widgets.MenuAction(
+        (cr.isDisabled() ? "Enable Rule" : "Disable Rule"),
+        () => _toggleRuleDisabled(cr),
+        "Change the disabled status of this rule",
+      )
     ];
     if (_forDevice != null) {
       acts.addAll([
@@ -367,6 +372,12 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     setState(() {
       _forUniverse.getProgram().reorderRules();
     });
+  }
+
+  void _toggleRuleDisabled(CatreRule cr) async {
+    cr.setDisabled(!cr.isDisabled());
+    await cr.addOrEditRule();
+    setState(() {});
   }
 
   num _findRulePriority(num p, bool below, PriorityLevel lvl) {

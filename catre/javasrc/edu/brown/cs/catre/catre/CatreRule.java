@@ -112,7 +112,16 @@ boolean isExplicit();
 /**
  *      Check if this is a trigger rule
  **/
+
 boolean isTrigger();
+
+
+/**
+ *      Check if a rule is currently disabled
+ **/
+
+boolean isDisabled();
+
 
 /**
  *	Apply a rule without waiting for the action to complete.  This
