@@ -58,6 +58,7 @@ class _AldsLoginPageState extends State<AldsLoginPage> {
   late storage.AuthData authdata;
   TextEditingController idcontrol = TextEditingController();
   TextEditingController pwdcontrol = TextEditingController();
+  TextEditingController namecontrol = TextEditingController();
 
   _AldsLoginPageState();
 
@@ -66,6 +67,7 @@ class _AldsLoginPageState extends State<AldsLoginPage> {
     authdata = storage.getAuthData();
     idcontrol.text = authdata.userId;
     pwdcontrol.text = authdata.password;
+    namecontrol.text = authdata.aldsName;
     super.initState();
   }
 
@@ -76,6 +78,13 @@ class _AldsLoginPageState extends State<AldsLoginPage> {
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
+          widgets.fieldSeparator(),
+          widgets.textField(
+            label: "Name",
+            hint: "Name for this ALDS instance",
+            tooltip: "Enter a device name for this device",
+            controller: namecontrol,
+          ),
           widgets.fieldSeparator(),
           widgets.textField(
             hint: "Generic User Id",
@@ -114,7 +123,11 @@ class _AldsLoginPageState extends State<AldsLoginPage> {
 
   void _saveCreds() async {
     BuildContext dcontext = context;
-    await storage.setAuthData(idcontrol.text, pwdcontrol.text);
+    await storage.setAuthData(
+      idcontrol.text,
+      pwdcontrol.text,
+      namecontrol.text,
+    );
     if (dcontext.mounted) {
       widgets.gotoDirect(dcontext, const AldsSelectWidget());
     }

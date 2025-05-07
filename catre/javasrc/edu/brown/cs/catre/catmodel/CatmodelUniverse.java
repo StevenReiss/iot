@@ -710,8 +710,6 @@ private CatreDevice createAnyDevice(CatreStore cs,Map<String,Object> map)
    if (is_started) return;
    is_started = true;
 
-   //TODO: check program to ensure it remains valid
-
    for (CatreDevice cd : all_devices) {
       cd.startDevice();
     }

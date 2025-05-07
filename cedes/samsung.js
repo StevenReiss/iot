@@ -181,7 +181,16 @@ async function processCommand(user, dev, trans, command, values) {
          JSON.stringify(cmdarg,null,2));
 
    let client = user.client;
-   let resp = await client.devices.executeCommand(dev.UID, cmdarg);
+   let resp = null;
+   for (let i = 0; i < 3; ++i) {
+      try {
+         resp = await client.devices.executeCommand(dev.UID, cmdarg);
+         break;
+       }
+      catch (e) {
+         console.log("SAMSUNG: Problem with command",e);
+       }
+    }
 
    console.log("SAMSUNG EXECUTE COMMAND", dev, trans, cmdarg, resp);
    

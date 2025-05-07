@@ -45,6 +45,9 @@ Future<String?> showLoginDialog(
   TextEditingController pwdcontrol = TextEditingController(
     text: authdata.password,
   );
+  TextEditingController namecontrol = TextEditingController(
+    text: authdata.aldsName,
+  );
 
   String? rslt = await showDialog(
     context: context,
@@ -54,11 +57,16 @@ Future<String?> showLoginDialog(
         authdata,
         idcontrol,
         pwdcontrol,
+        namecontrol,
       );
     },
   );
   if (rslt == 'OK') {
-    await storage.setAuthData(idcontrol.text, pwdcontrol.text);
+    await storage.setAuthData(
+      idcontrol.text,
+      pwdcontrol.text,
+      namecontrol.text,
+    );
   }
   return rslt;
 }
@@ -71,6 +79,7 @@ class _AldsLoginDialog extends AlertDialog {
     storage.AuthData authdata,
     TextEditingController idcontrol,
     TextEditingController pwdcontrol,
+    TextEditingController namecontrol,
   ) : super(
           title: const Text("Set Sherpa Credentials"),
           content: Padding(
@@ -81,6 +90,13 @@ class _AldsLoginDialog extends AlertDialog {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  widgets.textField(
+                    label: "Name",
+                    hint: "Name for this ALDS instance",
+                    tooltip: "Enter a device name for this device",
+                    controller: namecontrol,
+                  ),
+                  widgets.fieldSeparator(),
                   widgets.textField(
                     hint: "Generic User Id",
                     controller: idcontrol,

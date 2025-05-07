@@ -534,11 +534,6 @@ private String handleEnableDevice(HttpExchange e,CatserveSessionImpl cs)
       return BowerRouter.errorResponse(e,cs,400,"Device not found");
     }
    
-   String flag = BowerRouter.getParameter(e, "ENABLE");
-   if (flag == null || flag == ""){
-      return BowerRouter.errorResponse(e,cs,400,"Enable/disable not given");
-    }
-   
    Boolean fg = BowerRouter.getBooleanParameter(e,"ENABLE",null);
    if (fg == null) {
       return BowerRouter.errorResponse(e,cs,400,"Bad enable value");

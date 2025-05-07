@@ -139,9 +139,14 @@ class Cedes {
 
   Future<void> _sendDeviceInfo() async {
     storage.AuthData ad = storage.getAuthData();
+    if (!ad.userSet ||
+        storage.getDeviceId() == '*' ||
+        storage.getDeviceId().isEmpty) {
+      return;
+    }
     Map<String, dynamic> dev = {};
     dev["UID"] = storage.getDeviceId();
-    dev["NAME"] = "ALDS_${ad.userId}";
+    dev["NAME"] = ad.aldsName;
     dev["LABEL"] = "ALDS locator for ${ad.userId}";
     dev["BRIDGE"] = "generic";
     Map<String, dynamic> p0 = {

@@ -332,8 +332,6 @@ private class ClientThread extends Thread {
       try {
          String args = IvyFile.loadFile(client_socket.getInputStream());
          JSONObject argobj = new JSONObject(args);
-         CatreLog.logD("CATBRIDGE","BRIDGE COMMAND at " + 
-               (new Date()).toString() + ": " + argobj.toString(2));
          
          result.put("status","OK");
          String cmd = argobj.getString("command");
@@ -346,6 +344,9 @@ private class ClientThread extends Thread {
          if (cmd.startsWith("OAUTH_")) {
             oauth = catre_control.getDatabase().getOauth();
           }
+         
+         CatreLog.logD("CATBRIDGE","BRIDGE COMMAND " + cmd + " " + bridge + " at " +
+               (new Date()).toString() + ":\n" + argobj.toString(2));
          
          switch (cmd) {
             case "INITIALIZE" :

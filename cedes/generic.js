@@ -50,7 +50,7 @@ const catre = require("./catre");
 let users = { };
 let tokens = { };
 let queues = { };
-"de"
+
 
 /********************************************************************************/
 /*                                                                              */
@@ -103,7 +103,7 @@ function authenticate(req,res,next)
 
 function addBridge(authdata,bid)
 {
-   console.log('GENERIC ADD BRIDGE',authdata.uid,authdata.pat);
+   console.log('GENERIC ADD BRIDGE',authdata.uid,authdata.pat,bid);
 
    let uid = authdata.uid;
    let pat = authdata.pat;

@@ -37,20 +37,22 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'globals.dart' as globals;
 import 'util.dart' as util;
 
-AuthData _authData = AuthData('*', '*', false);
+AuthData _authData = AuthData('*', '*', false, 'MyAlds');
 List<String> _locations = globals.defaultLocations;
 String _deviceId = "*";
 
 class AuthData {
   final String _userId;
   final String _userPass;
+  final String _aldsName;
   final bool _userSet;
 
-  AuthData(this._userId, this._userPass, this._userSet);
+  AuthData(this._userId, this._userPass, this._userSet, this._aldsName);
 
   String get userId => _userId;
   String get password => _userPass;
   bool get userSet => _userSet;
+  String get aldsName => _aldsName;
 } // end of inner class AuthData
 
 Future<void> setupStorage() async {
@@ -64,25 +66,29 @@ Future<void> setupStorage() async {
   );
   String uid = await appbox.get(
     "userid",
-    defaultValue: util.randomString(12),
+    defaultValue: "*",
   );
   String upa = await appbox.get(
     "userpass",
-    defaultValue: util.randomString(16),
+    defaultValue: "*",
   );
   bool uset = await appbox.get(
     "userset",
     defaultValue: false,
   );
+  String anm = await appbox.get(
+    "aldsname",
+    defaultValue: "MyAlds",
+  );
 
-  _authData = AuthData(uid, upa, uset);
+  _authData = AuthData(uid, upa, uset, anm);
   _locations = appbox.get(
     "locations",
     defaultValue: globals.defaultLocations,
   );
   _deviceId = appbox.get(
     "deviceid",
-    defaultValue: "ALDS_${util.randomString(20)}",
+    defaultValue: "*",
   );
   if (!setup) {
     await saveData(appbox);
@@ -105,8 +111,14 @@ Future<void> saveData([
     await appbox.put('userpass', _authData.password);
   }
   await appbox.put('userset', _authData.userSet);
+  await appbox.put('aldsname', _authData.aldsName);
   await appbox.put('locations', _locations);
-  await appbox.put('deviceid', _deviceId);
+
+  if (_deviceId == '*') {
+    await appbox.delete('deviceid');
+  } else {
+    await appbox.put('deviceid', _deviceId);
+  }
 }
 
 AuthData getAuthData() {
@@ -135,8 +147,23 @@ Future<String?> readLocationData() async {
   return await appbox.get('locdata');
 }
 
-Future<void> setAuthData(String uid, String pwd) async {
-  _authData = AuthData(uid, pwd, true);
+Future<void> setAuthData(
+  String uid,
+  String pwd,
+  String authname,
+) async {
+  _authData = AuthData(uid, pwd, true, authname);
+  if (_deviceId == '*' &&
+      authname != '*' &&
+      uid != '*' &&
+      pwd != '*' &&
+      authname.isNotEmpty &&
+      uid.isNotEmpty &&
+      pwd.isNotEmpty) {
+    String s = util.hasher(authname);
+    s = s.substring(0, 16);
+    _deviceId = "ALDS_$s";
+  }
   await saveData();
 }
 
