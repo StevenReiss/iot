@@ -208,7 +208,7 @@ protected JSONObject sendCedesMessage(String cmd,Object... data)
 {
    Map<String,Object> map = new HashMap<>();
    map.put("bridge",getName());
-   map.put("bridge`Id",getBridgeId());
+   map.put("bridgeid",getBridgeId());
    for (int i = 0; i < data.length-1; i += 2) {
       String key = data[i].toString();
       Object val = data[i+1];
