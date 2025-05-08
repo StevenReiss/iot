@@ -113,6 +113,13 @@ class CatreUniverse extends CatreData {
     return null;
   }
 
+  void addDevice(CatreDevice cd) {
+    _deviceList.add(cd);
+    _devices[cd.getDeviceId()] = cd;
+    String s = cd.getName().toLowerCase();
+    _devices[s] = cd;
+  }
+
   Future<bool> removeDevice(CatreDevice? cd) async {
     if (cd == null) return false;
     Map<String, dynamic> rslt = await util.postJson(

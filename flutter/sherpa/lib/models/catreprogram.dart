@@ -31,6 +31,8 @@
  *                                                                               *
  ********************************************************************************/
 
+import 'package:sherpa/widgets.dart' as widgets;
+
 import 'catredata.dart';
 import 'catreuniverse.dart';
 import 'triggertime.dart';
@@ -281,7 +283,13 @@ class CatreRule extends CatreData {
     String desc = "WHEN ";
     for (int i = 0; i < _conditions.length; ++i) {
       desc += _conditions[i].getDescription();
-      if (i < _conditions.length - 1) desc += " AND ";
+      if (i < _conditions.length - 1) {
+        if (desc.length > 20) {
+          desc += " AND\n   ";
+        } else {
+          desc += " AND ";
+        }
+      }
     }
     desc += "\nDO   ";
     for (int i = 0; i < _actions.length; ++i) {
@@ -998,7 +1006,6 @@ class CatreTimeSlot extends CatreData {
     rslt += calDate(_fromDateTime);
     rslt += " - ${calDate(_toDateTime)}";
     rslt += " from ";
-    rslt += calTime(_fromDateTime);
     rslt += " - ${calTime(_toDateTime)}";
     // handle days and repeats
     return rslt;
@@ -1008,7 +1015,9 @@ class CatreTimeSlot extends CatreData {
     dt = dt.toLocal();
     DateTime now = DateTime.now();
     String rslt = "";
-    if (now.year == dt.year) {
+    if (!dt.isBefore(widgets.forEverDate)) {
+      rslt = "Forever";
+    } else if (now.year == dt.year) {
       rslt = DateFormat.Md().format(dt);
     } else {
       rslt = DateFormat.yMd().format(dt);

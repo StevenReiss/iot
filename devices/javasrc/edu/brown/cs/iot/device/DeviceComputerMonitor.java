@@ -607,7 +607,7 @@ private void checkStatus()
    
    long idle = getIdleTime();
    
-   WorkOption presence = null;
+   WorkOption presence = WorkOption.WORKING;
    if (idle >= 0) {
       if (idle < 300) {
          if (last_idle >= 300 || last_idle < 0) {

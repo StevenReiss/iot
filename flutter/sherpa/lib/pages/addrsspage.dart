@@ -32,13 +32,17 @@
  ********************************************************************************/
 
 import 'package:flutter/material.dart';
+import 'package:sherpa/models/catredevice.dart';
+import 'package:sherpa/models/catreuniverse.dart';
 import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class SherpaAddRssPage extends StatefulWidget {
-  const SherpaAddRssPage({super.key});
+  final CatreUniverse _theUniverse;
+
+  const SherpaAddRssPage(this._theUniverse, {super.key});
 
   @override
   State<SherpaAddRssPage> createState() => _SherpaAddRssPageState();
@@ -48,11 +52,13 @@ class _SherpaAddRssPageState extends State<SherpaAddRssPage> {
   final TextEditingController _urlControl = TextEditingController();
   final TextEditingController _nameControl = TextEditingController();
   final TextEditingController _descControl = TextEditingController();
+  late CatreUniverse _theUniverse;
 
   _SherpaAddRssPageState();
 
   @override
   void initState() {
+    _theUniverse = widget._theUniverse;
     super.initState();
   }
 
@@ -152,7 +158,11 @@ class _SherpaAddRssPageState extends State<SherpaAddRssPage> {
     Map<String, dynamic> rslt =
         await util.postJson("/universe/addvirtual", body);
     // might want to check the result
-    if (rslt["STATUS"] != "OK") {}
+    if (rslt["STATUS"] == "OK") {
+      Map<String, dynamic> dev = rslt["DEVICE"];
+      CatreDevice cd = CatreDevice.build(_theUniverse, dev);
+      _theUniverse.addDevice(cd);
+    }
     if (dcontext.mounted) {
       Navigator.pop(dcontext, "OK");
     }

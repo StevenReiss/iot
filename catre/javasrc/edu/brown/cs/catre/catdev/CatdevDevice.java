@@ -38,10 +38,12 @@ package edu.brown.cs.catre.catdev;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONObject;
 
@@ -157,9 +159,11 @@ private void initialize(CatreUniverse uu)
     }
    
    List<CatreParameter> nset = new ArrayList<>(cd.getParameters());
+   Set<CatreParameter> del = new HashSet<>(getParameters());
    for (ListIterator<CatreParameter> it = nset.listIterator(); it.hasNext(); ) {
       CatreParameter cp = it.next();
       CatreParameter oldcp = findParameter(cp.getName());
+      if (oldcp != null) del.remove(oldcp);
       if (oldcp == null) {
          chng = true;
        }
@@ -172,7 +176,7 @@ private void initialize(CatreUniverse uu)
          it.set(oldcp);
        }
     }
-   if (nset.size() != parameter_set.size()) {
+   if (nset.size() != parameter_set.size() || !del.isEmpty()) {
       // reset value of any removed parameters
       chng = true;
     }

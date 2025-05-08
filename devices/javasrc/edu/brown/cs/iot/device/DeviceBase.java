@@ -407,6 +407,8 @@ protected void sendParameterEvent(String param,Object val)
       authenticate();
       if (access_token == null) return;
     }
+   
+   if (val == null) return;
 
    JSONObject evt = buildJson("DEVICE",getUniqueId(),"TYPE","PARAMETER",
 	 "PARAMETER",param,
@@ -512,6 +514,7 @@ protected JSONObject sendToCedes(String nm,JSONObject obj)
 
 protected JSONObject sendToCedes(String nm,String cnts)
 {
+   System.err.println("SEND TO CEDES:" + cnts);
    try {
       String url = BASE_URL + nm;
       URL u = new URI(url).toURL();

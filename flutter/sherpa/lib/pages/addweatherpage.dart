@@ -32,24 +32,31 @@
  ********************************************************************************/
 
 import 'package:flutter/material.dart';
+import 'package:sherpa/models/catredevice.dart';
+import 'package:sherpa/models/catreuniverse.dart';
 import '../widgets.dart' as widgets;
 import '../util.dart' as util;
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class SherpaAddWeatherPage extends StatefulWidget {
-  const SherpaAddWeatherPage({super.key});
+  final CatreUniverse _theUniverse;
+
+  const SherpaAddWeatherPage(this._theUniverse, {super.key});
 
   @override
-  State<SherpaAddWeatherPage> createState() => _SherpaAddWeatherPageState();
+  State<SherpaAddWeatherPage> createState() =>
+      _SherpaAddWeatherPageState();
 }
 
 class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
-  final TextEditingController _locationControl = TextEditingController();
+  final TextEditingController _locationControl =
+      TextEditingController();
   final TextEditingController _nameControl = TextEditingController();
   final TextEditingController _descControl = TextEditingController();
   final TextEditingController _latControl = TextEditingController();
   final TextEditingController _longControl = TextEditingController();
+  late CatreUniverse _theUniverse;
   bool _locChanged = false;
   bool _nameSet = false;
   bool _descSet = false;
@@ -59,6 +66,7 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
 
   @override
   void initState() {
+    _theUniverse = widget._theUniverse;
     super.initState();
   }
 
@@ -66,14 +74,16 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
   Widget build(BuildContext context) {
     Widget w1 = widgets.textField(
       label: "Location",
-      hint: "Enter location (e.g., city state or city country or postal code)",
+      hint:
+          "Enter location (e.g., city state or city country or postal code)",
       controller: _locationControl,
       maxLines: 0,
       enabled: true,
       onChanged: (String s) {
         _locChanged = true;
       },
-      tooltip: "Enter location name.  Either click elsewhere or click the "
+      tooltip:
+          "Enter location name.  Either click elsewhere or click the "
           "Locate button to convert this to latitude and longitude.  If the location "
           "might be ambiguous, check the other fields for correctness. "
           "State postal codes might not work.  Use part of the state name instead",
@@ -242,7 +252,8 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
     return ", $v";
   }
 
-  Map<String, dynamic> _findBestMatch(List<dynamic> items, String? check) {
+  Map<String, dynamic> _findBestMatch(
+      List<dynamic> items, String? check) {
     if (check == null || check.isEmpty || items.length == 1) {
       return items.first;
     }
@@ -308,7 +319,11 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
     Map<String, dynamic> rslt =
         await util.postJson("/universe/addvirtual", body);
     // might want to check the result
-    if (rslt["STATUS"] != "OK") {}
+    if (rslt["STATUS"] == "OK") {
+      Map<String, dynamic> dev = rslt["DEVICE"];
+      CatreDevice cd = CatreDevice.build(_theUniverse, dev);
+      _theUniverse.addDevice(cd);
+    }
     if (dcontext.mounted) {
       Navigator.pop(dcontext, "OK");
     }
@@ -330,4 +345,3 @@ class _SherpaAddWeatherPageState extends State<SherpaAddWeatherPage> {
     return false;
   }
 }
-

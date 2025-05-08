@@ -57,7 +57,8 @@ class SherpaProgramWidget extends StatefulWidget {
   const SherpaProgramWidget(this._theUniverse, {super.key});
 
   @override
-  State<SherpaProgramWidget> createState() => _SherpaProgramWidgetState();
+  State<SherpaProgramWidget> createState() =>
+      _SherpaProgramWidgetState();
 }
 
 class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
@@ -143,6 +144,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
                   widgets.fieldSeparator(),
                   Expanded(
                       child: _createDeviceSelector(
+                    value: _forDevice,
                     tooltip:
                         "Select the device whose rules you with to view or edit",
                   )),
@@ -181,24 +183,27 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
               onChanged: _removeDeviceSelected,
               nullValue: "No Device",
               useAll: true,
+              value: null,
               tooltip:
                   "Select the device you wish to remove from your universe. "
                   "This cannot be undone easily.",
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
-                child: const Text("Remove"),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.pop(context, false);
-                },
-                child: const Text("Cancel"),
-              ),
-            ]),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    child: const Text("Remove"),
+                  ),
+                  SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text("Cancel"),
+                  ),
+                ]),
           ],
         );
       },
@@ -225,6 +230,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     String? nullValue = "All Devices",
     bool useAll = false,
     String tooltip = "",
+    CatreDevice? value,
   }) {
     List<CatreDevice> devs = _theUniverse.getOutputDevices().toList();
     if (useAll) devs = _theUniverse.getDevices();
@@ -293,11 +299,14 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
   }
 
   void _showAddWeatherPage() async {
-    await widgets.gotoThen(context, const SherpaAddWeatherPage());
+    await widgets.gotoThen(
+      context,
+      SherpaAddWeatherPage(_theUniverse),
+    );
   }
 
   void _showAddRssPage() async {
-    await widgets.gotoThen(context, const SherpaAddRssPage());
+    await widgets.gotoThen(context, SherpaAddRssPage(_theUniverse));
   }
 
   Widget? _createPriorityView(levels.PriorityLevel lvl, bool optional) {
@@ -378,4 +387,3 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     return w2;
   }
 }
-

@@ -355,16 +355,16 @@ private void setupService() throws IOException, GeneralSecurityException
          calendar_service.getServicePath() + " " + 
          calendar_service.getSuppressPatternChecks());
    
-   try {
-      CalendarList cl = calendar_service.calendarList().list()
-         .setPageToken(null)
-         .setMaxResults(200)
-         .execute();
-      CatreLog.logD("CATBRIDGE","FOUND Calendars " + cl.size() + " " + cl);
-    }
-   catch (Exception e) {
-      CatreLog.logD("CATBRIDGE","Problem getting list of calendars",e);
-    }
+// try {
+//    CalendarList cl = calendar_service.calendarList().list()
+//       .setPageToken(null)
+//       .setMaxResults(200)
+//       .execute();
+//    CatreLog.logD("CATBRIDGE","FOUND Calendars " + cl.size() + " " + cl);
+//  }
+// catch (Exception e) {
+//    CatreLog.logD("CATBRIDGE","Problem getting list of calendars",e);
+//  }
 }
 
 

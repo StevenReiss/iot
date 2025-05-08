@@ -481,6 +481,8 @@ private void setupBridges()
    cd.startDevice();
 
    fireDeviceAdded(cd);
+   
+   updateStored();
 }
 
 
