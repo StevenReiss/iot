@@ -419,6 +419,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
 
   void _descriptionListener() {
     String d = _descControl.text;
+    if (_forRule.getDescription() == d) return;
     if (d.isEmpty) {
       _isUserDescription = false;
       _forRule.setDescription("", false);

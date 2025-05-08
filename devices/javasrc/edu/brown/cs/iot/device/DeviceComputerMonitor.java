@@ -661,7 +661,7 @@ private void checkStatus()
    
    if (phoneopt != null) {
       System.err.println("Note computer monitor phone status: " + phoneopt);
-      sendParameterEvent("Presence",phoneopt);
+      sendParameterEvent("Presence-Phone",phoneopt);
     }
 }
 
