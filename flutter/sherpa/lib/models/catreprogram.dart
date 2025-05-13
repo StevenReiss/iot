@@ -105,10 +105,12 @@ class CatreProgram extends CatreData {
       ++index;
     }
     _theRules.insert(index, cr);
+    changed = true;
   }
 
   void reorderRules() {
     _theRules.sort(_ruleSorter);
+    changed = true;
   }
 
   int _ruleSorter(CatreRule r1, CatreRule r2) {
@@ -275,6 +277,7 @@ class CatreRule extends CatreData {
       if (rule != null) {
         rebuild(rule);
       }
+      changed = false;
     }
   }
 

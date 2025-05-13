@@ -107,26 +107,9 @@ CatprogRule(CatreProgram pgm,CatreStore cs,Map<String,Object> map)
          break;
        }
     }
-
-   if (!validateRule()) {
-      CatreLog.logE("Invalid rule found: " + map + " " + rule_priority + " " +
-         for_conditions + " " + for_actions + " " + getName() + " " + device_id);
-      throw new CatreCreationException("Invalid rule");
-    }
 }
 
 
-
-private boolean validateRule()
-{
-   if (rule_priority < 0) return false;
-   if (for_conditions == null || for_conditions.size() == 0) return false;
-   if (for_actions == null || for_actions.size() == 0) return false;
-   if (getName() == null || getName().equals("")) return false;
-   if (device_id == null) return false;
-
-   return true;
-}
 
 
 /********************************************************************************/
@@ -212,10 +195,11 @@ Set<CatreCondition> getUsedConditions()
       if (ps == null) ps = ns;
       else ps.putAll(ns);
     }
-   if (ps == null) {
-      CatreLog.logD("CATPROG","No conditions");
-      return false;
-    }
+   // no conditions (ps == null) means that rule holds at this point
+// if (ps == null) {
+//    CatreLog.logD("CATPROG","No conditions");
+//    return false;
+//  }
 
    CatreLog.logI("CATPROG","Apply " + getLabel());
 

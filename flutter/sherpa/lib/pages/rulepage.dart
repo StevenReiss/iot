@@ -266,8 +266,6 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
     if (_formKey.currentState!.validate()) {
       _updateRuleData();
       await _forRule.addOrEditRule();
-      // ensure validation has been run, run it if not
-      // ensure validation status is ok
     }
 
     setState(() {
@@ -299,7 +297,7 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
       List<dynamic>? errors = valid["ERRORS"];
       String text = "";
       if (errors == null || errors.isEmpty) {
-        text = "Rule ${_forRule.getName()} is VALID";
+        text = "Rule ${_forRule.getName()} seems to be okay";
       } else {
         text = "Possible issues for ${_forRule.getName()}:\n";
         for (Map<String, dynamic> v in errors) {

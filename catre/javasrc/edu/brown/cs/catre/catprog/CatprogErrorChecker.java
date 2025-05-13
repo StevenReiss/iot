@@ -95,6 +95,7 @@ List<RuleError> analyzeRule()
    checkParameterConditions(errors);
    checkValid(errors);
    checkOccludedRules(errors);
+   checkTriggers(errors);
   
    for (RuleError re : errors) {
       CatreLog.logD("CATPROG","Rule Error: " + re);
@@ -154,6 +155,17 @@ private void checkParameterConditions(List<RuleError> errors)
 
 private void checkValid(List<RuleError> errors)
 {
+   if (for_rule.getActions().isEmpty()) {
+      CheckError ce = new CheckError(ErrorLevel.ERROR,
+            "Rule has no associated actions");
+      errors.add(ce);
+    }
+   else if (for_rule.getTargetDevice() == null) {
+      CheckError ce = new CheckError(ErrorLevel.ERROR,
+            "Rule is not associated with a device");
+      errors.add(ce);
+    }
+   
    for (CatreCondition cc : for_rule.getConditions()) {
       if (!cc.isValid()) {
          CheckError ce = new CheckError(ErrorLevel.ERROR,
@@ -170,38 +182,22 @@ private void checkValid(List<RuleError> errors)
        }
     }
    
-   List<CatreCondition> conds = for_rule.getConditions();
-   boolean trig = false;
-   for (int i = 0; i < conds.size(); ++i) {
-      CatreCondition cc = conds.get(i);
-      if (cc.isTrigger()) {
-         if (trig) {
-            CheckError ce = new CheckError(ErrorLevel.ERROR,
-                  "Multiple trigger conditions -- rule won't fire");
-            errors.add(ce);
-          }
-         else if (i > 0) {
-            CheckError ce = new CheckError(ErrorLevel.ERROR,
-                  "Trigger condition should be first condition");
-            errors.add(ce);
-          }
-         else {
-            trig = true;
-          }
-       }
+   if (for_rule.getActions().isEmpty()) {
+      CheckError ce = new CheckError(ErrorLevel.ERROR,
+            "Rule has no actions");
+      errors.add(ce);
     }
    
-   for (CatreAction act : for_rule.getActions()) {
-      if (act.isTriggerAction() && !trig) {
-         CheckError ce = new CheckError(ErrorLevel.WARNING,
-               "Trigger action associated with non-trigger rule");
-         errors.add(ce);
-       }
-      else if (trig && !act.isTriggerAction()) {
-         CheckError ce = new CheckError(ErrorLevel.WARNING,
-               "Non-trigger action associated with trigger rule");
-         errors.add(ce);
-       }
+   if (for_rule.getPriority() < 0 || for_rule.getPriority() > 1000) {
+      CheckError ce = new CheckError(ErrorLevel.ERROR,
+            "Rule priority " + for_rule.getPriority() + " is out of bounds");
+      errors.add(ce);
+    }
+   
+   if (for_rule.getName() == null || for_rule.getName().isBlank()) {
+      CheckError ce = new CheckError(ErrorLevel.WARNING,
+            "Rule has no name");
+      errors.add(ce);
     }
 }
 
@@ -217,6 +213,7 @@ private void checkOccludedRules(List<RuleError> errors)
 {
    boolean higher = true;
    for (CatreRule cr : for_program.getRules()) {
+      if (cr.getTargetDevice() != for_rule.getTargetDevice()) continue;
       boolean othercond = false;
       boolean havetime = false;
       for (CatreCondition ccc : cr.getConditions()) {
@@ -252,6 +249,70 @@ private void checkOccludedRules(List<RuleError> errors)
     }
 }
    
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Check agreement of trigger conditions and actions                       */
+/*                                                                              */
+/********************************************************************************/
+
+private void checkTriggers(List<RuleError> errors)
+{
+   Boolean trigaction = null;
+   for (CatreAction act : for_rule.getActions()) {
+      if (act.isTriggerAction()) {
+         if (trigaction == null) trigaction = true;
+         else if (!trigaction) {
+            CheckError ce = new CheckError(ErrorLevel.ERROR,
+                  "Attempt to mix trigger and not-trigger actions");
+            errors.add(ce);
+          }
+       }
+      else {
+         if (trigaction == null) trigaction = false;
+         else if (trigaction) {
+            CheckError ce = new CheckError(ErrorLevel.ERROR,
+                  "Attempt to mix trigger and not-trigger actions");
+            errors.add(ce);
+          }
+       }
+    }
+   
+   if (trigaction != null) {
+      boolean havecond = false;
+      boolean havetrig = false;
+      for (CatreCondition cc : for_rule.getConditions()) {
+         if (!havecond) {
+            havecond = true;
+            if (cc.isTrigger()) {
+               havetrig = true;
+               if (!trigaction) {
+                  CheckError ce = new CheckError(ErrorLevel.WARNING,
+                        "Trigger condition must be associated with trigger action");
+                  errors.add(ce);
+                }
+             }
+          }
+         else {
+            if (cc.isTrigger()) {
+               if (havetrig) {
+                  CheckError ce = new CheckError(ErrorLevel.ERROR,
+                        "Can't have multiple trigger conditions");
+                  errors.add(ce);
+                }
+             }
+          }
+       }
+      if (!havetrig) {
+         CheckError ce = new CheckError(ErrorLevel.ERROR,
+               "Trigger action must be conditioned by a single trigger condition");
+         errors.add(ce);
+       }
+    }
+}
+
+
 
 /********************************************************************************/
 /*                                                                              */
