@@ -118,16 +118,20 @@ async function reauthorize(user)
 {
    let resp0 = await sendToIQsign("GET","login");
    let code = resp0.code;
+   let session = resp0.session;
    if (code == null) {
       user.session = null;
       return;
+    }
+   else {
+      user.session = session;
     }
    
    let tok1 = config.hasher(user.authtoken);
    let tok2 = config.hasher(tok1 + code);
    console.log("IQSIGN REAUTH ",user.authtoken,code,tok2);
    
-   let login = { username: user.username, accesscode: tok2 };
+   let login = { session: session, username: user.username, accesscode: tok2 };
    let resp1 = await sendToIQsign("POST","login",login);
    if (resp1.status != 'OK') {
       user.session = null;
@@ -341,7 +345,7 @@ async function sendToIQsign(method,path,data)
        }
     }
 
-   console.log("IQSIGN Send to iQsign",path,data);
+   console.log("IQSIGN Send to iQsign",method,path,data);
 
    let response = await fetch(url, {
 	 method: method,
