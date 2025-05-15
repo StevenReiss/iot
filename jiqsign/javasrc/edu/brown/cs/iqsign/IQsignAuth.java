@@ -216,7 +216,8 @@ String handleLogin(HttpExchange he,IQsignSession session)
 	  }
        }
       else if (accod != null && !accod.isEmpty() && session.getCode() != null) {
-         IvyLog.logD("IQSIGN","Try login with access token " + actok);
+         IvyLog.logD("IQSIGN","Try login with access code " + accod + " " +
+               session.getCode());
          IQsignLoginCode tokinfo = db.checkAccessToken(accod,
                user.getUserId(),session.getCode()); 
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {

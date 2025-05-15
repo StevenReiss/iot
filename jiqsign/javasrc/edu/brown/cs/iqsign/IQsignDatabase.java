@@ -289,7 +289,7 @@ void setTemporaryPassword(Number uid,String tpwd)
 IQsignLoginCode checkAccessToken(String token,Number uid,String code)
 {
    String q1 = "SELECT * FROM iQsignLoginCodes WHERE code = $1";
-   String q2 = "UPDATE iQsignLoginCodes SET last_used = CURRENT_TIMETTAMP WHERE code = $1";
+   String q2 = "UPDATE iQsignLoginCodes SET last_used = CURRENT_TIMESTAMP WHERE code = $1";
    String q3 = "SELECT * FROM iQsignLoginCodes WHERE userid = $1";
 
    JSONObject rslt = null;
