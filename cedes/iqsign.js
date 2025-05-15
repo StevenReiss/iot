@@ -125,6 +125,7 @@ async function reauthorize(user)
    
    let tok1 = config.hasher(user.authtoken);
    let tok2 = config.hasher(tok1 + code);
+   console.log("IQSIGN REAUTH ",user.authtoken,code,tok2);
    
    let login = { username: user.username, accesscode: tok2 };
    let resp1 = await sendToIQsign("POST","login",login);

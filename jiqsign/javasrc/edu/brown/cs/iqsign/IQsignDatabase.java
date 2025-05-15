@@ -302,6 +302,7 @@ IQsignLoginCode checkAccessToken(String token,Number uid,String code)
          IQsignLoginCode lc = new IQsignLoginCode(r);
          String c1 = IQsignMain.secureHash(lc.getCode());
          String c2 = IQsignMain.secureHash(c1 + code);
+         IvyLog.logD("IQSIGN","Check token " + lc.getCode() + " " + code + " " + c2);
          if (c2.equals(token)) {
             rslt = r;
             break;

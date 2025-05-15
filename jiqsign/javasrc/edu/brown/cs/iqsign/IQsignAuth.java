@@ -209,12 +209,14 @@ String handleLogin(HttpExchange he,IQsignSession session)
       String actok = BowerRouter.getParameter(he,"accesstoken");
       String accod = BowerRouter.getParameter(he,"accesscode");
       if (actok != null && !actok.isEmpty()) { 
+         IvyLog.logD("IQSIGN","Try login with access token " + actok);
 	 IQsignLoginCode tokinfo = db.checkAccessToken(actok,null,null);
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
 	    return errorResponse(session,"Invalid access token");
 	  }
        }
       else if (accod != null && !accod.isEmpty() && session.getCode() != null) {
+         IvyLog.logD("IQSIGN","Try login with access token " + actok);
          IQsignLoginCode tokinfo = db.checkAccessToken(accod,
                user.getUserId(),session.getCode()); 
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
@@ -222,6 +224,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
 	  } 
        }
       else {
+         IvyLog.logD("IQSIGN","Try login with password");
 	 String pwd = user.getPassword();
          String tpwd = user.getTempPassword();
 	 String upwd = BowerRouter.getParameter(he,"password");
