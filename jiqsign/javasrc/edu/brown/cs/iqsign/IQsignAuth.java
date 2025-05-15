@@ -215,7 +215,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
 	  }
        }
       else if (accod != null && !accod.isEmpty() && session.getCode() != null) {
-         IQsignLoginCode tokinfo = db.checkAccessToken(actok,
+         IQsignLoginCode tokinfo = db.checkAccessToken(accod,
                user.getUserId(),session.getCode()); 
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
 	    return errorResponse(session,"Invalid access token");
