@@ -327,7 +327,7 @@ void addLoginCode(Number uid,Number sid,String code)
       "VALUES ( $1, $2, $3 )";
    
    sql_database.sqlUpdate(q1,uid,sid);
-   sql_database.sqlUpdate(q1,code,uid,sid);
+   sql_database.sqlUpdate(q2,code,uid,sid);
 }
 
 
@@ -483,8 +483,16 @@ void addDefineName(Number uid,String dname,String contents,boolean useronly)
       sql_database.sqlUpdate(q5,di.getId(),uid);
     }
    else {
+      if (user) {
+         // check for recursive reference
+         String pat = "=\\s*\\Q" + dname + "\\E";
+         if (contents.matches(pat)) {
+            return; 
+          }
+       }
       IQsignDefinedImage di = new IQsignDefinedImage(json);
       if (!di.getContents().equals(contents) && user) {
+         // update if this is a change and a user sign
 	 sql_database.sqlUpdate(q4,contents,di.getId());
        }
     }

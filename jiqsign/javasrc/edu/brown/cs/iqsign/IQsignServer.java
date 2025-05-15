@@ -442,7 +442,6 @@ private final class SignUpdateAction implements BowerSessionHandler<IQsignSessio
             BowerRouter.getParameter(he,"signdim"),
             BowerRouter.getIntParameter(he,"signwidth"),
             BowerRouter.getIntParameter(he,"signheight"));
-      iqsign_database.updateSignProperties(sign);
    
       FinishedUpdate fu = new FinishedUpdate(he,session,sign.toJson());
       sign.changeSign(cnts,fu);

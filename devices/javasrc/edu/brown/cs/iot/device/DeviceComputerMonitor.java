@@ -88,6 +88,7 @@ enum WorkOption { WORKING, IDLE, AWAY, OFF };
 enum PhoneOption { PRESENT, NOT_PRESENT };
 
 private long    last_idle;
+private WorkOption last_work;
 private ZoomOption last_zoom;
 private long    last_check;
 private PhoneOption last_phone;
@@ -180,6 +181,7 @@ static {
 private DeviceComputerMonitor(String [] args)
 {
    last_idle = -1;
+   last_work = null;
    last_zoom = null;
    last_check = 0;
    last_phone = null;
@@ -623,6 +625,12 @@ private void checkStatus()
          presence = WorkOption.AWAY;
        }
       last_idle = idle;
+      if (presence == last_work) {
+         presence = null;
+       }
+      else {
+         last_work = presence;
+       }
     }
    
    ZoomOption zoomval = getZoomStatus();

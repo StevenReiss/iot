@@ -48,10 +48,12 @@ class SherpaConditionWidget extends StatefulWidget {
   final CatreRule _forRule;
   final CatreCondition _forCondition;
 
-  const SherpaConditionWidget(this._forRule, this._forCondition, {super.key});
+  const SherpaConditionWidget(this._forRule, this._forCondition,
+      {super.key});
 
   @override
-  State<SherpaConditionWidget> createState() => _SherpaConditionWidgetState();
+  State<SherpaConditionWidget> createState() =>
+      _SherpaConditionWidgetState();
 }
 
 class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
@@ -203,7 +205,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       CatreCondition? ccnm = shared[cnm];
       if (ccnm == null && !cnm.startsWith("Undefined")) {
         w0 = widgets.submitButton("Share", _shareCondition);
-      } else if (ccnm != _forCondition && !cnm.startsWith("Undefined")) {
+      } else if (ccnm != _forCondition &&
+          !cnm.startsWith("Undefined")) {
         w0 = widgets.submitButton("Update Shared", _updateShared);
       }
     }
@@ -346,7 +349,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     List<Widget> rslt = [];
     DateTime starttime = _forCondition.getTimeSlot().getFromDateTime();
     DateTime? endtime = _forCondition.getTimeSlot().getToDateTime();
-    int repeat = _forCondition.getTimeSlot().getRepeatInterval().toInt();
+    int repeat =
+        _forCondition.getTimeSlot().getRepeatInterval().toInt();
 
     rslt.add(widgets.fieldSeparator());
 
@@ -522,7 +526,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     if (sensors.isEmpty) return rslt;
 
     _SensorParameter sp = sensors.firstWhere(
-      (_SensorParameter sp) => sp.parameter == _forCondition.getParameter(),
+      (_SensorParameter sp) =>
+          sp.parameter == _forCondition.getParameter(),
       orElse: () => sensors[0],
     );
     Widget w1 = widgets.dropDownWidget(
@@ -732,7 +737,7 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
       hint: "Select shared condition to reference",
       nullValue: "UNDEFINED",
       value: _forCondition.getSharedName(),
-      onChanged: _setReferenceWidget,
+      onChanged: _setSharedCondition,
     );
     rslt.add(w1);
 
@@ -787,19 +792,44 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
   }
 
   void _setLabel(String? lbl) {
-    setState(() {
-      _forCondition.setLabel(lbl);
-      _forCondition.setName(lbl);
-      _forCondition.setDescription(_descControl.text);
-    });
+    _forCondition.setLabel(lbl);
+    _forCondition.setName(lbl);
+    String d = _forCondition.getDescription();
+    bool ud = _forCondition.isUserDescription();
+    _setDescription(d, ud);
+    setState(() {});
   }
 
-  void _setDescription(String? d) {
-    setState(() {
-      _forCondition.setDescription(d);
-      _forCondition.setLabel(_labelControl.text);
-      _forCondition.setName(_labelControl.text);
-    });
+  void _updateDescription() {
+    if (!_forCondition.isUserDescription()) {
+      String d = _forCondition.getDescription();
+      _forCondition.setDescription(d, false);
+      _descControl.text = d;
+    }
+    setState(() {});
+  }
+
+  void _setDescription(String? d, [bool? userdesc]) {
+    bool ud = false;
+    if (userdesc == null) {
+      if (d == _descControl.text) {
+        ud = false;
+      } else {
+        ud = true;
+      }
+    }
+
+    if (d == null || d.isEmpty) {
+      ud = false;
+      _forCondition.setDescription("", false);
+      d = _forCondition.getDescription();
+      _descControl.text = d;
+    }
+
+    _forCondition.setDescription(d, ud);
+    _forCondition.setLabel(_labelControl.text);
+    _forCondition.setName(_labelControl.text);
+    setState(() {});
   }
 
   void _setParameter(_SensorParameter? sp) {
@@ -813,23 +843,20 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     if (sp == null) return;
     if (_getRefCondition().getParameter() == sp.parameter) return;
     _setParameter(sp);
-    setState(() {
-      _forCondition.setLowValue(sp.parameter.getMinValue());
-      _forCondition.setHighValue(sp.parameter.getMaxValue());
-    });
+    _forCondition.setLowValue(sp.parameter.getMinValue());
+    _forCondition.setHighValue(sp.parameter.getMaxValue());
+    _updateDescription();
   }
 
   void _setOperator(String? op) {
     if (op == null) return;
-    setState(() {
-      _getRefCondition().setOperator(op);
-    });
+    _getRefCondition().setOperator(op);
+    _updateDescription();
   }
 
   void _setTargetValue(dynamic val) {
-    setState(() {
-      _getRefCondition().setTargetValue(val.toString());
-    });
+    _getRefCondition().setTargetValue(val.toString());
+    _updateDescription();
   }
 
   CatreCondition _getRefCondition() {
@@ -848,9 +875,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
 
   void _setDevice(CatreDevice? dev) {
     if (dev != null) {
-      setState(() {
-        _forCondition.setDeviceId(dev);
-      });
+      _forCondition.setDeviceId(dev);
+      _updateDescription();
     }
   }
 
@@ -858,143 +884,127 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     if (what == null) {
       return;
     } else {
-      setState(() {
-        if (what == "IS ENABLED") {
-          _forCondition.setCheckForEnabled(true);
-        } else {
-          _forCondition.setCheckForEnabled(false);
-        }
-      });
+      if (what == "IS ENABLED") {
+        _forCondition.setCheckForEnabled(true);
+      } else {
+        _forCondition.setCheckForEnabled(false);
+      }
+      _updateDescription();
     }
   }
 
   void _setStartTime(TimeOfDay time) {
-    setState(() {
-      _forCondition.getTimeSlot().setFromTime(time);
-    });
+    _forCondition.getTimeSlot().setFromTime(time);
+    _updateDescription();
   }
 
   void _setStartDate(DateTime date) {
-    setState(() {
-      _forCondition.getTimeSlot().setFromDate(date);
-    });
+    _forCondition.getTimeSlot().setFromDate(date);
+    _updateDescription();
   }
 
   void _setEndDate(DateTime date) {
-    setState(() {
-      _forCondition.getTimeSlot().setToDate(date);
-    });
+    _forCondition.getTimeSlot().setToDate(date);
+    _updateDescription();
   }
 
   void _setEndTime(TimeOfDay time) {
-    setState(() {
-      _forCondition.getTimeSlot().setToTime(time);
-    });
+    _forCondition.getTimeSlot().setToTime(time);
+    _updateDescription();
   }
 
   void _setDays(List<String> days) {
-    setState(() {
-      _forCondition.getTimeSlot().setDays(days);
-    });
+    _forCondition.getTimeSlot().setDays(days);
+    _updateDescription();
   }
 
   void _setRepeatOption(util.RepeatOption? opt) {
     if (opt != null) {
-      setState(() {
-        _forCondition.getTimeSlot().setRepeatInterval(opt.value);
-      });
+      _forCondition.getTimeSlot().setRepeatInterval(opt.value);
+      _updateDescription();
     }
   }
 
   void _setMinTime(Duration d) {
-    setState(() {
-      int min = d.inMilliseconds;
-      int max = _forCondition.getMaxTime().toInt();
-      _forCondition.setMinTime(min);
-      if (max < min) {
-        _forCondition.setMaxTime(min + 60000);
-      }
-    });
+    int min = d.inMilliseconds;
+    int max = _forCondition.getMaxTime().toInt();
+    _forCondition.setMinTime(min);
+    if (max < min) {
+      _forCondition.setMaxTime(min + 60000);
+    }
+    _updateDescription();
   }
 
   void _setMaxTime(Duration d) {
-    setState(() {
-      int min = _forCondition.getMinTime().toInt();
-      int max = d.inMilliseconds;
-      _forCondition.setMaxTime(max);
-      if (min > max) {
-        min = max - 60000;
-        if (min < 0) min = 0;
-        _forCondition.setMinTime(min);
-      }
-    });
+    int min = _forCondition.getMinTime().toInt();
+    int max = d.inMilliseconds;
+    _forCondition.setMaxTime(max);
+    if (min > max) {
+      min = max - 60000;
+      if (min < 0) min = 0;
+      _forCondition.setMinTime(min);
+    }
+    _updateDescription();
   }
 
   void _setOffAfter(Duration d) {
-    setState(() {
-      _forCondition.setOffAfter(d.inMilliseconds);
-      if (d.inMilliseconds > 0) _forCondition.setResetTime(-1);
-    });
+    _forCondition.setOffAfter(d.inMilliseconds);
+    if (d.inMilliseconds > 0) _forCondition.setResetTime(-1);
+    _updateDescription();
   }
 
   void _setResetTime(TimeOfDay td) {
-    setState(() {
-      _forCondition.setOffAfter(0);
-      _forCondition.setResetTime((td.hour * 60 + td.minute * 60) * 60 * 1000);
-    });
+    _forCondition.setOffAfter(0);
+    _forCondition
+        .setResetTime((td.hour * 60 + td.minute * 60) * 60 * 1000);
+    _updateDescription();
   }
 
   void _setOnTime(Duration d) {
-    setState(() {
-      _forCondition.setOnTime(d.inMilliseconds);
-    });
+    _forCondition.setOnTime(d.inMilliseconds);
+    _updateDescription();
   }
 
   void _setOffTime(Duration d) {
-    setState(() {
-      _forCondition.setOffTime(d.inMilliseconds);
-    });
+    _forCondition.setOffTime(d.inMilliseconds);
+    _updateDescription();
   }
 
   void _setLowValue(dynamic val) {
     if (val == null) return;
     num lv = val as num;
-    setState(() {
-      _forCondition.setLowValue(lv);
-      num? hv = _forCondition.getHighValue();
-      if (hv == null || hv.toDouble() < lv.toDouble()) {
-        _forCondition.setHighValue(lv);
-      }
-    });
+    _forCondition.setLowValue(lv);
+    num? hv = _forCondition.getHighValue();
+    if (hv == null || hv.toDouble() < lv.toDouble()) {
+      _forCondition.setHighValue(lv);
+    }
+    _updateDescription();
   }
 
   void _setHighValue(dynamic val) {
     if (val == null) return;
     num hv = val as num;
-    setState(() {
-      _forCondition.setHighValue(hv);
-      num? lv = _forCondition.getLowValue();
-      if (lv == null || lv.toDouble() > hv.toDouble()) {
-        _forCondition.setLowValue(hv);
-      }
-    });
+    _forCondition.setHighValue(hv);
+    num? lv = _forCondition.getLowValue();
+    if (lv == null || lv.toDouble() > hv.toDouble()) {
+      _forCondition.setLowValue(hv);
+    }
+    _updateDescription();
   }
 
   void _setCalField(int idx, String? val) {
     CatreCalendarMatch cm = _getCalendarItem(idx);
     if (val != null) {
-      setState(() {
-        cm.setFieldName(val);
-      });
+      cm.setFieldName(val);
+      _updateDescription();
     }
   }
 
   void _setCalOp(int idx, String? op) {
     CatreCalendarMatch cm = _getCalendarItem(idx);
     if (op != null) {
-      setState(() {
-        cm.setOperator(op);
-      });
+      cm.setOperator(op);
+      _updateDescription();
     }
   }
 
@@ -1004,22 +1014,17 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     cm.setMatchValue(v);
   }
 
-  void _setReferenceWidget(String? name) {
+  void _setSharedCondition(String? name) {
     if (name == null) return;
     CatreProgram pgm = _forCondition.getUniverse().getProgram();
     CatreCondition? cc = pgm.getSharedConditions()[name];
     if (cc != null) {
       _labelControl.text = cc.getLabel();
-      _descControl.text = cc.getDescription();
+      _setLabel(cc.getLabel());
     }
 
-    setState(() {
-      _forCondition.setSharedName(name);
-      if (cc != null) {
-        _setLabel(cc.getLabel());
-        _setDescription(cc.getDescription());
-      }
-    });
+    _forCondition.setSharedName(name);
+    _updateDescription();
   }
 
   CatreCalendarMatch _getCalendarItem(int idx) {

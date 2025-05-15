@@ -1009,6 +1009,7 @@ class CatreTimeSlot extends CatreData {
     rslt += calDate(_fromDateTime);
     rslt += " - ${calDate(_toDateTime)}";
     rslt += " from ";
+    rslt += calTime(_fromDateTime);
     rslt += " - ${calTime(_toDateTime)}";
     // handle days and repeats
     return rslt;

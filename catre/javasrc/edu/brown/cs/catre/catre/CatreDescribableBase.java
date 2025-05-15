@@ -186,6 +186,9 @@ public void setGeneratedDescription(String d)
    base_label = getSavedString(map,"LABEL",base_label);
    base_description = getSavedString(map,"DESCRIPTION",base_description);
    user_description = getSavedBool(map,"USERDESC",false);
+   if (base_name == null || base_name.isEmpty() || base_name.equals("Undefined")) {
+      base_name = base_label;
+    }
 }
 
 

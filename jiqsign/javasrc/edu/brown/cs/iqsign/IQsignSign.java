@@ -200,7 +200,6 @@ void changeSign(String cnts,Consumer<Boolean> next)
    cnts = setContents(cnts);
    for_database.changeSign(getId(),cnts);
    String dname = computeDisplayName();
-   setDisplayName(dname);
    for_database.addDefineName(getUserId(),dname,cnts,false);
    setupWebPage();
    updateSign(next,true,false);

@@ -263,14 +263,18 @@ class _SherpaRuleWidgetState extends State<SherpaRuleWidget> {
   }
 
   void _saveRule() async {
+    BuildContext dcontext = context;
     if (_formKey.currentState!.validate()) {
       _updateRuleData();
       await _forRule.addOrEditRule();
     }
 
+    _forRule.push();
+
     setState(() {
-      _forRule.push();
-      Navigator.pop(context);
+      if (dcontext.mounted) {
+        Navigator.pop(context);
+      }
     });
   }
 

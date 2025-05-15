@@ -203,6 +203,7 @@ class RepeatOption {
 List<RepeatOption> getRepeatOptions() {
   List<RepeatOption> rslt = [];
   rslt.add(RepeatOption("No Repeat", 0));
+  rslt.add(RepeatOption("Every Day", 1));
   rslt.add(RepeatOption("Every Week", 7));
   rslt.add(RepeatOption("Every 2 Weeks", 14));
   rslt.add(RepeatOption("Every 3 Weeks", 21));
