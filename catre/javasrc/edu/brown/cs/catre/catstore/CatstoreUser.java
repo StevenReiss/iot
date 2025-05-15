@@ -355,7 +355,7 @@ private static class BridgeAuth extends CatreSubSavableBase implements CatreBrid
          ctr = Integer.parseInt(m.group(1));
          value_count = Math.max(value_count,ctr+1);
        }
-      CatreLog.logD("Setup auth field " + key + " " + ctr);
+      CatreLog.logD("Setup auth field " + key + " " + ctr + " " + value);
      
       value_map.put(key,value);
     }

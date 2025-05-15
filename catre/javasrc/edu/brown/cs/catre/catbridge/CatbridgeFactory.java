@@ -156,8 +156,14 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
 	 if (cb == null) continue;
 	 CatbridgeBase oldcb = actual_bridges.put(cb.getBridgeId(),cb);
          if (oldcb == null) {
+            // send auth data for new bridge
             cb.registerBridge();
           }
+         else if (!oldcb.getAuthData().equals(cb.getAuthData())) {
+            // might need to send changed auth data
+            cb.registerBridge();
+          }
+         
 	 return cb;
        }
     }
