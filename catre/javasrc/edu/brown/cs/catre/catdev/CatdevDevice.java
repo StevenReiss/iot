@@ -467,7 +467,7 @@ protected void localStopDevice()			{ }
 @Override public void setParameterValue(CatreParameter p,Object val)
 {
    CatreLog.logD("CATDEV","SET PARAMETER " + p.getName() + " " + val + " " +
-         getName() + " " +
+         getDeviceId() + " " + getName() + " " +
          (val == null ? "?" : val.getClass()) + " " + isEnabled());
    
    if (!isEnabled()) return;
@@ -487,7 +487,8 @@ protected void localStopDevice()			{ }
 
    for_universe.setValue(p,val);
 
-   CatreLog.logI("CATDEV","Set " + getName() + "." + p + 
+   CatreLog.logI("CATDEV","Set " + getDeviceId() + " " + 
+         getName() + "." + p + 
          " " + p.hashCode() + " = " + getParameterValue(p));
 
    fireChanged(p);

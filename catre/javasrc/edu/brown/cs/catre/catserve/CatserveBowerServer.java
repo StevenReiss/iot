@@ -631,7 +631,7 @@ private String handleGetValue(HttpExchange e,CatserveSessionImpl cs)
    CatreUniverse cu = cs.getUniverse(catre_control);
    String dnm = BowerRouter.getParameter(e,"DEVICE");
    String pnm = BowerRouter.getParameter(e,"PARAMETER");
-   CatreLog.logD("CATSERVE","GET VALUE " + dnm + pnm);
+   CatreLog.logD("CATSERVE","GET VALUE " + dnm + " " + pnm);
    
    CatreDevice cd = cu.findDevice(dnm);
    if (cd == null) {

@@ -462,37 +462,37 @@ private final class LoadSignImageAction implements BowerSessionHandler<IQsignSes
       if (nameid != null && nameid.isEmpty()) nameid = null;
       if (name != null && name.isEmpty()) name = null;
       if (name == null && nameid == null) {
-	 return BowerRouter.errorResponse(he,session,400,"No name given");
+         return BowerRouter.errorResponse(he,session,400,"No name given");
        }
-
+   
       String cnts = null;
       if (name != null && name.equals("*Current*")) {
-	 IQsignSign sign = iqsign_database.findSignById(getIdParameter(he,"signid"));
-	 if (sign == null) {
-	    return BowerRouter.errorResponse(he,session,400,"Invalid sign");
-	  }
-	 if (!sign.getUserId().equals(session.getUserId())) {
-	    return BowerRouter.errorResponse(he,session,400,"Invalid user");
-	  }
-	 if (!sign.getNameKey().equals(BowerRouter.getParameter(he,"signnamekey"))) {
-	    return BowerRouter.errorResponse(he,session,400,"Invalid name key");
-	  }
-	 cnts = sign.getContents();
+         IQsignSign sign = iqsign_database.findSignById(getIdParameter(he,"signid"));
+         if (sign == null) {
+            return BowerRouter.errorResponse(he,session,400,"Invalid sign");
+          }
+         if (!sign.getUserId().equals(session.getUserId())) {
+            return BowerRouter.errorResponse(he,session,400,"Invalid user");
+          }
+         if (!sign.getNameKey().equals(BowerRouter.getParameter(he,"signnamekey"))) {
+            return BowerRouter.errorResponse(he,session,400,"Invalid name key");
+          }
+         cnts = sign.getContents();
        }
       else {
-	 Number nid = getIdParameter(he,"nameid");
-	 IQsignDefinedImage di = iqsign_database.getDefineData(nid,name,session.getUserId());
-	 if (di == null) {
-	    return BowerRouter.errorResponse(he,session,400,"Bad define id");
-	  }
-	 Number duid = di.getUserId();
-	 if (duid != null && !duid.equals(session.getUserId())) {
-	    return BowerRouter.errorResponse(he,session,400,"Bad user define id");
-	  }
-	 cnts = di.getContents();
-	 name = di.getName();
+         Number nid = getIdParameter(he,"nameid");
+         IQsignDefinedImage di = iqsign_database.getDefineData(nid,name,session.getUserId());
+         if (di == null) {
+            return BowerRouter.errorResponse(he,session,400,"Bad define id");
+          }
+         Number duid = di.getUserId();
+         if (duid != null && !duid.equals(session.getUserId())) {
+            return BowerRouter.errorResponse(he,session,400,"Bad user define id");
+          }
+         cnts = di.getContents();
+         name = di.getName();
        }
-
+   
       return BowerRouter.jsonOKResponse(session,"name",name,"contents",cnts);
     }
 
@@ -634,13 +634,15 @@ private final class AddSignAction implements BowerSessionHandler<IQsignSession> 
       String signname = BowerRouter.getParameter(he,"signname");
       String cnts = null;
       if (signname != null && !signname.isEmpty()) {
-	 cnts = "=" + signname;
+         cnts = "=" + signname;
        }
       FinishAddSign fas = new FinishAddSign(he,session);
       IQsignSign sign = IQsignSign.setupSign(iqsign_main,name,email,cnts,fas);
       if (sign == null) {
-	 return BowerRouter.errorResponse(he,session,400,"Can't create sign");
+         return BowerRouter.errorResponse(he,session,400,"Can't create sign");
        }
+      
+      IvyLog.logD("IQSIGN","Add sign " + sign.getId() + " " + sign.getNameKey());
       
       IQsignUser user = session.getUser();
       users_updated.add(user.getUserName());
