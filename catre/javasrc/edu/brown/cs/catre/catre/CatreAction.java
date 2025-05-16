@@ -77,7 +77,7 @@ CatreTransition getTransition();
  *	Indicate if this is a trigger action
  **/
 
-boolean isTriggerAction();
+Boolean isTriggerAction();
 
 
 /**

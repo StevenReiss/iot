@@ -70,8 +70,8 @@ class CatprogAction extends CatreDescribableBase
 private CatreUniverse	for_universe;
 private CatreTransitionRef transition_ref;
 private Map<String,Object> parameter_values;
-private boolean 	is_trigger;
 private boolean 	is_valid;
+private Boolean         is_trigger;
 private boolean 	needs_name;
 
 
@@ -88,6 +88,7 @@ CatprogAction(CatreProgram p,CatreStore cs,Map<String,Object> map)
 
    needs_name = true;
    is_valid = false;
+   is_trigger = null;
    parameter_values = new HashMap<>();
 
    for_universe = p.getUniverse();
@@ -136,14 +137,7 @@ private void setActionName()
 /*										*/
 /********************************************************************************/
 
-@Override public boolean isTriggerAction()
-{
-   return is_trigger;
-}
-
-
-
-
+@Override public Boolean isTriggerAction()              { return is_trigger; } 
 
 @Override public CatreDevice getDevice()		{ return transition_ref.getDevice(); }
 
@@ -229,6 +223,8 @@ protected void setValid(boolean fg)
    rslt.put("PARAMETERS",parameter_values);
    
    rslt.put("NEEDSNAME",needs_name);
+   
+   if (is_trigger != null) rslt.put("ISTRIGGER",is_trigger);
 
    return rslt;
 }
@@ -256,6 +252,7 @@ protected void setValid(boolean fg)
     }
    
    needs_name = getSavedBool(map,"NEEDSNAME",false);
+   is_trigger = getSavedBool(map,"ISTRIGGER",null);
    
    transition_ref.initialize();
 }

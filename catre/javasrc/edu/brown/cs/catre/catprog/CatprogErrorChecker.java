@@ -227,19 +227,25 @@ private void checkOccludedRules(List<RuleError> errors)
          if (othercond) break;          // no need to check lower priorities
          continue;
        }
-      if (higher && havetime) {
+      if (!havetime) continue;
+      
+      CatreLog.logD("CATPROG","Check overlap between " + for_rule.getLabel() +
+            for_rule.getPriority() + " and " +
+            cr.getLabel() + " " + cr.getPriority());
+      
+      if (higher) {
          if (othercond) continue;       // this rule is conditional -- don't check   
          List<TimeInterval> crtimes = getTimeSlots(cr);
-         List<TimeInterval> usetimes = intersectIntervals(crtimes,rule_intervals);
+         List<TimeInterval> usetimes = subtractIntervals(rule_intervals,crtimes);
          if (usetimes.isEmpty()) {
             CheckError ce = new CheckError(ErrorLevel.ERROR,
                   "Higher priority rule " + cr.getName() + " prevents this rule from occurring");
             errors.add(ce);
           }
        } 
-      else if (!higher && havetime) {
+      else if (!higher) {
          List<TimeInterval> crtimes = getTimeSlots(cr);
-         List<TimeInterval> usetimes = intersectIntervals(crtimes,rule_intervals);
+         List<TimeInterval> usetimes = subtractIntervals(crtimes,rule_intervals);
          if (usetimes.isEmpty()) {
             CheckError ce = new CheckError(ErrorLevel.ERROR,
                   "This rule prevents the rule " + cr.getName() + " from occurring");
@@ -261,7 +267,8 @@ private void checkTriggers(List<RuleError> errors)
 {
    Boolean trigaction = null;
    for (CatreAction act : for_rule.getActions()) {
-      if (act.isTriggerAction()) {
+      Boolean trig = act.isTriggerAction();
+      if (trig != null && trig) {
          if (trigaction == null) trigaction = true;
          else if (!trigaction) {
             CheckError ce = new CheckError(ErrorLevel.ERROR,
@@ -269,7 +276,7 @@ private void checkTriggers(List<RuleError> errors)
             errors.add(ce);
           }
        }
-      else {
+      else if (trig != null) {
          if (trigaction == null) trigaction = false;
          else if (trigaction) {
             CheckError ce = new CheckError(ErrorLevel.ERROR,
@@ -375,14 +382,52 @@ private List<TimeInterval> intersectIntervals(List<TimeInterval> ta,List<TimeInt
    while (i < ta.size() && j < tb.size()) {
       TimeInterval tia = ta.get(i);
       TimeInterval tib = tb.get(j);
-      long start= Math.max(tia.getStartTime(),tib.getStartTime());
+      long start = Math.max(tia.getStartTime(),tib.getStartTime());
       long end = Math.min(tia.getEndTime(),tib.getEndTime());
       if (start <= end) {
-         rslt.add(new TimeInterval(start,end));
+         TimeInterval ovlp = new TimeInterval(start,end);
+         CatreLog.logD("CATPROG","Intervals overlap " + tia + " " + tib + " " +
+               ovlp);
+         rslt.add(ovlp);
        }
       if (tia.getEndTime() < tib.getEndTime()) ++i;
       else ++j;
     }
+   
+   return rslt;
+}
+
+
+private List<TimeInterval> subtractIntervals(List<TimeInterval> ta,List<TimeInterval> subs)
+{
+   List<TimeInterval> rslt = new ArrayList<>();
+   
+   for (TimeInterval interval : ta) {
+      long start = interval.getStartTime();
+      long end = interval.getEndTime();
+      for (TimeInterval sub : subs) {
+         if (sub.getEndTime() < start) continue;
+         if (sub.getStartTime() > end) continue;
+         if (sub.getStartTime() <= start && sub.getEndTime() >= end) {
+            start = end + 1;    // no interval
+          }
+         else if (sub.getStartTime() > start && sub.getEndTime() < end) {
+            rslt.add(new TimeInterval(start,sub.getStartTime()));
+            start = sub.getEndTime(); 
+          }
+         else if (sub.getStartTime() <= start && sub.getEndTime() < end) {
+            start = sub.getEndTime();
+          }
+         else if (sub.getStartTime() > start && sub.getStartTime() < end) {
+            rslt.add(new TimeInterval(start,sub.getStartTime()));
+            start = sub.getEndTime();
+          }
+       }
+      if (start < end) {
+         rslt.add(new TimeInterval(start,end));
+       }
+    }
+   
    
    return rslt;
 }

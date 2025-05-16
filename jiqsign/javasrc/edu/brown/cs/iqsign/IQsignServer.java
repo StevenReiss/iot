@@ -328,6 +328,10 @@ private final class AuthorizeAction implements BowerSessionHandler<IQsignSession
 private final class Authenticator implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange he,IQsignSession session) {
+      if (session == null) {
+         return BowerRouter.errorResponse(he,session,402,"Bad session");
+       }
+     
       String tok = BowerRouter.getAccessToken(he);
       if (tok != null && !tok.equals(session.getCode())) {
          return BowerRouter.errorResponse(he,session,402,"Bad authorization code");
