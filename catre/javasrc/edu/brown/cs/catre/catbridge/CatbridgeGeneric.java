@@ -172,7 +172,12 @@ protected CatbridgeBase createInstance(CatreUniverse u,CatreBridgeAuthorization 
                   evt.getString("PARAMETER") + " for " + dev.getName());
             return;
           }
-	 Object val = evt.get("VALUE");
+	 Object val = evt.opt("VALUE");
+         if (val == null) {
+            CatreLog.logE("CATBRIDGE","Generic event value  not found " + 
+                  evt.getString("PARAMETER") + " for " + dev.getName());
+            return;
+          }
 	 try {
 	    dev.setParameterValue(param,val);
 	  }

@@ -1011,6 +1011,35 @@ class CatreTimeSlot extends CatreData {
     rslt += " from ";
     rslt += calTime(_fromDateTime);
     rslt += " - ${calTime(_toDateTime)}";
+    String? s = getDays();
+    if (s != null &&
+        s != "Mon,Tue,Wed,Thu,Fri,Sat,Sun" &&
+        s.isNotEmpty) {
+      rslt += " on $s";
+    }
+    num r = getRepeatInterval();
+    switch (r) {
+      case 1:
+        rslt += " Daily";
+        break;
+      case 7:
+        rslt += " Weekly";
+        break;
+      case 14:
+        rslt += " Every 2 Weeks";
+        break;
+      case 21:
+        rslt += " Every 3 Weeks";
+        break;
+      case 28:
+        rslt += " Every 4 Weeks";
+        break;
+      case -1:
+        rslt += " Every Month";
+        break;
+      default:
+        break;
+    }
     // handle days and repeats
     return rslt;
   }

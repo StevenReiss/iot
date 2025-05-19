@@ -372,7 +372,7 @@ async function noPingEvent(user,dev,par)
    let event = { DEVICE: dev.UID, 
          TYPE: "PARAMETER",
          PARAMETER: par.NAME, 
-         VALUE: par.NOPINGPING };
+         VALUE: par.NOPING };
    let msg = { command: "EVENT", 
          uid : user.uid,
          bridge: "generic",

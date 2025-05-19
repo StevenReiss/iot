@@ -514,7 +514,7 @@ protected JSONObject sendToCedes(String nm,JSONObject obj)
 
 protected JSONObject sendToCedes(String nm,String cnts)
 {
-   System.err.println("SEND TO CEDES:" + cnts);
+   System.err.println("SEND TO CEDES:" + new Date() + ": " +  cnts);
    try {
       String url = BASE_URL + nm;
       URL u = new URI(url).toURL();
