@@ -240,7 +240,7 @@ async function handleCommand(bid,uid,devid,command,values)
       if (dev.UID == devid) {
 	  switch (command) {
 	     case "setSign" :
-		await sendToIQsign("POST","/sign/setto",{
+		await sendToIQsign("POST","sign/setto",{
 		   session: user.session,
 		   signid: dev.ID,
 		   value: values.setTo,
