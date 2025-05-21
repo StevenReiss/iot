@@ -224,6 +224,8 @@ async function getSavedSigns(user)
 
 async function handleCommand(bid,uid,devid,command,values)
 {
+   console.log("IQSIGN COMMAND ",command,values);
+   
    let user = users[uid];
    if (user == null) return;
    let sets = null;
@@ -235,6 +237,8 @@ async function handleCommand(bid,uid,devid,command,values)
     }
 
    await reauthorize(user);
+   
+   console.log("IQSIGN COMMAND VALUES ",values.setTo,values.otherText,values);
    
    for (let dev of user.devices) {
       if (dev.UID == devid) {
