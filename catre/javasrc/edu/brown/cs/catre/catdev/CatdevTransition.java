@@ -173,7 +173,7 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
    if (device == null) throw new CatreActionException("No device to act on");
    
    CatreLog.logD("CATDEV","Start transition " + getName() + " " +
-         params + " " + props);
+         params + " " + props + " " + default_parameters);
 
    CatreActionValues avals = getUniverse().createActionValues(default_parameters);
    if (params != null) {

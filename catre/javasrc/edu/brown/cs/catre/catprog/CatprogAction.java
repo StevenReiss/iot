@@ -49,6 +49,7 @@ import edu.brown.cs.catre.catre.CatreAction;
 import edu.brown.cs.catre.catre.CatreActionException;
 import edu.brown.cs.catre.catre.CatreDescribableBase;
 import edu.brown.cs.catre.catre.CatreDevice;
+import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatreParameterSet;
 import edu.brown.cs.catre.catre.CatreProgram;
 import edu.brown.cs.catre.catre.CatrePropertySet;
@@ -163,11 +164,17 @@ protected void setValid(boolean fg)
 {
    if (!isValid()) throw new CatreActionException("Invalid Action");
 
+   CatreLog.logD("CATPROG","Get action parameters " + parameter_values);
+   
    CatreTransition ct = transition_ref.getTransition();
    CatreParameterSet params = ct.getDefaultParameters();
    for (String cp : parameter_values.keySet()) {
+      CatreLog.logD("CATPROG","Set action parameter " + cp + " = " +
+            parameter_values.get(cp));
       params.setParameter(cp,parameter_values.get(cp));
     }
+   
+   CatreLog.logD("CATPROG","Get action parameters " + params);
    return params;
 }
 
@@ -200,7 +207,7 @@ protected void setValid(boolean fg)
 	throws CatreActionException
 {
    if (!isValid()) throw new CatreActionException("Invalid Action");
-
+   
    CatreParameterSet params = getParameters();
 
    transition_ref.getTransition().perform(params,ps);
