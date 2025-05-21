@@ -171,6 +171,9 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
    CatreDevice device = getDevice();
 
    if (device == null) throw new CatreActionException("No device to act on");
+   
+   CatreLog.logD("CATDEV","Start transition " + getName() + " " +
+         params + " " + props);
 
    CatreActionValues avals = getUniverse().createActionValues(default_parameters);
    if (params != null) {
@@ -178,6 +181,8 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
 	 avals.put(cp.getName(),params.getValue(cp));
        }
     }
+   CatreLog.logD("CATDEV","Transition initial values " + avals);
+   
    if (props != null) {
       for (Map.Entry<String,String> ent : props.entrySet()) {
 	 CatreParameter cp = findParameter(ent.getKey());
@@ -186,6 +191,8 @@ public void setDescription(String desc) 	{ super.setDescription(desc); }
 	  }
        }
     }
+   CatreLog.logD("CATDEV","Transition final values " + avals);
+   
    try {
       device.apply(this,avals);
     }
