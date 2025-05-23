@@ -643,6 +643,7 @@ private String handleGetValue(HttpExchange e,CatserveSessionImpl cs)
     }
    Object v = cu.getValue(cp);
    v = cp.unnormalize(v);
+   CatreLog.logD("CATSERVE","PARAMTER VALUE: " + v);
    
    JSONObject obj = buildJson("STATUS","OK",
 	 "DEVICE",dnm,

@@ -402,6 +402,7 @@ private final class SetSignAction implements BowerSessionHandler<IQsignSession> 
       
       String setval = BowerRouter.getParameter(he,"value");
       if (setval == null || setval.isEmpty()) {
+         IvyLog.logE("IQSIGN","No value given for set sign");
          return BowerRouter.errorResponse(he,session,400,"No value given");
        }
    
