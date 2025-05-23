@@ -144,7 +144,7 @@ async function reauthorize(user)
 
 async function getDevices(user)
 {
-   await getSavedSigns(user);
+   let names = await getSavedSigns(user);
 
    let resp = await sendToIQsign("POST","signs",{ session : user.session });
    if (resp.status != 'OK') return;
@@ -169,7 +169,8 @@ async function getDevices(user)
 	       LABEL : "iQsign " + newdev.name,
 	       DESCRIPTION: "iQsign " + newdev.displayname,
 	       PARAMETERS :  [
-		  { NAME: "savedValues", TYPE: "STRINGLIST", ISSENSOR: false, VOLATILE: true }
+		  { NAME: "savedValues", TYPE: "STRINGLIST", ISSENSOR: false, VOLATILE: true,
+                     VALUES: names }
 	       ],
 	       TRANSITIONS: [
 		  { NAME : "setSign",
