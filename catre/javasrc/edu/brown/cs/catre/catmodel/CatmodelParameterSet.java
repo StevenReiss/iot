@@ -49,6 +49,7 @@ import edu.brown.cs.catre.catre.CatreParameterSet;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreSubSavable;
 import edu.brown.cs.catre.catre.CatreUniverse;
+import edu.brown.cs.ivy.file.IvyLog;
 
 class CatmodelParameterSet implements CatreSubSavable, CatreParameterSet, CatmodelConstants
 {
@@ -189,7 +190,13 @@ public void addParameters(Collection<CatreParameter> ups)
 	 break;
        }
     }
-   if (parm == null) return;
+   if (parm == null) {
+      for (CatreParameter up : getValidParameters()) {
+         IvyLog.logD("CATMODEL","Bad parameter " + nm + " " +
+               up.getName() + " " + up.getName().equals(nm));
+       }
+      return;
+    }
 
    if (val == null) {
       parameter_values.remove(parm);

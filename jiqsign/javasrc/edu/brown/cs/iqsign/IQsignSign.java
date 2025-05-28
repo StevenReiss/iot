@@ -250,9 +250,6 @@ private boolean setupWebPage()
       map.put("NAME",getSignName());
       map.put("WIDTH",String.valueOf(getWidth()));
       map.put("DIMENSION",getDimension().toString());
-      
-
-      
       cnts = IvyFile.expandName(cnts,map);
       try (FileWriter fw = new FileWriter(getHtmlFile())) {
 	 fw.write(cnts);
@@ -261,6 +258,7 @@ private boolean setupWebPage()
          IvyLog.logE("IQSIGN","Problem copying to initial html page",e);
          return false;
        }
+      IvyLog.logD("IQSIGN","Web page set up in " + getHtmlFile());
     }
    
    File f5 = getImageFile(false);

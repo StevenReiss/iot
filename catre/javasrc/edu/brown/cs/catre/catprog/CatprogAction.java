@@ -169,9 +169,10 @@ protected void setValid(boolean fg)
    CatreTransition ct = transition_ref.getTransition();
    CatreParameterSet params = ct.getDefaultParameters();
    for (String cp : parameter_values.keySet()) {
+      Object val = parameter_values.get(cp);
       CatreLog.logD("CATPROG","Set action parameter " + cp + " = " +
-            parameter_values.get(cp));
-      params.setParameter(cp,parameter_values.get(cp));
+            val + " " + val.getClass());
+      params.setParameter(cp,val);
     }
    
    CatreLog.logD("CATPROG","Get action parameters " + params);
