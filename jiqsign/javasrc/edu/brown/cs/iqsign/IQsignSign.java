@@ -37,6 +37,8 @@ package edu.brown.cs.iqsign;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
 
@@ -242,6 +244,16 @@ private boolean setupWebPage()
 {
    String cnts = iqsign_main.loadResource("iqsigntemplate.html",this);
    if (cnts != null) {
+      Map<String,String> map = new HashMap<>();
+      map.put("NAMEKEY",getNameKey());
+      map.put("HEIGHT",String.valueOf(getHeight()));
+      map.put("NAME",getSignName());
+      map.put("WIDTH",String.valueOf(getWidth()));
+      map.put("DIMENSION",getDimension().toString());
+      
+
+      
+      cnts = IvyFile.expandName(cnts,map);
       try (FileWriter fw = new FileWriter(getHtmlFile())) {
 	 fw.write(cnts);
        }
@@ -265,11 +277,6 @@ private boolean setupWebPage()
          IvyLog.logE("IQSIGN","Problem setting up image file for sign",e);
        }
     }
-   
-   File f1 = getHtmlFile();
-   f1.delete();
-   File f2 = getImageFile(false);
-   f2.delete();
    
    return false;
 }
