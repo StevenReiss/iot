@@ -288,74 +288,79 @@ String mapString(String s)
 
 String useSavedImage(String name)
 {
-   Connection sql = SignMaker.getSqlDatabase();
-   if (sql == null || name == null || name.length() == 0) return null;
-   if (used_ids == null) used_ids = new HashSet<>();
-   String cnts = null;
-   
-   try {
-      String q1 = "SELECT * FROM iQsignDefines WHERE name = ? AND ";
-      q1 += "( userid = ? OR userid IS NULL )";
-      PreparedStatement st1 = sql.prepareStatement(q1);
-      st1.setString(1,name);
-      st1.setInt(2,user_id);
-      ResultSet rs1 = st1.executeQuery();
+   for (int i = 0; i < 4; ++i) {
+      Connection sql = SignMaker.getSqlDatabase();
+      if (sql == null || name == null || name.length() == 0) return null;
+      if (used_ids == null) used_ids = new HashSet<>();
+      String cnts = null;
       
-      int bestid = 0;
-      int bestuid = 0;
-      while (rs1.next()) {
-         int did = rs1.getInt("id");
-         if (used_ids.contains(did)) continue;
-         int uid = rs1.getInt("userid");
-         if (uid > 0 && uid != user_id) continue;
-         if (uid <= 0 && bestuid > 0) continue;
-         cnts = rs1.getString("contents");
-         bestid = did;
-         bestuid = uid;
-       }
-      
-      if (bestid <= 0) {
-         IvyLog.logD("SIGNMAKER","Problem loading definition: `" + name + 
-               "' user=" + user_id);
-         cnts = "# Bad Sign Name";
-       }
-      else {
-         IvyLog.logD("SIGNMAKER","Loaded sign " + name + " " + bestid + " " +
-               bestuid);
-         used_ids.add(bestid);
-         if (do_counts) {
-            String q3 = "SELECT * FROM iQsignUseCounts WHERE defineid = ? AND userid = ?";
-            PreparedStatement st3 = sql.prepareStatement(q3);
-            st3.setInt(1,bestid);
-            st3.setInt(2,user_id);
-            ResultSet rs3 = st3.executeQuery();
-            if (rs3.next()) {
-               int count = rs3.getInt("count");
-               String q4 = "UPDATE iQsignUseCounts SET count = ?, " +
-                     "last_used = CURRENT_TIMESTAMP " +
-                     "WHERE defineid = ? AND userid = ?";
-               PreparedStatement st4 = sql.prepareStatement(q4);
-               st4.setInt(1,count+1);
-               st4.setInt(2,bestid);
-               st4.setInt(3,user_id);
-               st4.execute();
-             }
-            else {
-               String q5 = "INSERT INTO iQsignUseCounts(defineid,userid,count) " +
-                  "VALUES (?,?,1)";
-               PreparedStatement st5 = sql.prepareStatement(q5);
-               st5.setInt(1,bestid);
-               st5.setInt(2,user_id);
-               st5.execute();
+      try {
+         String q1 = "SELECT * FROM iQsignDefines WHERE name = ? AND ";
+         q1 += "( userid = ? OR userid IS NULL )";
+         PreparedStatement st1 = sql.prepareStatement(q1);
+         st1.setString(1,name);
+         st1.setInt(2,user_id);
+         ResultSet rs1 = st1.executeQuery();
+         
+         int bestid = 0;
+         int bestuid = 0;
+         while (rs1.next()) {
+            int did = rs1.getInt("id");
+            if (used_ids.contains(did)) continue;
+            int uid = rs1.getInt("userid");
+            if (uid > 0 && uid != user_id) continue;
+            if (uid <= 0 && bestuid > 0) continue;
+            cnts = rs1.getString("contents");
+            bestid = did;
+            bestuid = uid;
+          }
+         
+         if (bestid <= 0) {
+            IvyLog.logD("SIGNMAKER","Problem loading definition: `" + name + 
+                  "' user=" + user_id);
+            cnts = "# Bad Sign Name";
+          }
+         else {
+            IvyLog.logD("SIGNMAKER","Loaded sign " + name + " " + bestid + " " +
+                  bestuid);
+            used_ids.add(bestid);
+            if (do_counts) {
+               String q3 = "SELECT * FROM iQsignUseCounts WHERE defineid = ? AND userid = ?";
+               PreparedStatement st3 = sql.prepareStatement(q3);
+               st3.setInt(1,bestid);
+               st3.setInt(2,user_id);
+               ResultSet rs3 = st3.executeQuery();
+               if (rs3.next()) {
+                  int count = rs3.getInt("count");
+                  String q4 = "UPDATE iQsignUseCounts SET count = ?, " +
+                        "last_used = CURRENT_TIMESTAMP " +
+                        "WHERE defineid = ? AND userid = ?";
+                  PreparedStatement st4 = sql.prepareStatement(q4);
+                  st4.setInt(1,count+1);
+                  st4.setInt(2,bestid);
+                  st4.setInt(3,user_id);
+                  st4.execute();
+                }
+               else {
+                  String q5 = "INSERT INTO iQsignUseCounts(defineid,userid,count) " +
+                     "VALUES (?,?,1)";
+                  PreparedStatement st5 = sql.prepareStatement(q5);
+                  st5.setInt(1,bestid);
+                  st5.setInt(2,user_id);
+                  st5.execute();
+                }
              }
           }
+         
+         return cnts;
+       }
+      catch (SQLException e) {
+         IvyLog.logE("SIGNMAKER","Database problem: ",e);
+         SignMaker.clearDatabase();
        }
     }
-   catch (SQLException e) {
-      IvyLog.logE("SIGNMAKER","Database problem: ",e);
-    }
    
-   return cnts;
+   return null;
 }
 
 

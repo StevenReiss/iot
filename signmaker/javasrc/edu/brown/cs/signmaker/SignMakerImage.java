@@ -817,27 +817,31 @@ void setQR(String name)
 
 private String lookupImage(String name)
 {
-   Connection sql = SignMaker.getSqlDatabase();
-   if (sql == null) return null;
    String rslt = null;
-   try {
-      String q = "SELECT * FROM iQsignImages WHERE (userid = ? OR userid IS NULL) AND name = ?";
-      PreparedStatement st = sql.prepareStatement(q);
-      st.setInt(1,user_id);
-      st.setString(2,name);
-      ResultSet rs = st.executeQuery();
-      if (rs.next()) {
-         String url = rs.getString("url");
-         String file = rs.getString("file");
-         if (url != null) rslt = url;
-         else if (file != null) rslt = file;
+   
+   for (int i = 0; i < 4; ++i) {
+      Connection sql = SignMaker.getSqlDatabase();
+      if (sql == null) return null;
+      try {
+         String q = "SELECT * FROM iQsignImages WHERE (userid = ? OR userid IS NULL) AND name = ?";
+         PreparedStatement st = sql.prepareStatement(q);
+         st.setInt(1,user_id);
+         st.setString(2,name);
+         ResultSet rs = st.executeQuery();
+         if (rs.next()) {
+            String url = rs.getString("url");
+            String file = rs.getString("file");
+            if (url != null) rslt = url;
+            else if (file != null) rslt = file;
+          }
+         st.close();
+         break;
        }
-      st.close();
-      if (rslt != null) return rslt;
-    }
-   catch (SQLException e) {
-      IvyLog.logE("SIGNMAKER","Database problem: ",e);
-      // need to reconnect to sql database here
+      catch (SQLException e) {
+         IvyLog.logE("SIGNMAKER","Database problem: ",e);
+         SignMaker.clearDatabase(); 
+         // need to reconnect to sql database here
+       }
     }
 
    return rslt;

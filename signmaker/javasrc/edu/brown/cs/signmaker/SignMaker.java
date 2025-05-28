@@ -97,6 +97,16 @@ private void setupBase()
       base_directory = findBaseDirectory();
     }
    
+   sql_database = null;
+   checkDatabase();
+}
+
+
+
+private static void checkDatabase()
+{
+   if (sql_database != null) return;
+   
    File f1 = new File(base_directory,"secret");
    File f2 = new File(f1,"signmaker.props");
    Properties props = new Properties();
@@ -108,7 +118,6 @@ private void setupBase()
       catch (IOException e) { }
     }
    
-   sql_database = null;
    String dbnm = props.getProperty("database","iqsign");
    try {
       File dbf = SignMaker.getDatabasePropertyFile();
@@ -121,7 +130,6 @@ private void setupBase()
     }
    System.err.println("Connected to database " + dbnm);
 }
-
 
 
 
@@ -287,7 +295,13 @@ static String getFontAwesomeToken()
 
 static Connection getSqlDatabase()
 {
+   checkDatabase();
    return sql_database;
+}
+
+static void clearDatabase()
+{
+   sql_database = null;
 }
 
 
