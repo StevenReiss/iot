@@ -65,6 +65,7 @@ import edu.brown.cs.catre.catre.CatreReferenceListener;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreSubSavable;
 import edu.brown.cs.catre.catre.CatreUniverse;
+import edu.brown.cs.ivy.file.IvyLog;
 import edu.brown.cs.ivy.swing.SwingColorSet;
 
 abstract class CatmodelParameter extends CatreDescribableBase implements CatreParameter, 
@@ -1132,13 +1133,19 @@ private static class EnumParameter extends CatmodelParameter {
    @Override public Object normalize(Object o) {
       if (o == null) return null;
       String s = o.toString();
-      for (String v : value_set) {
-	 if (v.equals(s)) return v;
+      List<Object> vals = getValues();
+      for (Object vo : vals) {
+         String v = vo.toString();
+         if (v.equals(s)) return v;
        }
-      for (String v : value_set) {
-	 if (v.equalsIgnoreCase(s)) return v;
+      for (Object vo : vals) {
+         String v = vo.toString();
+         if (v.equalsIgnoreCase(s)) return v;
        }
-      return null;
+      
+      IvyLog.logE("CATMODEL","Bad paramter enum value " + s + " " + vals);
+      
+      return s;
     }
 
 }	// end of inner class EnumParameter

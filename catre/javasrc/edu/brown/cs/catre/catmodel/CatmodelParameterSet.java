@@ -191,10 +191,6 @@ public void addParameters(Collection<CatreParameter> ups)
        }
     }
    if (parm == null) {
-      for (CatreParameter up : getValidParameters()) {
-         IvyLog.logD("CATMODEL","Bad parameter " + nm + " " +
-               up.getName() + " " + up.getName().equals(nm));
-       }
       return;
     }
 
