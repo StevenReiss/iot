@@ -167,7 +167,7 @@ Collection<String> getAllUnits();
 
 
 /**
- *      Change the label associated with this paramter
+ *      Change the label associated with this parameter
  **/
 
 void setLabel(String label);

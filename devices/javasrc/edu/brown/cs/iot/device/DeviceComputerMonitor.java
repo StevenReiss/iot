@@ -624,13 +624,15 @@ private void checkStatus()
       else if (last_idle < 3600) {
          presence = WorkOption.AWAY;
        }
-      last_idle = idle;
       if (presence == last_work) {
          presence = null;
        }
       else {
+         System.err.println("Work status change " + idle + " " + last_idle + " " + presence);
          last_work = presence;
        }
+      last_idle = idle;
+      
     }
    
    ZoomOption zoomval = getZoomStatus();

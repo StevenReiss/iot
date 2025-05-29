@@ -49,7 +49,6 @@ import edu.brown.cs.catre.catre.CatreParameterSet;
 import edu.brown.cs.catre.catre.CatreStore;
 import edu.brown.cs.catre.catre.CatreSubSavable;
 import edu.brown.cs.catre.catre.CatreUniverse;
-import edu.brown.cs.ivy.file.IvyLog;
 
 class CatmodelParameterSet implements CatreSubSavable, CatreParameterSet, CatmodelConstants
 {

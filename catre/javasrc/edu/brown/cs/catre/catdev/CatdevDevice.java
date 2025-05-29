@@ -278,6 +278,11 @@ public CatreParameter addParameter(CatreParameter p)
       if (up.getName().equals(p.getName())) return up;
     }
    
+   if (p.getName().startsWith("Samsung.")) {
+      CatreLog.logI("CATDEV","Remove old parameter " + p.getName());
+      return null;
+    }
+   
    CatreLog.logD("Add parameter " + getName() + "." +
          p.getName() + " " + p.hashCode());
 
@@ -453,7 +458,9 @@ protected void localStopDevice()			{ }
       CatreLog.logX("CATDEV","Attempt to get invalid parameter " +
             p + " " + p.hashCode());
       p = addParameter(p);
+      if (p == null) return null;
     }
+   
    Object v = for_universe.getValue(p);
    
    CatreLog.logD("CATDEV","Get parameter value " +
@@ -475,6 +482,7 @@ protected void localStopDevice()			{ }
    if (!parameter_set.contains(p)) {
       CatreLog.logD("CATDEV","Attempt to set invalid parameter");
       p = addParameter(p);
+      if (p == null) return;
     }
    
    val = p.normalize(val);
@@ -597,6 +605,19 @@ protected void updateCurrentState()		{ }
    rslt.put("ISCALENDAR",isCalendarDevice());
 
    return rslt;
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Output Methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+@Override public String toString()
+{
+   return getName();
 }
 
 

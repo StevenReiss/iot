@@ -542,7 +542,7 @@ private class Updater implements Runnable {
     }
 
    @Override public void run() {
-      CatreLog.logD("CATPROG","Start updater for " + for_universe.getName());
+      CatreLog.logD("CATPROG","Start updater for " + for_universe.getName() + (new Date()));
       
       Set<CatreDevice> used = null;
       for_universe.updateLock();

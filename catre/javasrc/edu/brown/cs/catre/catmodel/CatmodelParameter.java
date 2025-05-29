@@ -164,6 +164,12 @@ static CatreParameter createParameter(CatreUniverse cu,CatreStore cs,Map<String,
    if (p == null) return null;
 
    p.fromJson(cs,map);
+   
+   Object v = map.get("VALUES");
+   if (v == null) v = map.get("VALUE");
+   if (v != null && cu != null) {
+      cu.setValue(p,v);
+    }
 
    return p;
 }
@@ -386,6 +392,7 @@ protected String externalString(Object v)
    if (range_ref != null && range_ref.getParameter() != null) {
       Object vls = for_universe.getValue(range_ref.getParameter());
       if (vls != null) {
+         
          if (vls instanceof List) {
             vals = (List<?>) vls;
           }
@@ -1096,9 +1103,10 @@ private static class EnumParameter extends CatmodelParameter {
          checkRange();
          CatreParameter cp = range_ref.getParameter();
          if (cp != null) {
-            Object v = for_universe.getValue(range_ref.getParameter());
+            Object v = for_universe.getValue(cp);
             if (value_set.isEmpty()) {
-               CatreLog.logD("CATBRIDGE","Value load if needed here");
+               CatreLog.logD("CATBRIDGE","Value load if needed here " + v +
+                     " " + cp);
                setRangeValues(v);   
              }
           }
@@ -1143,7 +1151,7 @@ private static class EnumParameter extends CatmodelParameter {
          if (v.equalsIgnoreCase(s)) return v;
        }
       
-      IvyLog.logE("CATMODEL","Bad paramter enum value " + s + " " + vals);
+      IvyLog.logE("CATMODEL","Bad parameter enum value " + s + " " + vals);
       
       return s;
     }

@@ -647,7 +647,7 @@ class SamsungDevice {
             }
             let svals = this.getValues(ocap);
             if (svals != null) {
-               param.TYPE = 'ENUM';
+               if (param.TYPE == null) param.TYPE = 'ENUM';
                param.VALUES = svals;
                // might check for svals being empty
             }
