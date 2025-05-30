@@ -388,13 +388,15 @@ protected String externalString(Object v)
    rslt.put("VOLATILE",is_volatile);
    if (parameter_data != null) rslt.put("DATA",parameter_data);
 
-   List<?> vals = getValues();
+   Collection<?> vals = getValues();
    if (range_ref != null && range_ref.getParameter() != null) {
       Object vls = for_universe.getValue(range_ref.getParameter());
       if (vls != null) {
-         
          if (vls instanceof List) {
             vals = (List<?>) vls;
+          }
+         else if (vls instanceof Set) {
+            vals = (Set<?>) vls;
           }
          else if (vls instanceof JSONObject) ;
          else {
