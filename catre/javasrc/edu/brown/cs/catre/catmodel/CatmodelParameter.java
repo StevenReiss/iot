@@ -167,6 +167,7 @@ static CatreParameter createParameter(CatreUniverse cu,CatreStore cs,Map<String,
    
    Object v = map.get("VALUE");
    if (v != null && cu != null) {
+      
       cu.setValue(p,v);
     }
 

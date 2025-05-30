@@ -163,13 +163,15 @@ private void initialize(CatreUniverse uu)
    for (ListIterator<CatreParameter> it = nset.listIterator(); it.hasNext(); ) {
       CatreParameter cp = it.next();
       CatreParameter oldcp = findParameter(cp.getName());
+      CatreLog.logD("CATDEV","Update parameter " + oldcp + " " + cp);
       if (oldcp != null) del.remove(oldcp);
       if (oldcp == null) {
          chng = true;
        }
       else if (cp.getParameterType() != oldcp.getParameterType()) {
+         // use new parameter if the types differ
         chng = true;
-        it.set(oldcp);
+//      it.set(oldcp);
        }
       else {
          chng |= oldcp.update(cp); 
