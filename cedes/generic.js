@@ -263,7 +263,9 @@ async function handleEvent(req,res)
       let devid = event.DEVICE;
       let param = event.PARAMETER;
       if (user.active[devid] != null) {
-         if (!user.active[devid].has(param)) report = false;
+         if (!user.active[devid].has(param)) {
+//          report = false;     // uncomment this when data is correct
+          }
        }
       console.log("GENERIC EVENT CHECK",devid,param,report);
     }
