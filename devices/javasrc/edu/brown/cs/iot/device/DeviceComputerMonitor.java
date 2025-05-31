@@ -265,6 +265,8 @@ private void setupBtCommands()
       bt_command = BT_COMMAND_2;
       need_python_setup = true;
     }
+   
+   System.err.println("Use BT command " + bt_command + " " + need_python_setup);
 }
 
 
@@ -310,6 +312,8 @@ private void setupPython()
        }
       catch (IOException e) { }
     }
+   
+   System.err.println("Finished python setup " + bt_command);
    
    return;
 }
@@ -431,6 +435,9 @@ private boolean checkCommand(String rslt,String... cmd)
          "TRANSITIONS",translist,
          "PARAMETERS",paramlist);
    
+   
+   resetParameters();
+   
    return obj;
 }
 
@@ -439,12 +446,18 @@ private boolean checkCommand(String rslt,String... cmd)
 {
    System.err.println("RESET computer monitor DEVICE");
    if (fg) {
-      last_zoom = null;
-      last_check = 0;
-      last_phone = null;
-      phone_count = 0;
+      resetParameters();
     }
    super.resetDevice(fg);
+}
+
+
+private void resetParameters()
+{
+   last_zoom = null;
+   last_check = 0;
+   last_phone = null;
+   phone_count = 0;
 }
 
 
@@ -609,31 +622,28 @@ private void checkStatus()
    
    long idle = getIdleTime();
    
+   System.err.println("IDLE TIME = " + idle + " at " + new Date());
+   
    WorkOption presence = WorkOption.WORKING;
-   if (idle >= 0) {
-      if (idle < 300) {
-         if (last_idle >= 300 || last_idle < 0) {
-            presence = WorkOption.WORKING;
-          }
-       }
-      else if (idle < 3600) {
-         if (last_idle >= 3600 || last_idle < 300) {
-            presence = WorkOption.IDLE;
-          }
-       }
-      else if (last_idle < 3600) {
-         presence = WorkOption.AWAY;
-       }
-      if (presence == last_work) {
-         presence = null;
-       }
-      else {
-         System.err.println("Work status change " + idle + " " + last_idle + " " + presence);
-         last_work = presence;
-       }
-      last_idle = idle;
-      
+   if (idle >= last_idle || idle < 30) {
+      // if idle went down, then we are working
+      // otherwise give us 30 seconds grace to read the display
     }
+   else if (idle >= 7200) {
+      presence = WorkOption.OFF;
+    }
+   else if (idle >= 300) {
+      presence = WorkOption.AWAY;
+    }
+   else presence = WorkOption.IDLE;
+   if (presence == last_work) {
+      presence = null;
+    }
+   else {
+      System.err.println("Work status change " + idle + " " + last_idle + " " + presence);
+      last_work = presence;
+    }
+   last_idle = idle;
    
    ZoomOption zoomval = getZoomStatus();
    if (zoomval == last_zoom) zoomval = null;
@@ -808,9 +818,12 @@ private PhoneOption getPhoneStatus()
       else bt_command = bt_command.replace("$MAC",s1);
     }
    
+// System.err.println("CHECK PHONE STATUS: " + bt_command);
+   
    try (BufferedReader rdr = runCommand(bt_command)) {
       for ( ; ; ) {
          String ln = rdr.readLine();
+//       System.err.println("PHONE STATUS LINE: " + ln);
          if (ln == null) break;
          ln = ln.toUpperCase();
          if (ln.contains("FAILED")) continue;
@@ -819,7 +832,11 @@ private PhoneOption getPhoneStatus()
        }
       return PhoneOption.NOT_PRESENT;
     }
-   catch (IOException e) { }
+   catch (IOException e) { 
+      System.err.println("Problem checking phone status " + e);
+    }
+   
+   System.err.println("PHONE STATUS CHECK FAILED");
    
    return null;
 }

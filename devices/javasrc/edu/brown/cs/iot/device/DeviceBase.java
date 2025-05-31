@@ -587,10 +587,18 @@ protected JSONObject buildJson(Object... args)
 
 protected BufferedReader runCommand(String cmd) throws IOException
 {
-   String [] args = new String [] { "sh","-c",cmd };
 
-   Process proc = Runtime.getRuntime().exec(args,null);
-
+   ProcessBuilder pb = new ProcessBuilder("/bin/csh","-c",cmd);
+   pb.directory(new File(System.getProperty("user.home")));
+// pb.redirectInput(ProcessBuilder.Redirect.DISCARD);
+   pb.redirectOutput(ProcessBuilder.Redirect.PIPE);
+   pb.redirectError(ProcessBuilder.Redirect.INHERIT);   // DISCARD
+   Process proc = pb.start();
+   
+// System.err.println("RUNNING " + pb.command());
+   
+// String [] args = new String [] { "sh","-c",cmd };
+// Process proc = Runtime.getRuntime().exec(args,null);
    proc.getOutputStream().close();
 
    InputStream ins = proc.getInputStream();
