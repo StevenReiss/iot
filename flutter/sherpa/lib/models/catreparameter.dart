@@ -53,6 +53,7 @@ class CatreParameter extends CatreData {
   String? getDefaultUnit() => optString("UNIT");
   String? getValue() => optString("VALUE");
   bool isVolatile() => getBool("VOLATILE");
+  bool isSorted() => getBool("SORT");
 
   Future<void> updateValues(CatreDevice? cd) async {
     CatreParameterRef? ref =
@@ -63,6 +64,9 @@ class CatreParameter extends CatreData {
         await rp.updateValues(ref.getDevice());
         List<String>? vals = rp.optStringList("VALUE");
         if (vals != null) {
+          if (isSorted()) {
+            vals.sort();
+          }
           setListField("VALUES", vals);
         }
       }

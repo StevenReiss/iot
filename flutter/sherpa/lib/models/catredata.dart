@@ -225,12 +225,12 @@ class CatreData {
   List<String> stringOrStringList(String id) {
     dynamic v = catreData[id];
     if (v == null) return [];
-    if (v!.runtimeType == String) {
-      return [v as String];
+    if (v is String) {
+      return [v];
     }
-    if (v!.runtimeType == List<String>) {
-      return v as List<String>;
-    } else if (v!.runtimeType == List) {
+    if (v is List<String>) {
+      return v;
+    } else if (v is List) {
       List<String> rslt = [];
       for (var x in v) {
         rslt.add(x.toString());
@@ -244,11 +244,11 @@ class CatreData {
   List<String>? optStringList(String id) {
     dynamic v0 = catreData[id];
     if (v0 == null) return null;
-    if (v0!.runtimeType == String) {
+    if (v0 is String) {
       List<String> v1 = v0.split(";");
       return v1;
-    } else if (v0.runtimeType == List) {
-      List<dynamic>? v = v0 as List<dynamic>;
+    } else if (v0 is List) {
+      List<dynamic>? v = v0;
       List<String> rslt = [];
       for (dynamic d in v) {
         rslt.add(d.toString());
