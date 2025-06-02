@@ -316,6 +316,8 @@ class _ActionParameter {
             value: value,
             onChanged: _setValue,
           );
+        } else {
+          print("Problem with values");
         }
         break;
       case "TIME":

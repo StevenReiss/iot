@@ -127,22 +127,22 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       acts.addAll([
         widgets.MenuAction(
           'Add New Rule Before',
-          () => _newRule(cr, false, true),
+          () => _addRule(cr, false, true),
           "Insert a new rule with higher priority than this rule",
         ),
         widgets.MenuAction(
           'Add New Rule After',
-          () => _newRule(cr, false, false),
+          () => _addRule(cr, false, false),
           "Insert a new rule with lower priority than this rule",
         ),
         widgets.MenuAction(
           'Add New Trigger Before',
-          () => _newRule(cr, true, true),
+          () => _addRule(cr, true, true),
           "Insert a new trigger rule with higher priority than this rule",
         ),
         widgets.MenuAction(
           'Add New Trigger After',
-          () => _newRule(cr, true, false),
+          () => _addRule(cr, true, false),
           "Insert a new trigger rule with lower priority than this rule",
         ),
       ]);
@@ -313,12 +313,19 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
   }
 
   void _editRule(CatreRule cr) async {
-    await widgets.gotoThen(context, SherpaRuleWidget(cr));
-    setState(() {});
+    BuildContext dcontext = context;
+    await cr.getDevice().updateValues();
+    if (dcontext.mounted) {
+      await widgets.gotoThen(dcontext, SherpaRuleWidget(cr));
+      setState(() {});
+    }
   }
 
   Future<CatreRule?> _newRule(
-      CatreRule? cr, bool trig, bool after) async {
+    CatreRule? cr,
+    bool trig,
+    bool after,
+  ) async {
     if (_forDevice == null) {
       await widgets.displayDialog(
         context,
@@ -415,8 +422,12 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     }
   }
 
-  void _addRule() async {
-    CatreRule? cr = await _newRule(null, false, true);
+  void _addRule([
+    CatreRule? rule,
+    bool trig = false,
+    bool after = true,
+  ]) async {
+    CatreRule? cr = await _newRule(rule, trig, after);
     if (cr != null) {
       _editRule(cr);
     }

@@ -1080,6 +1080,9 @@ private static class EnumParameter extends CatmodelParameter {
       super.fromJson(cs,map);
       value_set = getSavedStringList(map,"VALUES",value_set);
       is_sorted = getSavedBool(map,"SORT",is_sorted);
+      if (is_sorted && value_set != null) {
+         Collections.sort(value_set);
+       }
     }
    
    @Override public Map<String,Object> toJson() {
@@ -1111,6 +1114,9 @@ private static class EnumParameter extends CatmodelParameter {
                      " " + cp);
                setRangeValues(v);   
              }
+          }
+         if (is_sorted && value_set != null) {
+            Collections.sort(value_set);
           }
        }
       return new ArrayList<Object>(value_set);

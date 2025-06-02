@@ -263,6 +263,10 @@ default Boolean getSavedBool(Map<String,Object> map,String key,Boolean v)
 	 Boolean bv = (Boolean) ov;
 	 v = bv.booleanValue();
        }
+      else {
+         CatreLog.logE("CATRE","Problem with saved boolean " + ov + " " + 
+               ov.getClass());
+       }
     }
 
    return v;

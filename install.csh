@@ -84,18 +84,22 @@ ssh sherpa.cs.brown.edu '(cd /vol/iot/catre; start.csh)'
 echo catre start status $status
 
 pushd devices
+echo starting devices locally
 start.csh
 popd
 
 pushd flutter/iqsign
+echo building iQsign web front end
 buildweb.csh >&! buildweb.out
 popd
 
 pushd flutter/sherpa
+echo building SherPa web front end
 buildweb.csh >&! buildweb.out
 popd
 
 pushd flutter/alds
+echo building alds ios application
 flutter clean
 flutter build ios
 # flutter install
