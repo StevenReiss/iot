@@ -647,9 +647,9 @@ private CatreDevice createAnyDevice(CatreStore cs,Map<String,Object> map)
 }
 
 
-@Override public CatreParameter createEnumParameter(String name,Iterable<String> vals)
-{
-   return CatmodelParameter.createEnumParameter(this,name,vals);
+@Override public CatreParameter createEnumParameter(String name,Iterable<String> vals,boolean sorted)
+{ 
+   return CatmodelParameter.createEnumParameter(this,name,vals,sorted);
 }
 
 
@@ -659,9 +659,9 @@ private CatreDevice createAnyDevice(CatreStore cs,Map<String,Object> map)
 }
 
 
-@Override public CatreParameter createEnumParameter(String name,String [] v)
+@Override public CatreParameter createEnumParameter(String name,String [] v,boolean sorted)
 {
-   return CatmodelParameter.createEnumParameter(this,name,v);
+   return CatmodelParameter.createEnumParameter(this,name,v,sorted); 
 }
 
 

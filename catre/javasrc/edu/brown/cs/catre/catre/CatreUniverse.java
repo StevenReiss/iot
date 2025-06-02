@@ -206,14 +206,14 @@ CatreParameter createEnumParameter(String name,Enum<?> e);
  *      Create an enum parameter for an internal device.
  **/
 
-CatreParameter createEnumParameter(String name,Iterable<String> vals);
+CatreParameter createEnumParameter(String name,Iterable<String> vals,boolean sorted);
 
 
 /**
  *      Create an enum parameter for an internal device.
  **/
 
-CatreParameter createEnumParameter(String name,String [] v);
+CatreParameter createEnumParameter(String name,String [] v,boolean sorted);
 
 /**
  *      Create a set parameter for an internal device.

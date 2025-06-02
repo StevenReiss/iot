@@ -160,7 +160,7 @@ private void initialize()
    List<String> vals = List.of("Clear","Partly Cloudy","Cloudy",
          "Fog", "Drizzle", "Rain", "Snow", "Rain Showers",
          "Snow Showers", "Thunderstorm","Unknown");
-   CatreParameter pp1 = for_universe.createEnumParameter("WeatherCondition",vals);
+   CatreParameter pp1 = for_universe.createEnumParameter("WeatherCondition",vals,false);
    pp1.setIsSensor(true);
    addParameter(pp1);
    // might want to add other weather conditions

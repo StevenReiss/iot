@@ -213,15 +213,17 @@ public static CatmodelParameter createEnumParameter(CatreUniverse cu,String name
 }
 
 
-public static CatmodelParameter createEnumParameter(CatreUniverse cu,String name,Iterable<String> vals)
+public static CatmodelParameter createEnumParameter(CatreUniverse cu,String name,
+      Iterable<String> vals,boolean sorted)
 {
-   return new EnumParameter(cu,name,vals);
+   return new EnumParameter(cu,name,vals,sorted);
 }
 
 
-public static CatmodelParameter createEnumParameter(CatreUniverse cu,String name,String [] vals)
+public static CatmodelParameter createEnumParameter(CatreUniverse cu,String name,
+      String [] vals,boolean sorted)
 {
-   return new EnumParameter(cu,name,vals);
+   return new EnumParameter(cu,name,vals,sorted);
 }
 
 public static CatmodelParameter createSetParameter(CatreUniverse cu,String name,Iterable<String> vals)
@@ -1058,31 +1060,35 @@ private static class EnumParameter extends CatmodelParameter {
 
    EnumParameter(CatreUniverse cu,String nm,Enum<?> e) {
       super(cu,nm);
+      is_sorted = false;
       value_set = new ArrayList<>();
       for (Enum<?> x : e.getClass().getEnumConstants()) {
          value_set.add(x.toString().intern());
        }
+      handleSort();
     }
 
-   EnumParameter(CatreUniverse cu,String nm,Iterable<String> vals) {
+   EnumParameter(CatreUniverse cu,String nm,Iterable<String> vals,boolean sorted) {
       super(cu,nm);
       value_set = new ArrayList<>();
+      is_sorted = sorted;
       for (String s : vals) value_set.add(s.intern());
+      handleSort();
     }
 
-   EnumParameter(CatreUniverse cu,String nm,String [] vals) {
+   EnumParameter(CatreUniverse cu,String nm,String [] vals,boolean sorted) {
       super(cu,nm);
       value_set = new ArrayList<>();
+      is_sorted = sorted;
       for (String s : vals) value_set.add(s.intern());
+      handleSort();
     }
 
    @Override public void fromJson(CatreStore cs,Map<String,Object> map) {
       super.fromJson(cs,map);
       value_set = getSavedStringList(map,"VALUES",value_set);
       is_sorted = getSavedBool(map,"SORT",is_sorted);
-      if (is_sorted && value_set != null) {
-         Collections.sort(value_set);
-       }
+      handleSort();
     }
    
    @Override public Map<String,Object> toJson() {
@@ -1096,6 +1102,7 @@ private static class EnumParameter extends CatmodelParameter {
       EnumParameter sp = (EnumParameter) cp;
       value_set = sp.value_set;
       is_sorted = sp.is_sorted;
+      handleSort();
       return chng;
     }
    
@@ -1115,9 +1122,7 @@ private static class EnumParameter extends CatmodelParameter {
                setRangeValues(v);   
              }
           }
-         if (is_sorted && value_set != null) {
-            Collections.sort(value_set);
-          }
+         handleSort();
        }
       return new ArrayList<Object>(value_set);
     }
@@ -1140,9 +1145,7 @@ private static class EnumParameter extends CatmodelParameter {
                      vals1.getClass() + " " + vals1);
              }
           }
-        if (is_sorted) {
-            Collections.sort(value_set);
-          }
+         handleSort();
        }
     }
    
@@ -1162,6 +1165,12 @@ private static class EnumParameter extends CatmodelParameter {
       IvyLog.logE("CATMODEL","Bad parameter enum value " + s + " " + vals);
       
       return s;
+    }
+   
+   private void handleSort() {
+      if (is_sorted && value_set != null) {
+         Collections.sort(value_set);
+       }
     }
 
 }	// end of inner class EnumParameter
