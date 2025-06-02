@@ -170,6 +170,7 @@ async function getDevices(user)
 	       DESCRIPTION: "iQsign " + newdev.displayname,
 	       PARAMETERS :  [
 		  { NAME: "savedValues", TYPE: "STRINGLIST", ISSENSOR: false, VOLATILE: true,
+                     SORT: true,
                      VALUES: names }
 	       ],
 	       TRANSITIONS: [

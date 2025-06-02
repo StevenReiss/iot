@@ -1260,6 +1260,8 @@ private static class EventsParameter extends CatmodelParameter {
 
 private static class StringListParameter extends CatmodelParameter {
 
+   private boolean is_sorted;
+   
    StringListParameter(CatreUniverse cu,String name) {
       super(cu,name);
     }
@@ -1267,13 +1269,26 @@ private static class StringListParameter extends CatmodelParameter {
    @Override public ParameterType getParameterType() {
       return ParameterType.STRINGLIST;
     }
-
+   
+   @Override public void fromJson(CatreStore cs,Map<String,Object> map) {
+      super.fromJson(cs,map);
+      is_sorted = getSavedBool(map,"SORT",is_sorted);
+    }
+   
+   @Override public Map<String,Object> toJson() {
+      Map<String,Object> rslt = super.toJson();
+      rslt.put("SORT",is_sorted);
+      return rslt;
+    }
+   
    @Override public Object normalize(Object o) {
       if (o == null) return null;
       List<String> rslt = new ArrayList<>();
    
       if (o instanceof List) {
-         return o;
+         for (Object v : ((List<?>) o)) {
+            rslt.add(v.toString());
+          }
        }
       else if (o instanceof Collection) {
          Collection<?> c = (Collection<?>) o;
@@ -1294,6 +1309,9 @@ private static class StringListParameter extends CatmodelParameter {
             String v1 = tok.nextToken().trim();
             rslt.add(v1);
           }
+       }
+      if (is_sorted) {
+         Collections.sort(rslt);
        }
       return rslt;
     }
