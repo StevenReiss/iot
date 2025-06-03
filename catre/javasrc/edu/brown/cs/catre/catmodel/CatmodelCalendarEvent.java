@@ -197,7 +197,7 @@ String getDays()
        }
       
       if (end.compareTo(start) <= 0) {
-         CatreLog.logD("CATMODEL","End time " + end.toInstant() + "before " + start.toInstant());
+         CatreLog.logD("CATMODEL","End time " + end.toInstant() + " before " + start.toInstant());
          continue;
        }
       rslt.add(start);

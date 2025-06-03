@@ -208,6 +208,7 @@ private BowerRouter<CatserveSessionImpl> setupRouter()
 {
    BowerRouter<CatserveSessionImpl> br = new BowerRouter<>(session_store);
    br.addRoute("ALL","/ping",this::handlePing);
+   br.addRoute("ALL","/aab9",this::handleIgnore);
    br.addRoute("ALL",BowerRouter::handleParameters);
    br.addRoute("ALL",br::handleSessions);
    br.addRoute("ALL",BowerRouter::handleLogging);
@@ -268,6 +269,13 @@ private BowerRouter<CatserveSessionImpl> setupRouter()
 private String handlePing(HttpExchange e)
 {
    return "{ 'pong' : true }";
+}
+
+
+
+private String handleIgnore(HttpExchange e)
+{
+   return "Go Away";
 }
 
 

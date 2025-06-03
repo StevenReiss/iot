@@ -522,11 +522,12 @@ private class Updater implements Runnable {
 
    Updater(Set<CatreDevice> devices) {
       run_again = true;
-      last_request = 0;
+      last_request = System.currentTimeMillis();
       for_devices = devices;
     }
 
    void runAgain(Set<CatreDevice> devices) {
+      CatreLog.logD("CATPROG","Run again for " + devices);
       for_universe.updateLock();
       try {
          run_again = true;
@@ -539,6 +540,7 @@ private class Updater implements Runnable {
       finally {
          for_universe.updateUnlock();
        }
+      CatreLog.logD("CATPROG","Run again finished");
     }
 
    @Override public void run() {
@@ -547,18 +549,21 @@ private class Updater implements Runnable {
       Set<CatreDevice> used = null;
       for_universe.updateLock();
       try {
-         for ( ; ; ) {
+         run_again = true;
+         while (run_again) {
+            run_again = false;
             long now = System.currentTimeMillis();
             if (now - last_request > RUN_DELAY) break;
+            for_universe.updateUnlock();                // allow run again while waiting
             try {
                Thread.sleep(now-last_request);
              }
             catch (InterruptedException e) { }
+            for_universe.updateLock();
           }
          used = for_devices;
          for_devices = null;
          run_again = false;
-         
        }
       finally {
          for_universe.updateUnlock();

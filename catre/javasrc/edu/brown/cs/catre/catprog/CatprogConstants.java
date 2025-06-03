@@ -48,7 +48,7 @@ public interface CatprogConstants
 /*                                                                              */
 /********************************************************************************/
 
-long    RUN_DELAY = 1000;               // delay after change in ms
+long    RUN_DELAY = 5000;               // delay after change in ms
 
 
 

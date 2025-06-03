@@ -210,7 +210,6 @@ private void setupBridges()
 /*										*/
 /********************************************************************************/
 
-
 @Override public void updateLock()
 {
    update_lock.lock();
