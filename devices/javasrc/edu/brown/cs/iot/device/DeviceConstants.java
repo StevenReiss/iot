@@ -57,7 +57,7 @@ String DEVICE_UID = "device_uid";
 
 String LOCK_DIR = ".locks";
 
-long PING_TIME = 10000;
+long PING_TIME = 30000;
 long ACCESS_TIME = 60000;
 
 }	// end of interface DeviceConstants

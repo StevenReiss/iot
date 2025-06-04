@@ -626,7 +626,7 @@ private void checkStatus()
    System.err.println("WORK STATUS: " + idle + " " + last_idle + " " + last_work);
    
    WorkOption presence = WorkOption.WORKING;
-   if (idle < last_idle || idle < 30) {
+   if (idle < last_idle || idle < 60) {
       // if idle went down, then we are working
       // otherwise give us 30 seconds grace to read the display
     }

@@ -181,7 +181,16 @@ private void setupKeys()
    JSONObject current = json.getJSONObject("main");
    Object otemp = current.get("temp");
    String temp = null;
-   if (otemp != null) temp = otemp.toString();
+   if (otemp != null) {
+      if (otemp instanceof Number) {
+         double v = ((Number) otemp).doubleValue();
+         v = Math.round(v);
+         temp = String.valueOf(v);
+       }
+      else {
+         temp = otemp.toString();
+       }
+    }
    JSONObject weather = json.getJSONArray("weather").getJSONObject(0);
    String cond = weather.getString("main");
    

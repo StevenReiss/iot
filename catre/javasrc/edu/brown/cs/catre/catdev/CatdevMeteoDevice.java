@@ -223,8 +223,9 @@ private double convertTemperature(double v,String unit)
       if (unit.contains("F")) {
          v = (v-32) * 5.0 / 9.0;
        }
-      
     }
+   v = Math.round(v);
+   
    return v;
 }
 

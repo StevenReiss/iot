@@ -355,7 +355,7 @@ async function checkUpdates()
          // might want to check if device is active
          if (dev.PINGTIME != null && dev.PINGTIME > 0) {
             let lp = user.lastping[dev.UID];
-            if (lp != null && lp > 0 && (now-lp) > 2 * dev.PINGTIME) {
+            if (lp != null && lp > 0 && (now-lp) > 4 * dev.PINGTIME) {
                console.log("GENERIC LOST DEVICE",dev);
                user.lastping[dev.UID] = 0;
                for (let par of dev.PARAMETERS) {
