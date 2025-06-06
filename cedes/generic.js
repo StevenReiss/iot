@@ -115,6 +115,7 @@ function addBridge(authdata,bid)
          bridgeid: bid,
          devices : [ ],
          active: null,
+         saved: null,
          lastping: { },
          devicecounter : 1 };
    queues[uid] = [];
@@ -265,6 +266,14 @@ async function handleEvent(req,res)
       if (user.active[devid] != null) {
          if (!user.active[devid].has(param)) {
             report = false;     // uncomment this when data is correct
+            if (user.saved == null) user.saved = {};
+            if (user.saved[devid] == null) user.saved[devid] = {};
+            user.saved[devid][param] = event;
+          }
+         else {
+            if (user.saved != null && user.saved[devid] != null) {
+               delete user.saved[devid][param];
+             }
           }
        }
       console.log("GENERIC EVENT CHECK",devid,param,report);
@@ -279,7 +288,6 @@ async function handleEvent(req,res)
    
    config.handleSuccess(req,res);
 }
-
 
 
 
@@ -314,15 +322,56 @@ function handleActiveSensors(bid,uid,active)
       return;
     }
    if (user.active == null) user.active = {};
+   let todo = [];
+   let newactive = {};
    for (let param of active) {
       let devid = param.DEVICE;
-      user.active[devid] = new Set();
+      newactive[devid] = new Set();
     }
    for (let param of active) {
       let devid = param.DEVICE;
       let nm = param.PARAMETER;
-      user.active[devid].add(nm);
+      if (!isActive(user,param)) todo.add(param);
+      newactive[devid].add(nm);
     }
+   
+   for (let dev in newactive) {
+      user.active[dev] = newactive[dev];
+    }
+   
+   for (let param of todo) {
+      sendEvent(user,param);            // these are done in background
+    }
+}
+
+
+function isActive(user,param) 
+{
+   console.log("CHECK ACTIVE",param,user.active[param.DEVICE]);
+   
+   let devid = param.DEVICE;
+   if (user.active[devid] == null) return false;
+   if (user.active[devid].has(param)) return true;
+   return false;
+}
+
+async function sendEvent(user,param) 
+{
+   let devid = param.DEVICE;
+   let nm = param.PARAMTER;
+   
+   if (user.saved == null) return;
+   if (user.saved[devid] == null) return;
+   let event = user.saved[devid][param];
+   if (event == null) return;
+   
+   let msg = { command: "EVENT", 
+         uid : user.uid,
+         bridge: "generic",
+         bid: user.bridgeid,
+         event: event,
+    };
+   await catre.sendToCatre(msg);              
 }
 
 

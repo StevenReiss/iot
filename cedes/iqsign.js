@@ -69,7 +69,7 @@ function getRouter(restful)
    restful.all("*",config.handle404)
    restful.use(config.handleError);
 
-   setInterval(pingChecker,120*1000);
+   setInterval(pingChecker,60*1000);
 
    return restful;
 }
