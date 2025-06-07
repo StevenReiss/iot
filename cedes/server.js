@@ -151,16 +151,16 @@ async function addBridge(req,res)
 
    switch (req.body.bridge) {
       case "generic" :
-         succ = generic.addBridge(req.body.authdata,req.body.bridgeid);
+         succ = await generic.addBridge(req.body.authdata,req.body.bridgeid);
          break;
       case "smarrthings" :
-         succ = smartthings.addBridge(req.body.authdata,req.body.bridgeid);
+         succ = await smartthings.addBridge(req.body.authdata,req.body.bridgeid);
          break;
       case "iqsign" :
-         succ = iqsign.addBridge(req.body.authdata,req.body.bridgeid);
+         succ = await iqsign.addBridge(req.body.authdata,req.body.bridgeid);
          break
       case "samsung" :
-         succ = samsung.addBridge(req.body.authdata,req.body.bridgeid);
+         succ = await samsung.addBridge(req.body.authdata,req.body.bridgeid);
          break;
       default :
          console.log("NO SUCH BRIDGE: ",req.body.bridge);

@@ -162,7 +162,7 @@ private void setupTimer()
       else delay = t0-now;
     }
    CatreLog.logI("CATPROG","Set timer for condition " + getLabel() + 
-         " = " + delay);
+         " = " + delay + " " + (delay/1000/60));
    getCatre().schedule(new CondChecker(),delay);
 }
 

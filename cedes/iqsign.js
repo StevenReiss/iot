@@ -129,7 +129,7 @@ async function reauthorize(user)
    
    let tok1 = config.hasher(user.authtoken);
    let tok2 = config.hasher(tok1 + code);
-   console.log("IQSIGN REAUTH ",user.authtoken,code,tok2);
+   console.log("IQSIGN REAUTH ",user.username,user.authtoken,code,tok2);
    
    let login = { session: session, username: user.username, accesscode: tok2 };
    let resp1 = await sendToIQsign("POST","login",login);
@@ -139,6 +139,8 @@ async function reauthorize(user)
    else {
       user.session = resp1.session;
     }
+   
+   console.log("REAUTHORIZE COMPLETE",user.session);
 }
 
 
@@ -226,7 +228,7 @@ async function getSavedSigns(user)
 
 async function handleCommand(bid,uid,devid,command,values)
 {
-   console.log("IQSIGN COMMAND ",command,values);
+   console.log("IQSIGN COMMAND",command,values);
    
    let user = users[uid];
    if (user == null) return;

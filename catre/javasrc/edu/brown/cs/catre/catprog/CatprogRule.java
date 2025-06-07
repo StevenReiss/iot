@@ -207,6 +207,10 @@ Set<CatreCondition> getUsedConditions()
       active_rule = new RuleRunner(ps);
       active_rule.applyRule();
     }
+   else {
+      CatreLog.logI("CATPROG","Rule has NO ACTIONS");
+
+    }
 
    return true;
 }
@@ -236,6 +240,7 @@ private class RuleRunner implements Runnable {
     }
 
    void abort() {
+      CatreLog.logI("CATPROG","Attempt to abort rule " + getLabel());
       synchronized (this) {
 	 // don't want to interrupt thread if it has finished rule
 	 if (active_rule != null && runner_thread != null) {
@@ -255,6 +260,7 @@ private class RuleRunner implements Runnable {
       try {
          try {
             for (CatreAction a : for_actions) {
+               CatreLog.logD("CATPROG","Apply rule action " + a.getLabel());
                a.perform(param_set);
                synchronized (this) {
         	  if (Thread.currentThread().isInterrupted() || is_aborted) {
