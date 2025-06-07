@@ -106,6 +106,7 @@ public CatbridgeFactory(CatreController cc)
 
    ServerThread sthrd = new ServerThread();
    sthrd.start();
+   sthrd.waitForSetup();
 }
 
 
@@ -269,6 +270,7 @@ static String getBridgeKey()			{ return bridge_key; }
 private class ServerThread extends Thread {
 
    private ServerSocket server_socket;
+   private boolean server_setup;
 
    ServerThread() {
       super("CatbridgeServerThread");
@@ -280,6 +282,7 @@ private class ServerThread extends Thread {
          System.exit(1);
        }
       CatreLog.logD("CATBRIDGE","Server running on " + BRIDGE_PORT);
+      server_setup = false;
     }
 
    @Override public void run() {
@@ -290,6 +293,11 @@ private class ServerThread extends Thread {
             Thread.sleep(1000); 
           }
          catch (InterruptedException e) { }
+       }
+      
+      synchronized (this) {
+         server_setup = true;
+         notifyAll();
        }
    
       for ( ; ; ) {
@@ -305,6 +313,16 @@ private class ServerThread extends Thread {
        }
       System.exit(0);
     }
+   
+   synchronized void waitForSetup() {
+      while (!server_setup) {
+         try {
+            wait(5000);
+          }
+         catch (InterruptedException e) { }
+       }
+    }
+   
 
 }	// end of inner class ServerThread
 
