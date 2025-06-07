@@ -108,9 +108,9 @@ async function addBridge(authdata,bid)
    await reauthorize(user);
    if (user.session == null) return false;
    
-   getDevices(user);
+   await getDevices(user);
    
-   return false;
+   return true;
 }
 
 

@@ -111,9 +111,9 @@ async function addBridge(authdata, bid) {
       user.bridgeid = bid;
    }
 
-   getDevices(username);
+   await getDevices(username);
 
-   return false;
+   return true;
 }
 
 
