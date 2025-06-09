@@ -268,7 +268,6 @@ private final class PingAction implements BowerSessionHandler<IQsignSession> {
 private final class LoginAction implements BowerSessionHandler<IQsignSession> {
 
    @Override public String handle(HttpExchange e,IQsignSession session) {
-      IvyLog.logD("IQSIGN","HANDLE LOGIN " + session);
       String rslt = iqsign_auth.handleLogin(e,session);
       Number userid = session.getUserId();
       if (userid != null) {

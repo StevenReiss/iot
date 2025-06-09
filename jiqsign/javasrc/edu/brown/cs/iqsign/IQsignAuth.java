@@ -191,8 +191,6 @@ String handlePreLogin(HttpExchange he,IQsignSession session)
 
 String handleLogin(HttpExchange he,IQsignSession session)
 {
-   session.setUser(null);
-
    IQsignDatabase db = iqsign_main.getDatabaseManager();
    IQsignUser user = null;
    try {
@@ -212,6 +210,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
          IvyLog.logD("IQSIGN","Try login with access token " + actok);
 	 IQsignLoginCode tokinfo = db.checkAccessToken(actok,null,null);
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
+            session.setUser(null);
 	    return errorResponse(session,"Invalid access token");
 	  }
        }
@@ -221,6 +220,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
          IQsignLoginCode tokinfo = db.checkAccessToken(accod,
                user.getUserId(),session.getCode()); 
 	 if (tokinfo == null || !tokinfo.getUserId().equals(user.getUserId())) {
+            session.setUser(null);
 	    return errorResponse(session,"Invalid access token");
 	  } 
        }
@@ -244,6 +244,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
           }
          
 	 if (!pwd1.equals(upwd)) {
+            session.setUser(null);
 	    return errorResponse(session,"Invalid username or password");
 	  }
        }
@@ -255,6 +256,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
     }
    catch (Throwable t) {
       IvyLog.logE("IQSIGN","Problem with login",t);
+      session.setUser(null);
       return BowerRouter.errorResponse(he,session,500,"Login problem");
     }
 }
