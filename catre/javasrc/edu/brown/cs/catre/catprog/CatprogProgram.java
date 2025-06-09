@@ -204,14 +204,16 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 }
 
 
-@Override public synchronized void removeRule(CatreRule ur)
+@Override public void removeRule(CatreRule ur)
 {
-   if (ur != null) {
-      rule_list.remove(ur);
-      updateConditions();
-    }
-   else {
-      CatreLog.logD("CATPROG","Remove null rule to trigger update");
+   synchronized (this) {
+      if (ur != null) {
+         rule_list.remove(ur);
+         updateConditions();
+       }
+      else {
+         CatreLog.logD("CATPROG","Remove null rule to trigger update");
+       }
     }
    
    fireProgramUpdated();

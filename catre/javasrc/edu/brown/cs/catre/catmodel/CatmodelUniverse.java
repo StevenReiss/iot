@@ -427,7 +427,7 @@ private void setupBridges()
    CatreLog.logD("CATMODEL","Finish updating devices " + universe_program + " " + chng);
    
    if (universe_program != null) {
-      universe_program.removeRule(null);           // triggers condition update for bridge
+      universe_program.removeRule(null);        // triggers condition update for bridge
     }
    else if (chng) {
       fireUniverseSetup();
