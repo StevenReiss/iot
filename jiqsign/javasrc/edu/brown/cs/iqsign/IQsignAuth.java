@@ -196,7 +196,7 @@ String handleLogin(HttpExchange he,IQsignSession session)
    IQsignDatabase db = iqsign_main.getDatabaseManager();
    IQsignUser user = null;
    try {
-      IvyLog.logD("IQSIGN","LOGIN ");
+      IvyLog.logD("IQSIGN","LOGIN " + session);
       String uid = BowerRouter.getParameter(he,"username");
       if (uid == null || uid.isEmpty()) {
 	 return errorResponse(session,"User name must be given");
