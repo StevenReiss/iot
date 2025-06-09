@@ -78,6 +78,7 @@ private Map<CatreUniverse,CatbridgeBase> known_instances;
 protected CatreUniverse 	for_universe;
 protected Map<String,CatreDevice> device_map;
 protected String		bridge_id;
+protected boolean               is_registered;
 
 
 
@@ -94,6 +95,7 @@ protected CatbridgeBase()
    device_map = null;
    known_instances = new HashMap<>();
    bridge_id = null;
+   is_registered = false;
 }
 
 
@@ -104,6 +106,8 @@ protected CatbridgeBase(CatbridgeBase base,CatreUniverse cu)
    device_map = new HashMap<>();
    known_instances = null;
    bridge_id = CatreUtil.randomString(24);
+   is_registered = false;
+   
    if (cu.getProgram() != null) {
       CatreLog.logD("CATBRIDGE","Add program listener for " + getName() + " " + bridge_id);
       cu.getProgram().addProgramListener(this);
@@ -194,6 +198,8 @@ protected void registerBridge()
             "authdata",new JSONObject(authdata));
       CatreLog.logD("CATBRIDGE","Registration result: " + rslt);
     }
+   
+   is_registered = true;
 }
 
 
@@ -204,7 +210,7 @@ protected Map<String,Object> getAuthData()
 
 
 
-protected JSONObject sendCedesMessage(String cmd,Object... data)
+protected synchronized JSONObject sendCedesMessage(String cmd,Object... data)
 {
    Map<String,Object> map = new HashMap<>();
    map.put("bridge",getName());
@@ -421,6 +427,12 @@ private class EventHandler implements Runnable {
 @Override public void applyTransition(CatreDevice dev,CatreTransition t,Map<String,Object> values)
 	throws CatreActionException
 {
+   
+   if (!is_registered) {
+      CatreLog.logI("CATBRIDGE","Command before device is registered");
+      return;       
+    }
+   
    sendCedesMessage("catre/command",
          "deviceid",dev.getDeviceId(),
          "uid",getUserId(),

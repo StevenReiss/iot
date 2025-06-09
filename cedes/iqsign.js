@@ -146,6 +146,8 @@ async function reauthorize(user)
 
 async function getDevices(user)
 {
+   console.log("IQSIGN","Get DEVICES",user);
+   
    let names = await getSavedSigns(user);
 
    let resp = await sendToIQsign("POST","signs",{ session : user.session });
@@ -228,7 +230,7 @@ async function getSavedSigns(user)
 
 async function handleCommand(bid,uid,devid,command,values)
 {
-   console.log("IQSIGN COMMAND",command,values);
+   console.log("IQSIGN COMMAND",devid,command,values);
    
    let user = users[uid];
    if (user == null) return;
