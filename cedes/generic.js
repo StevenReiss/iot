@@ -331,8 +331,10 @@ function handleActiveSensors(bid,uid,active)
    for (let param of active) {
       let devid = param.DEVICE;
       let nm = param.PARAMETER;
-      if (!isActive(user,param)) todo.add(param);
-      newactive[devid].add(nm);
+      if (!isActive(user,param)) {
+         todo.push(param);
+       }
+       newactive[devid].add(nm);
     }
    
    for (let dev in newactive) {
