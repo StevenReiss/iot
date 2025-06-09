@@ -719,6 +719,8 @@ private CatreDevice createAnyDevice(CatreStore cs,Map<String,Object> map)
 
 private void updateStored()
 {
+   CatreLog.logD("CATMODEL","Universe " + getName() + " SAVED");
+   
    catre_control.getDatabase().saveObject(this);
 }
 

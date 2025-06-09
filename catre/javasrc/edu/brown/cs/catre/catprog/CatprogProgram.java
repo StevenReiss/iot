@@ -600,6 +600,9 @@ private class Updater implements Runnable {
                resetTriggers();
                break;
              }
+            else {
+               last_request = System.currentTimeMillis();       // ensure delay
+             }
           }
          finally {
             for_universe.updateUnlock();
