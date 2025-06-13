@@ -188,10 +188,8 @@ class CatreRule extends CatreData {
   CatreRule.clone(CatreRule cr)
       : super(
           cr.getUniverse(),
-          Map<String, dynamic>.from(cr.getCatreOutput()),
+          Map<String, dynamic>.from(_cloneData(cr.getCatreOutput())),
         ) {
-    setLabel("${getLabel()} (clone)");
-
     setup();
   }
 
@@ -315,6 +313,15 @@ class CatreRule extends CatreData {
       if (i < _actions.length - 1) desc += " AND ";
     }
     return desc;
+  }
+
+  static Map<String, dynamic> _cloneData(Map<String, dynamic> d0) {
+    Map<String, dynamic> d = Map.from(d0);
+    String lbl = d["LABEL"];
+    d["LABEL"] = "$lbl (clone)";
+    d.remove("_id");
+    d.remove("CREATED");
+    return d;
   }
 }
 
