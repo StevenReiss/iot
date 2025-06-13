@@ -95,6 +95,11 @@ class CatreProgram extends CatreData {
     return cr;
   }
 
+  CatreRule addUserRule(CatreRule cr) {
+    _insertRule(cr);
+    return cr;
+  }
+
   void _insertRule(CatreRule cr) {
     num priority = cr.getPriority();
     int index = 0;
@@ -178,6 +183,16 @@ class CatreRule extends CatreData {
     _forceTrigger = trigger;
     _actions = [CatreAction.empty(cu, cd, trigger)];
     _forDevice = cd;
+  }
+
+  CatreRule.clone(CatreRule cr)
+      : super(
+          cr.getUniverse(),
+          Map<String, dynamic>.from(cr.getCatreOutput()),
+        ) {
+    setLabel("${getLabel()} (clone)");
+
+    setup();
   }
 
   @override

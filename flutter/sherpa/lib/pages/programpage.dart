@@ -163,7 +163,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
 
   void _reloadProgram() async {
     CatreModel cm = CatreModel();
-    await cm.loadUniverse();
+    _theUniverse = await cm.loadUniverse();
     setState(() {});
   }
 

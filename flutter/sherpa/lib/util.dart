@@ -102,12 +102,13 @@ List<T> skipNulls<T>(List<T?> items) {
 
 List<DayInWeek> getDays({String? given}) {
   List<DayInWeek> rslt = [];
-  List<String> std = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  List<String> std = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   DateFormat fmt = DateFormat.E();
   DateTime dt = DateTime.now();
   while (dt.weekday != 1) {
     dt = dt.add(const Duration(days: 1));
   }
+  if (given != null) given = given.toUpperCase();
   for (int i = 0; i < 7; ++i) {
     String name = fmt.format(dt);
     DayInWeek diw = DayInWeek(name, dayKey: name);

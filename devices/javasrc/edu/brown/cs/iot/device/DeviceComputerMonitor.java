@@ -106,6 +106,8 @@ private boolean need_python_setup;
 
 private final String IDLE_COMMAND_1 = "xssstate -i";
 private final String IDLE_COMMAND_2 = "ioreg -c IOHIDSystem | fgrep HIDIdleTime";
+private final String IDLE_COMMAND_3 = "xprintidle";
+      
 
 // private final String ZOOM_COMMAND = "ps -ax | fgrep zoom | fgrep CptHost";
 private final String ZOOM_COMMAND = "ps -ax -o lstart,command | fgrep zoom | fgrep CptHost";
@@ -228,6 +230,10 @@ private void setupIdleCommands()
    if (checkCommand("HIDIdleTime","ioreg","-c","IOHIDSystem")) {
       idle_command = IDLE_COMMAND_2;
       idle_divider = 1000000000L;
+    }
+   if (checkCommand(null,"xprintidle")) {
+      idle_command = IDLE_COMMAND_3;
+      idle_divider = 1000L;
     }
 }
 

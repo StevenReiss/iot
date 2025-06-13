@@ -121,7 +121,12 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
         (cr.isDisabled() ? "Enable Rule" : "Disable Rule"),
         () => _toggleRuleDisabled(cr),
         "Change the disabled status of this rule",
-      )
+      ),
+      widgets.MenuAction(
+        'Clone Rule',
+        () => _cloneRule(cr),
+        "Create a new rule that is a clone of this rule",
+      ),
     ];
     if (_forDevice != null) {
       acts.addAll([
@@ -420,6 +425,16 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       await _forUniverse.getProgram().removeRule(cr);
       setState(() {});
     }
+  }
+
+  Future<void> _cloneRule(CatreRule cr) async {
+    CatreRule nr = CatreRule.clone(cr);
+    num basepriority = cr.getPriority();
+    num p = _findRulePriority(basepriority, true, _priority);
+    nr.setPriority(p);
+    setState(() {
+      _forUniverse.getProgram().addUserRule(nr);
+    });
   }
 
   void _addRule([
