@@ -260,7 +260,7 @@ private void setupBtCommands()
    bt_command = null;
    need_python_setup = false;
 
-   if (checkCommand(null,"sdptool")) {
+   if (checkCommand(null,"sdptool","-h")) {
       bt_command = BT_COMMAND_1;
     }
    else if (checkCommand("Python 3","python","--vesion")) {
