@@ -38,8 +38,10 @@ import java.io.File;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -692,8 +694,19 @@ List<IQsignDefinedImage> getSavedSigns(Number uid)
       "ORDER BY C.count DESC, C.last_used DESC, D.id";
    List<JSONObject> qrslt = sql_database.sqlQueryN(q1,uid);
    List<IQsignDefinedImage> rslt = new ArrayList<>();
+   Map<String,IQsignDefinedImage> used = new HashMap<>();
+   
    for (JSONObject jo : qrslt) {
-      rslt.add(new IQsignDefinedImage(jo));
+      IQsignDefinedImage img = new IQsignDefinedImage(jo);
+      String nm = img.getName();
+      IQsignDefinedImage oimg = used.get(nm);
+      if (oimg != null) {
+         if (img.getUserId() == null && oimg.getUserId() != null) continue;
+         if (img.getUserId() != null && oimg.getUserId() == null) {
+            rslt.remove(oimg);
+          }
+       }
+      rslt.add(img);
     }
 
    return rslt;

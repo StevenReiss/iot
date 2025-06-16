@@ -1117,10 +1117,16 @@ private static class EnumParameter extends CatmodelParameter {
          if (cp != null) {
             Object v = for_universe.getValue(cp);
             if (value_set.isEmpty()) {
-               CatreLog.logD("CATBRIDGE","Value load if needed here " + v +
+               CatreLog.logD("CATMODEL","Value load if needed here " + v +
                      " " + cp);
+             }
+            else {
+               // update range values
                setRangeValues(v);   
              }
+          }
+         else {
+            CatreLog.logD("CATMODEL","Range parameter not valid");
           }
          handleSort();
        }

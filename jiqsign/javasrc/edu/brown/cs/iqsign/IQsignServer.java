@@ -617,11 +617,11 @@ private final class GetSavedSignsAction implements BowerSessionHandler<IQsignSes
    @Override public String handle(HttpExchange he,IQsignSession session) {
       List<IQsignDefinedImage> defs = iqsign_database.getSavedSigns(session.getUserId());
       if (defs == null) {
-	 return BowerRouter.errorResponse(he,session,400,"No images");
+         return BowerRouter.errorResponse(he,session,400,"No images");
        }
       JSONArray arr = new JSONArray();
       for (IQsignDefinedImage di : defs) {
-	 arr.put(di.toJson());
+         arr.put(di.toJson());
        }
       return BowerRouter.jsonOKResponse(session,"data",arr);
     }

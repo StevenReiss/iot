@@ -407,9 +407,10 @@ private void setDimensions(double w,double h)
    double y0 = 0;
    double w0 = w;
    double x0 = 0;
+   double ypos = 0;
    if (haveborder) {
       h0 = h * 0.8;
-      y0 = h * 0.1;
+      ypos = h * 0.1;
       w0 = w * 0.8;
       x0 = w * 0.1;
     }
@@ -417,7 +418,6 @@ private void setDimensions(double w,double h)
       rows[i] = y0 + rows[i] / tot * h0;
     }
    
-   double ypos = 0;
    ypos = setPositions(x0,w0,ypos,rows[0], image_regions[3],c0,image_regions[4]);
    ypos = setPositions(x0,w0,ypos,rows[1],text_regions[1]);
    ypos = setPositions(x0,w0,ypos,rows[2],text_regions[2]);
