@@ -189,6 +189,12 @@ protected String getDeviceParameter(String id)
    return device_params.optString(id,null);
 }
 
+protected Object getDeviceJson(String id)
+{
+   return device_params.opt(id);
+}
+
+
 protected abstract String getDeviceName();
 protected abstract JSONObject getDeviceJson();
 
