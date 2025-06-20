@@ -202,7 +202,7 @@ async function getDevices(user)
       let msg = { command: "DEVICES", uid : user.username, bridge: "iqsign",
 	    bid : user.bridgeid, devices : user.devices };
       await catre.sendToCatre(msg);
-      await updateValues(user,null);
+      await updateAuthedValues(user,null);
     }
 }
 
@@ -284,10 +284,16 @@ async function updateValues(user,devid)
 
    if (user == null || user.devices == null) return;
    
-   reauthorize(user);
+   await reauthorize(user);
    
-   getDevices(user);
+   await getDevices(user);
+   
+   await updateAuthedValues(user,devid);
+}
 
+
+async function updateAuthedValues(user,devid)
+{
    for (let dev of user.devices) {
       if (devid != null && dev.UID != devid) continue;
       let names = await getSavedSigns(user);
@@ -361,11 +367,17 @@ async function sendToIQsign(method,path,data)
 	 method: method,
 	 body : body,
 	 headers: hdrs });
-   let rslt = await response.json();
-
-   console.log("IQSIGN Recieved back from iQsign",rslt);
-
-   return rslt;
+   
+   try {
+      let rslt = await response.json();
+      
+      console.log("IQSIGN Recieved back from iQsign",rslt);
+      
+      return rslt;
+    }
+   catch (e) {
+      return null;
+    }
 }
 
 
