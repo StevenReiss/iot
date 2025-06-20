@@ -239,6 +239,8 @@ private void setupIdleCommands()
       idle_command = IDLE_COMMAND_3;
       idle_divider = 1000L;
     }
+   
+   System.err.println("IDLE COMMAND: " + idle_command + " " + idle_divider);
 }
 
 
@@ -452,7 +454,7 @@ private boolean checkCommand(String rslt,String... cmd)
 
 @Override protected void resetDevice(boolean fg)
 {
-   System.err.println("RESET computer monitor DEVICE");
+   System.err.println("RESET computer monitor DEVICE " + fg);
    if (fg) {
       resetParameters();
     }
@@ -462,6 +464,7 @@ private boolean checkCommand(String rslt,String... cmd)
 
 private void resetParameters()
 {
+   last_work = null;
    last_zoom = null;
    last_check = 0;
    last_presence.clear();
@@ -718,6 +721,7 @@ private long getIdleTime()
       for ( ; ; ) {
          String ln = br.readLine();
          if (ln == null) break;
+         System.err.println("IDLE COMMAND YIELDS: " + ln);
          String num = ln;
          int idx = ln.indexOf("=");
          if (idx > 0) {
