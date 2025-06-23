@@ -514,7 +514,8 @@ protected void updateCurrentState()		{ }
 {
    if (is_enabled != null && fg == is_enabled) return;
    
-   CatreLog.logD("CATDEV","Device ENABLED " + device_uid + " " + fg);
+   CatreLog.logD("CATDEV","Device ENABLED " + device_uid + " " + 
+         getName() + " " + fg);
 
    is_enabled = fg;
 

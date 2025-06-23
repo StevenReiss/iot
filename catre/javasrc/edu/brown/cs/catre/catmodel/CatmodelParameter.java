@@ -1126,7 +1126,8 @@ private static class EnumParameter extends CatmodelParameter {
              }
           }
          else {
-            CatreLog.logD("CATMODEL","Range parameter not valid");
+            CatreLog.logD("CATMODEL","Range parameter not valid " +
+                  range_ref.getDeviceId() + " " + range_ref.getParameterName());
           }
          handleSort();
        }
