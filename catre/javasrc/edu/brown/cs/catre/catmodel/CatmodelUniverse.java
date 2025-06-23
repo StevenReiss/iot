@@ -265,6 +265,7 @@ private void setupBridges()
     }
    finally {
       update_lock.unlock();
+      CatreLog.logD("CATMODEL","Done update wait");
     }
 }
 

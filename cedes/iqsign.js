@@ -171,7 +171,8 @@ async function getDevices(user)
 	       BRIDGE : "iqsign",
 	       NAME : "iQsign " + newdev.name,
 	       LABEL : "iQsign " + newdev.name,
-	       DESCRIPTION: "iQsign " + newdev.displayname,
+	       DESCRIPTION: "iQsign " + newdev.name,
+               USERDESC: false,
 	       PARAMETERS :  [
 		  { NAME: "savedValues", TYPE: "STRINGLIST", ISSENSOR: false, VOLATILE: true,
                      SORT: true,

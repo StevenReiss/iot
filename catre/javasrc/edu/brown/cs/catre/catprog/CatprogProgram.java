@@ -479,7 +479,7 @@ private void conditionChange(CatreCondition c)
 
 private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps)
 {
-   CatreLog.logD("CATPROG","Condition changed " + c + " " +
+   CatreLog.logD("CATPROG","Condition changed " + c.getName() + " " +
          istrig + " " + ps);
    
    Set<CatreDevice> devices = null;
@@ -503,6 +503,7 @@ private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps
 	 upd.runAgain(devices);
        }
       else {
+         CatreLog.logD("CATPROG","Create updater for " + devices);
 	 upd = new Updater(devices);
 	 active_updater = upd;
 	 for_universe.getCatre().submit(upd);
@@ -542,7 +543,7 @@ private class Updater implements Runnable {
       finally {
          for_universe.updateUnlock();
        }
-      CatreLog.logD("CATPROG","Run again finished");
+      CatreLog.logD("CATPROG","Run again finished " + for_devices);
     }
 
    @Override public void run() {
@@ -580,7 +581,15 @@ private class Updater implements Runnable {
          for_universe.updateLock();
          try {
             ctx = for_universe.waitForUpdate();
+            if (run_again) {
+               if (for_devices != null) {
+                  CatreLog.logD("CATPROG","Add relevant devices to run against " + for_devices);
+                  if (used == null) used = for_devices;
+                  else used.addAll(for_devices);
+                }
+             }
             run_again = false;
+            for_devices = null;
           }
          finally {
             for_universe.updateUnlock();
@@ -594,6 +603,7 @@ private class Updater implements Runnable {
           }
         
          for_universe.updateLock();
+         CatreLog.logD("CATPROG","Finished program run " + run_again + " " + for_devices);
          try {
             if (!run_again) {
                active_updater = null;
