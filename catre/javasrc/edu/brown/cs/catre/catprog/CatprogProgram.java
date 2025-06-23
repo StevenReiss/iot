@@ -479,7 +479,8 @@ private void conditionChange(CatreCondition c)
 
 private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps)
 {
-   CatreLog.logD("CATPROG","Condition changed " + c.getName() + " " +
+   String nm = (c == null ? "<NONE>" : c.getName());
+   CatreLog.logD("CATPROG","Condition changed " + nm + " " +
          istrig + " " + ps);
    
    Set<CatreDevice> devices = null;
