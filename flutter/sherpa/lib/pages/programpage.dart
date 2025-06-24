@@ -121,16 +121,16 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
             ),
             widgets.MenuAction('Remove Device', _handleRemoveDevice,
                 "Remove a device from your universe."),
-            widgets.MenuAction(
-              'Upload Rule File',
-              _uploadRules,
-              "Upload a saved rule file",
-            ),
-            widgets.MenuAction(
-              'Save Current Rules',
-              _saveRules,
-              "Save current rule set into a file",
-            ),
+            // widgets.MenuAction(
+            //   'Upload Rule File',
+            //   _uploadRules,
+            //   "Upload a saved rule file",
+            // ),
+            // widgets.MenuAction(
+            //   'Save Current Rules',
+            //   _saveRules,
+            //   "Save current rule set into a file",
+            // ),
 //          widgets.MenuAction(
 //            'Create Virtual Condition',
 //            _createVirtualCondition,
@@ -401,6 +401,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     return w2;
   }
 
+  // ignore: unused_element
   void _saveRules() async {
     String? result = await FilePicker.platform.saveFile(
       dialogTitle: "Select json file to write rules",
@@ -422,6 +423,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     }
   }
 
+  // ignore: unused_element
   void _uploadRules() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       dialogTitle: "Select rule file to upload",

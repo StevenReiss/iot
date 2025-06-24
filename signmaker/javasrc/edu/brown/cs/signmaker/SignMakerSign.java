@@ -305,8 +305,13 @@ String useSavedImage(String name)
          int bestid = 0;
          int bestuid = 0;
          while (rs1.next()) {
+            IvyLog.logD("SIGNMAKER","Consider defined sign " + rs1.getInt("id") +
+                  " " + rs1.getInt("userid") + " " + user_id);
             int did = rs1.getInt("id");
-            if (used_ids.contains(did)) continue;
+            if (used_ids.contains(did)) {
+               IvyLog.logD("SIGNMAKER","Sign id " + did + " already used");
+               continue;
+             }
             int uid = rs1.getInt("userid");
             if (uid > 0 && uid != user_id) continue;
             if (uid <= 0 && bestuid > 0) continue;

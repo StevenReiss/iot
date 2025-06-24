@@ -236,7 +236,7 @@ Widget itemWithMenu<T>(
 
   id ??= "";
   Widget w1 = GestureDetector(
-    key: Key(lbl + id!),
+    key: Key(lbl + id),
     onTap: onTap,
     onDoubleTap: onDoubleTap,
     onLongPress: onLongPress,

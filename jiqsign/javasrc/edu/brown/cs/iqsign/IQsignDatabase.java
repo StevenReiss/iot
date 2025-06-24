@@ -43,6 +43,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
@@ -64,6 +66,7 @@ class IQsignDatabase implements IQsignConstants
 private IQsignMain iqsign_main;
 private BowerDatabasePool sql_database;
 private String     database_name;
+
 
 
 /********************************************************************************/
@@ -480,6 +483,7 @@ void addDefineName(Number uid,String dname,String contents,boolean useronly)
       json = sql_database.sqlQuery1(q2,dname);
     }
    if (json == null) {
+      IvyLog.logT("IQSIGN","No previous defininition of " + dname);
       // no previous definition
       sql_database.sqlUpdate(q3,uid,dname,contents);
       IQsignDefinedImage di = getDefineData(null,dname,uid);
@@ -488,9 +492,16 @@ void addDefineName(Number uid,String dname,String contents,boolean useronly)
    else {
       if (user) {
          // check for recursive reference
-         String pat = "=\\s*\\Q" + dname + "\\E";
-         if (contents.matches(pat)) {
+         String pat1 = "=\\s*\\Q" + dname + "\\E";
+         Pattern p = Pattern.compile(pat1);
+         Matcher m = p.matcher(contents);
+         if (m.find()) {
             return; 
+          }
+         IvyLog.logD("IQSIGN","Pattern " + p + " doesn't match " + contents);
+         if (contents.contains("=")) {
+            // disallow all reference items for now
+            return;
           }
        }
       IQsignDefinedImage di = new IQsignDefinedImage(json);
