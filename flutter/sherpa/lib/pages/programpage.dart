@@ -31,6 +31,9 @@
  *                                                                               *
  ********************************************************************************/
 
+import 'dart:convert' as convert;
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sherpa/globals.dart' as globals;
 import 'package:sherpa/util.dart' as util;
@@ -44,6 +47,7 @@ import 'package:sherpa/pages/addrsspage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
 import 'package:sherpa/lookandfeel.dart' as laf;
+import 'package:file_picker/file_picker.dart';
 
 /********************************************************************************/
 /*                                                                              */
@@ -117,6 +121,16 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
             ),
             widgets.MenuAction('Remove Device', _handleRemoveDevice,
                 "Remove a device from your universe."),
+            widgets.MenuAction(
+              'Upload Rule File',
+              _uploadRules,
+              "Upload a saved rule file",
+            ),
+            widgets.MenuAction(
+              'Save Current Rules',
+              _saveRules,
+              "Save current rule set into a file",
+            ),
 //          widgets.MenuAction(
 //            'Create Virtual Condition',
 //            _createVirtualCondition,
@@ -161,7 +175,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     );
   }
 
-  void _reloadProgram() async {
+  Future<void> _reloadProgram() async {
     CatreModel cm = CatreModel();
     _theUniverse = await cm.loadUniverse();
     setState(() {});
@@ -385,5 +399,50 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       w1,
     );
     return w2;
+  }
+
+  void _saveRules() async {
+    String? result = await FilePicker.platform.saveFile(
+      dialogTitle: "Select json file to write rules",
+      type: FileType.any,
+    );
+    if (result != null) {
+      List<dynamic> rules = [];
+      for (CatreRule cr in _theUniverse.getProgram().getRules()) {
+        Map<String, dynamic> crd = cr.getCatreOutput();
+        rules.add(crd);
+      }
+      String data = convert.jsonEncode(rules);
+      try {
+        File file = File(result);
+        await file.writeAsString(data);
+      } catch (e) {
+        return;
+      }
+    }
+  }
+
+  void _uploadRules() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      dialogTitle: "Select rule file to upload",
+    );
+    if (result != null) {
+      try {
+        File file = File(result.files.single.path!);
+        String cnts = await file.readAsString();
+        List<dynamic> rules = convert.jsonDecode(cnts);
+        await _uploadRuleArray(rules);
+        await _reloadProgram();
+      } catch (e) {
+        return;
+      }
+    }
+  }
+
+  Future<void> _uploadRuleArray(List<dynamic> rules) async {
+    for (Map<String, dynamic> rule in rules) {
+      CatreRule cr = CatreRule.build(_theUniverse, rule);
+      await cr.addOrEditRule();
+    }
   }
 }

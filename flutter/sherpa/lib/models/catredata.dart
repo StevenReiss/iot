@@ -77,6 +77,8 @@ class CatreData {
     return getString("DESCRIPTION");
   }
 
+  String? getUID() => optString("_id");
+
   String getDescription() {
     if (getBool("USERDESC")) {
       if (optString("DESCRIPTION") == null) {

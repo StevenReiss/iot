@@ -184,6 +184,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       onDoubleTap: () => _editRule(cr),
       onLongPress: () => _conditionalEdit(cr),
       tooltip: cr.getDescription(),
+      id: cr.getUID(),
     );
 
     return w1;

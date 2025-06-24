@@ -214,6 +214,7 @@ Widget itemWithMenu<T>(
   void Function()? onDoubleTap,
   void Function()? onLongPress,
   String tooltip = "",
+  String? id,
 }) {
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_open_rounded),
@@ -233,8 +234,9 @@ Widget itemWithMenu<T>(
     return w;
   }
 
+  id ??= "";
   Widget w1 = GestureDetector(
-    key: Key(lbl),
+    key: Key(lbl + id!),
     onTap: onTap,
     onDoubleTap: onDoubleTap,
     onLongPress: onLongPress,
@@ -364,7 +366,9 @@ Widget topMenuAction(List<MenuAction> labels) {
 List<PopupMenuItem<MenuAction>> _topMenuActionBuilder(
   List<MenuAction> labels,
 ) {
-  return labels.map<PopupMenuItem<MenuAction>>(_menuItemAction).toList();
+  return labels
+      .map<PopupMenuItem<MenuAction>>(_menuItemAction)
+      .toList();
 }
 
 PopupMenuItem<MenuAction> _menuItemAction(dynamic val) {
@@ -523,7 +527,8 @@ Widget dropDownMenu(
     initialSelection: value,
     requestFocusOnTap: true,
     onSelected: onChanged,
-    dropdownMenuEntries: items.map<DropdownMenuEntry<String>>((String value) {
+    dropdownMenuEntries:
+        items.map<DropdownMenuEntry<String>>((String value) {
       return DropdownMenuEntry<String>(value: value, label: value);
     }).toList(),
   );
@@ -743,15 +748,16 @@ class DateFormField {
         textStyle: const TextStyle(fontWeight: FontWeight.bold),
         //  overlayColor: Colors.brown,
       );
-      _textField =
-          Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-        Expanded(child: _textField),
-        ElevatedButton(
-          onPressed: _handleForever,
-          style: style,
-          child: const Icon(Icons.all_inclusive),
-        ),
-      ]);
+      _textField = Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Expanded(child: _textField),
+            ElevatedButton(
+              onPressed: _handleForever,
+              style: style,
+              child: const Icon(Icons.all_inclusive),
+            ),
+          ]);
     }
     _textField = tooltipWidget(tooltip, _textField);
   }
@@ -1089,8 +1095,9 @@ Future<void> displayDialog(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title),
-        content:
-            description.isNotEmpty ? Text(description, maxLines: 10) : null,
+        content: description.isNotEmpty
+            ? Text(description, maxLines: 10)
+            : null,
         actions: <Widget>[
           TextButton(
             child: const Text("OK"),
@@ -1114,8 +1121,9 @@ Future<bool> getValidation(
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text(title),
-        content:
-            description.isNotEmpty ? Text(description, maxLines: 10) : null,
+        content: description.isNotEmpty
+            ? Text(description, maxLines: 10)
+            : null,
         actions: <Widget>[
           TextButton(
             child: const Text("YES"),
@@ -1322,4 +1330,3 @@ Widget getTopLevelLogo(BuildContext context) {
 }
 
 // end of widgets.dart
-
