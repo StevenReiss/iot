@@ -275,6 +275,7 @@ String getDays()
    
    CatreLog.logD("CATMODEL","Check times " + dend.toInstant() + " " +
          dstart.toInstant() + " " + cal.toInstant() + " " +
+         from_datetime.getTimeInMillis() + " " + when + " " +
          from_datetime.toInstant() + " " +
          to_datetime.toInstant() + " " + 
          usetimes + " " + usefromtime + " " + usetotime);

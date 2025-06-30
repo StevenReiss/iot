@@ -173,11 +173,32 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
          if (nm != null) used.add(nm);
        }
     }
-   for (Iterator<String> it = shared_conditions.keySet().iterator(); it.hasNext(); ) {
-      String snm = it.next();
-      if (used.contains(snm)) continue;
-      CatreLog.logD("CATPROG","Remove unused shared condition " + snm);
-      it.remove();
+   Map<String,CatprogCondition> reps = new HashMap<>();
+   Iterator<Map.Entry<String,CatprogCondition>> it = shared_conditions.entrySet().iterator();
+   while (it.hasNext()) {
+      Map.Entry<String,CatprogCondition> ent = it.next();
+      String snm = ent.getKey();
+      if (!used.contains(snm)) {
+         CatreLog.logD("CATPROG","Remove unused shared condition " + snm);
+         it.remove();
+       }
+      else {
+         CatprogCondition cc = ent.getValue();
+         for ( ; ; ) {
+            CatprogCondition base = cc.getSubcondition();
+            if (base != null && base.getSharedName().equals(cc.getSharedName())) {
+               cc = base;
+             }
+            else break;
+          }
+         if (cc != ent.getValue()) {
+            reps.put(snm,cc);
+            CatreLog.logD("CATPROG","Replace refereced shared position with " + cc);
+          }
+       }
+    }
+   for (Map.Entry<String,CatprogCondition> ent : reps.entrySet()) {
+//    shared_conditions.put(ent.getKey(),ent.getValue());
     }
 }
 
