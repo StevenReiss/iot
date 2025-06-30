@@ -213,7 +213,6 @@ private void checkOccludedRules(List<RuleError> errors)
 {
    boolean higher = true;
    for (CatreRule cr : for_program.getRules()) {
-      if (cr == for_rule) continue;
       if (cr.getTargetDevice() != for_rule.getTargetDevice()) continue;
       boolean othercond = false;
       boolean havetime = false;
@@ -226,6 +225,8 @@ private void checkOccludedRules(List<RuleError> errors)
       if (cr == for_rule) {
          higher = false;
          if (othercond) break;          // no need to check lower priorities
+         CatreLog.logD("CATPROG","Start working on lower priority rules");
+
          continue;
        }
       if (!havetime) continue;
@@ -248,6 +249,7 @@ private void checkOccludedRules(List<RuleError> errors)
          List<TimeInterval> crtimes = getTimeSlots(cr);
          List<TimeInterval> usetimes = subtractIntervals(crtimes,rule_intervals);
          if (usetimes.isEmpty()) {
+            CatreLog.logD("CATPROG","No intervals with " + crtimes + " " + rule_intervals);
             CheckError ce = new CheckError(ErrorLevel.ERROR,
                   "This rule prevents the rule " + cr.getName() + " from occurring");
             errors.add(ce);
