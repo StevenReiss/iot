@@ -189,7 +189,11 @@ String getDays()
       if (sameDay(from_datetime,day)) usefromtime = true;
       Calendar estart = setDateAndTime(day,from_datetime);
       if (usefromtime) {
-         if (estart.after(start)) start = estart;
+         if (estart.after(start)) {
+            CatreLog.logD("CATMODEL","New start time " + estart.toInstant() + " " +
+                  start.toInstant());
+            start = estart;
+          }
        }
       
       boolean usetotime = usetimes;
@@ -198,15 +202,21 @@ String getDays()
          Calendar endt = setDateAndTime(day,to_datetime);
          if (endt.before(estart)) {
             endt.add(Calendar.DAY_OF_YEAR,1);
+            CatreLog.logD("CATMODEL","New end time " + endt.toInstant() + " " + end.toInstant());
             end = endt;
           }
-         else if (endt.before(end)) end = endt;
+         else if (endt.before(end)) {
+            CatreLog.logD("CATMODEL","Replace current end time " + endt.toInstant() + " " + 
+                  end.toInstant());
+            end = endt;
+          }
        }
       
       if (end.compareTo(start) <= 0) {
          CatreLog.logD("CATMODEL","End time " + end.toInstant() + " before " + start.toInstant() + 
-               " " + usefromtime + " " + usetotime + " " + sameDay(to,day) + " " +
-               CatreTimeSlotEvent.startOfNextDay(day) + " " + start + " " + end);
+               " " + usetimes + " " + usefromtime + " " + usetotime + " " + sameDay(to,day) + " " +
+               CatreTimeSlotEvent.startOfNextDay(day).toInstant() + " " + 
+               start.toInstant() + " " + end.toInstant());
          continue;
        }
       rslt.add(start);
