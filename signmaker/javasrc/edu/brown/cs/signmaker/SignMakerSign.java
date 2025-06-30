@@ -321,7 +321,7 @@ String useSavedImage(String name)
           }
          
          if (bestid <= 0) {
-            IvyLog.logD("SIGNMAKER","Problem loading definition: `" + name + 
+            IvyLog.logE("SIGNMAKER","Problem loading definition: `" + name + 
                   "' user=" + user_id);
             cnts = "# Bad Sign Name";
           }
