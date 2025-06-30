@@ -234,7 +234,7 @@ CatprogCondition getSubcondition() 	      { return null; }
 /*										*/
 /********************************************************************************/
 
-@Override public final CatrePropertySet getCurrentStatus()
+@Override public CatrePropertySet getCurrentStatus()
 	throws CatreConditionException
 {
    setTime();

@@ -38,6 +38,7 @@ package edu.brown.cs.catre.catprog;
 import java.util.Map;
 
 import edu.brown.cs.catre.catre.CatreCondition;
+import edu.brown.cs.catre.catre.CatreConditionException;
 import edu.brown.cs.catre.catre.CatreConditionListener;
 import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatrePropertySet;
@@ -132,6 +133,14 @@ CatprogConditionRef(CatprogConditionRef cr)
    if (base_condition != null) {
       base_condition.setTime();
     }
+}
+
+@Override public final CatrePropertySet getCurrentStatus()  
+   throws CatreConditionException
+{
+   if (base_condition == null) return super.getCurrentStatus();
+   
+   return base_condition.getCurrentStatus();
 }
 
 
