@@ -186,6 +186,8 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
          CatprogCondition cc = ent.getValue();
          for ( ; ; ) {
             CatprogCondition base = cc.getSubcondition();
+            CatreLog.logD("CATPROG","Check shared " + cc.getSharedName() + " " +
+                  cc.getName() + " " + base);
             if (base != null && base.getSharedName().equals(cc.getSharedName())) {
                cc = base;
              }
