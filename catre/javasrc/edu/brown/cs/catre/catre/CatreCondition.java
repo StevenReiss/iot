@@ -120,6 +120,13 @@ void noteIsShared();
 
 
 /**
+ *      Get the name of the shared condition (this name or the reference name).
+ **/
+
+String getSharedName();
+
+
+/**
  *      Return the universe associated with this conditions
  **/
 

@@ -47,6 +47,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,6 +160,23 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
    shared_conditions.remove(name); 
 }
 
+
+@Override public void cleanSharedConditions()
+{
+   Set<String> used = new HashSet<>();
+   for (CatreRule cr : rule_list) {
+      for (CatreCondition cc : cr.getConditions()) {
+         String nm = cc.getSharedName(); 
+         if (nm != null) used.add(nm);
+       }
+    }
+   for (Iterator<String> it = shared_conditions.keySet().iterator(); it.hasNext(); ) {
+      String snm = it.next();
+      if (used.contains(snm)) continue;
+      CatreLog.logD("CATPROG","Remove unused shared condition " + snm);
+      // it.remove();
+    }
+}
 
  
 @Override public List<CatreRule> getRules()

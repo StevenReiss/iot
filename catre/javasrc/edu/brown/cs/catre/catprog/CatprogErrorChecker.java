@@ -223,13 +223,9 @@ private void checkOccludedRules(List<RuleError> errors)
          else havetime = true;
        }
       if (cr == for_rule ||
-            cr.getDataUID().equals(for_rule.getDataUID()) ||
-            cr.getPriority() == for_rule.getPriority()) {
+            cr.getDataUID().equals(for_rule.getDataUID())) {
          higher = false;
          if (othercond) break;          // no need to check lower priorities
-         CatreLog.logD("CATPROG","Start working on lower priority rules " +
-               (cr == for_rule) + " " + cr.getDataUID() + " " + for_rule.getDataUID() + " " +
-               cr.getPriority() + " " + for_rule.getPriority());
          continue;
        }
       if (!havetime) continue;

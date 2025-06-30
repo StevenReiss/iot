@@ -114,6 +114,12 @@ CatprogConditionRef(CatprogConditionRef cr)
 }
 
 
+@Override public String getSharedName()
+{
+   return shared_name; 
+}
+
+
 
 /********************************************************************************/
 /*                                                                              */

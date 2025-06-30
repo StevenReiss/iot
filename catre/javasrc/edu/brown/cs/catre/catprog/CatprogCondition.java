@@ -138,6 +138,12 @@ CatreController getCatre()
    is_shared = true; 
 }
 
+@Override public String getSharedName()
+{
+   if (is_shared) return getName();
+   
+   return null;
+}
 
 protected void setValid(boolean fg)
 {

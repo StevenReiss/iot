@@ -245,6 +245,7 @@ private BowerRouter<CatserveSessionImpl> setupRouter()
    br.addRoute("POST","/universe/deviceStates",this::handleDeviceStates);
    br.addRoute("POST","/universe/shareCondition",this::handleShareCondition);
    br.addRoute("POST","/universe/unshareCondition",this::handleUnshareCondition);
+   br.addRoute("POST","/universe/cleanShared",this::handleCleanSharedConditions);
    br.addRoute("POST","/universe/getValue",this::handleGetValue);
    br.addRoute("GET","/rules",this::handleListRules);
    br.addRoute("POST","/rule/add",this::handleAddRule);
@@ -631,6 +632,19 @@ private String handleUnshareCondition(HttpExchange e,CatserveSessionImpl cs)
    cp.removeSharedCondition(condname);
    
   return BowerRouter.jsonOKResponse(cs);
+}
+
+
+
+private String handleCleanSharedConditions(HttpExchange e,CatserveSessionImpl cs)
+{
+   CatreUniverse cu = cs.getUniverse(catre_control);
+   CatreProgram cp = cu.getProgram();
+   
+   CatreLog.logI("CATSERVE","Clean Shared Conditions");
+   cp.cleanSharedConditions();
+    
+   return null;
 }
 
 

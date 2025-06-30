@@ -135,6 +135,11 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
 //            'Create Virtual Condition',
 //            _createVirtualCondition,
 //          ),
+            widgets.MenuAction(
+              'Clean Shared Conditions',
+              _handleCleanShared,
+              "Remove unused shared conditions",
+            ),
             widgets.MenuAction('Log Off', _logOff),
           ]),
         ],
@@ -446,5 +451,10 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       CatreRule cr = CatreRule.build(_theUniverse, rule);
       await cr.addOrEditRule();
     }
+  }
+
+  Future<void> _handleCleanShared() async {
+    await util.postJson("/universe/cleanShared", null);
+    await _reloadProgram();
   }
 }

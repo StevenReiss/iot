@@ -73,6 +73,15 @@ void addSharedCondition(CatreCondition cc);
 
 void removeSharedCondition(String name);
 
+
+/**
+ *      Clean up shared conditions.  Remove any conditions that are no longer
+ *      referenced.
+ ***/
+
+void cleanSharedConditions();
+
+
 /**
  *      Return a particular rule by id or name
  **/
