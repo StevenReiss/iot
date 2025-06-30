@@ -173,7 +173,14 @@ String getDays()
       Calendar end = null;
       if (sameDay(from,day)) start = setDateAndTime(day,from);
       else start = CatreTimeSlotEvent.startOfDay(day);
-      if (sameDay(to,day)) end = setDateAndTime(day,to);
+      if (sameDay(to,day)) {
+         end = setDateAndTime(day,to);
+         if (end.compareTo(start) <= 0) {
+            CatreLog.logD("CATMODEL","End before start -- move to next day " +
+                  end + " " + CatreTimeSlotEvent.startOfNextDay(day));
+            end = CatreTimeSlotEvent.startOfNextDay(day);
+          }
+       }
       else {
          end = CatreTimeSlotEvent.startOfNextDay(day);
        }
@@ -197,7 +204,9 @@ String getDays()
        }
       
       if (end.compareTo(start) <= 0) {
-         CatreLog.logD("CATMODEL","End time " + end.toInstant() + " before " + start.toInstant());
+         CatreLog.logD("CATMODEL","End time " + end.toInstant() + " before " + start.toInstant() + 
+               " " + usefromtime + " " + usetotime + " " + sameDay(to,day) + " " +
+               CatreTimeSlotEvent.startOfNextDay(day) + " " + start + " " + end);
          continue;
        }
       rslt.add(start);

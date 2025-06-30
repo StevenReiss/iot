@@ -229,7 +229,7 @@ private void checkOccludedRules(List<RuleError> errors)
        }
       if (!havetime) continue;
       
-      CatreLog.logD("CATPROG","Check overlap between " + for_rule.getLabel() +
+      CatreLog.logD("CATPROG","Check overlap between " + for_rule.getLabel() + " " _+
             for_rule.getPriority() + " and " +
             cr.getLabel() + " " + cr.getPriority());
       
