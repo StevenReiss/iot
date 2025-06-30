@@ -205,7 +205,7 @@ String getDays()
             CatreLog.logD("CATMODEL","New end time " + endt.toInstant() + " " + end.toInstant());
             end = endt;
           }
-         else if (endt.before(end)) {
+         else if (endt.before(end) && endt.after(start)) {
             CatreLog.logD("CATMODEL","Replace current end time " + endt.toInstant() + " " + 
                   end.toInstant());
             end = endt;
