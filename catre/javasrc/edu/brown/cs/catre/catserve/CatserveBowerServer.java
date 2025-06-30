@@ -644,7 +644,7 @@ private String handleCleanSharedConditions(HttpExchange e,CatserveSessionImpl cs
    CatreLog.logI("CATSERVE","Clean Shared Conditions");
    cp.cleanSharedConditions();
     
-   return null;
+   return BowerRouter.jsonOKResponse(cs);
 }
 
 

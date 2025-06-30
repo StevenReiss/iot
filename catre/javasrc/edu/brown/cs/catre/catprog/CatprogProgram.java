@@ -164,6 +164,9 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 @Override public void cleanSharedConditions()
 {
    Set<String> used = new HashSet<>();
+   // Add default shared conditions so we don't remove them
+   used.add("ALWAYS");
+   
    for (CatreRule cr : rule_list) {
       for (CatreCondition cc : cr.getConditions()) {
          String nm = cc.getSharedName(); 
@@ -174,7 +177,7 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
       String snm = it.next();
       if (used.contains(snm)) continue;
       CatreLog.logD("CATPROG","Remove unused shared condition " + snm);
-      // it.remove();
+      it.remove();
     }
 }
 
