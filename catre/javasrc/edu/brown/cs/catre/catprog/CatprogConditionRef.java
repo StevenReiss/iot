@@ -39,6 +39,7 @@ import java.util.Map;
 
 import edu.brown.cs.catre.catre.CatreCondition;
 import edu.brown.cs.catre.catre.CatreConditionListener;
+import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatrePropertySet;
 import edu.brown.cs.catre.catre.CatreStore;
 
@@ -103,6 +104,12 @@ CatprogConditionRef(CatprogConditionRef cr)
    if (base_condition == null) return false;
    if (!base_condition.isValid()) return false;
    
+   if (cond_handler == null && hasConditionHandlers()) {
+      CatreLog.logD("CATPROG","Add validation condition handler for ref");
+      cond_handler = new CondChanged();
+      base_condition.addConditionHandler(cond_handler);
+    }
+   
    return super.isValid();
 }
 
@@ -132,8 +139,9 @@ CatprogConditionRef(CatprogConditionRef cr)
    super.addConditionHandler(hdlr);
    
    if (cond_handler == null) {
+      CatreLog.logD("CATPROG","Add handler condition handler for ref");
       cond_handler = new CondChanged();
-      base_condition.addConditionHandler(cond_handler);
+      if (base_condition != null) base_condition.addConditionHandler(cond_handler);
     }
 }
 
@@ -143,7 +151,8 @@ CatprogConditionRef(CatprogConditionRef cr)
    super.removeConditionHandler(hdlr);
    
    if (cond_handler != null && !hasConditionHandlers()) {
-      base_condition.removeConditionHandler(hdlr);
+      CatreLog.logD("CATPROG","Remove handler condition handler for ref");
+      if (base_condition != null) base_condition.removeConditionHandler(hdlr);
       cond_handler = null;
     }
 }
