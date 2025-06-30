@@ -176,8 +176,8 @@ String getDays()
       if (sameDay(to,day)) {
          end = setDateAndTime(day,to);
          if (end.compareTo(start) <= 0) {
-            CatreLog.logD("CATMODEL","End before start -- move to next day " +
-                  end + " " + CatreTimeSlotEvent.startOfNextDay(day));
+//          CatreLog.logD("CATMODEL","End before start -- move to next day " +
+//                end + " " + CatreTimeSlotEvent.startOfNextDay(day));
             end = CatreTimeSlotEvent.startOfNextDay(day);
           }
        }
@@ -190,8 +190,8 @@ String getDays()
       Calendar estart = setDateAndTime(day,from_datetime);
       if (usefromtime) {
          if (estart.after(start)) {
-            CatreLog.logD("CATMODEL","New start time " + estart.toInstant() + " " +
-                  start.toInstant());
+//          CatreLog.logD("CATMODEL","New start time " + estart.toInstant() + " " +
+//                start.toInstant());
             start = estart;
           }
        }
@@ -202,12 +202,12 @@ String getDays()
          Calendar endt = setDateAndTime(day,to_datetime);
          if (endt.before(estart)) {
             endt.add(Calendar.DAY_OF_YEAR,1);
-            CatreLog.logD("CATMODEL","New end time " + endt.toInstant() + " " + end.toInstant());
+//          CatreLog.logD("CATMODEL","New end time " + endt.toInstant() + " " + end.toInstant());
             end = endt;
           }
          else if (endt.before(end) && endt.after(start)) {
-            CatreLog.logD("CATMODEL","Replace current end time " + endt.toInstant() + " " + 
-                  end.toInstant());
+//          CatreLog.logD("CATMODEL","Replace current end time " + endt.toInstant() + " " + 
+//                end.toInstant());
             end = endt;
           }
        }

@@ -213,6 +213,7 @@ private void checkOccludedRules(List<RuleError> errors)
 {
    boolean higher = true;
    for (CatreRule cr : for_program.getRules()) {
+      if (cr == for_rule) continue;
       if (cr.getTargetDevice() != for_rule.getTargetDevice()) continue;
       boolean othercond = false;
       boolean havetime = false;
