@@ -178,6 +178,7 @@ void addUsedConditions(Set<CatreCondition> rslt)
 {
    if (!rslt.add(this)) return;
    CatprogCondition sub = getSubcondition();
+   CatreLog.logD("CATPROG","Add used conditions for " + getName() + " " + sub);
    if (sub != null) {
       sub.addUsedConditions(rslt);
     }

@@ -173,6 +173,8 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
          if (nm != null) used.add(nm);
        }
     }
+   
+   boolean chng = false;
    Map<String,CatprogCondition> reps = new HashMap<>();
    Iterator<Map.Entry<String,CatprogCondition>> it = shared_conditions.entrySet().iterator();
    while (it.hasNext()) {
@@ -181,6 +183,7 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
       if (!used.contains(snm)) {
          CatreLog.logD("CATPROG","Remove unused shared condition " + snm);
          it.remove();
+         chng = true;
        }
       else {
          CatprogCondition cc = ent.getValue();
@@ -200,7 +203,12 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
        }
     }
    for (Map.Entry<String,CatprogCondition> ent : reps.entrySet()) {
-//    shared_conditions.put(ent.getKey(),ent.getValue());
+      shared_conditions.put(ent.getKey(),ent.getValue());
+      chng = true;
+    }
+   
+   if (chng) {
+      fireProgramUpdated();
     }
 }
 

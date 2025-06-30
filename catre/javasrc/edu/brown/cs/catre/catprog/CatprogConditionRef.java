@@ -127,6 +127,13 @@ CatprogConditionRef(CatprogConditionRef cr)
 }
 
 
+@Override public void setTime()
+{
+   if (base_condition != null) {
+      base_condition.setTime();
+    }
+}
+
 
 /********************************************************************************/
 /*                                                                              */
