@@ -125,6 +125,14 @@ void noteIsShared();
 
 String getSharedName();
 
+/**
+ *      Get the active condition for a condition.  Typically this is the condition
+ *      itself.  However, in the case of a reference to a shared condition, it is the
+ *      shared condition.
+ **/
+
+CatreCondition getActiveCondition();
+
 
 /**
  *      Return the universe associated with this conditions

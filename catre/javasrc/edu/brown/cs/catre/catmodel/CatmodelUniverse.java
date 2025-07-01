@@ -282,8 +282,10 @@ private void setupBridges()
 }
 
 
-@Override public void addTrigger(CatreCondition c,CatrePropertySet ps)
+@Override public void addTrigger(CatreCondition c0,CatrePropertySet ps)
 {
+   CatreCondition c = c0.getActiveCondition();
+   
    if (ps == null) ps = new CatmodelPropertySet();
 
    update_lock.lock();

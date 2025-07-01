@@ -145,6 +145,13 @@ CatreController getCatre()
    return null;
 }
 
+@Override public CatreCondition getActiveCondition()
+{
+   return this;
+}
+
+
+
 protected void setValid(boolean fg)
 {
    CatreLog.logD("CATPROG","Set condition " +

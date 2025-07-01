@@ -184,6 +184,7 @@ Set<CatreCondition> getUsedConditions()
    
    CatrePropertySet ps = null;
    for (CatreCondition cc : for_conditions) {
+      cc = cc.getActiveCondition();
       CatreLog.logD("CATPROG","CHECK CONDITION " + cc.getName());
       CatrePropertySet ns = null;
       if (ctx != null) ns = ctx.checkCondition(cc);

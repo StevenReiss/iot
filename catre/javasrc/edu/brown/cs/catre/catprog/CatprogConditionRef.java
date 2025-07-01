@@ -127,6 +127,13 @@ CatprogConditionRef(CatprogConditionRef cr)
    return shared_name; 
 }
 
+@Override public CatreCondition getActiveCondition()
+{
+   if (base_condition != null) return base_condition;
+   
+   return this;
+}
+
 
 @Override public void setTime()
 {

@@ -74,12 +74,6 @@ CatmodelTriggerContext()
 }
 
 
-CatmodelTriggerContext(CatreCondition uc,CatrePropertySet us)
-{
-   this();
-   addCondition(uc,us);
-}
-
 
 /********************************************************************************/
 /*                                                                              */
