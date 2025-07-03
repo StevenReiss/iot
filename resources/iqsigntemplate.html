@@ -22,6 +22,9 @@ function refreshIt(e)
       base_url = e.src.split('?')[0];
       image_item = e;
     }
+  else {
+     setup();
+   }
 }
 
 function update()
@@ -70,7 +73,6 @@ function playsound()
 }
 
 
-
 </script>
 </head>
 <body onclick='playsound()' onload='setup()' >
@@ -78,58 +80,3 @@ function playsound()
    <audio id='doorbell' src='doorbell.wav' preload='auto'></audio>
 </body>
 </html>
-setup()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
