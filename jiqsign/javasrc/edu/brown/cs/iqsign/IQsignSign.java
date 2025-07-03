@@ -201,8 +201,15 @@ void changeSign(String cnts,Consumer<Boolean> next)
 {
    cnts = setContents(cnts);
    for_database.changeSign(getId(),cnts);
-   String dname = computeDisplayName();
-   for_database.addDefineName(getUserId(),dname,cnts,false);
+   
+   // At one point we wanted to add this sign as a user-defined sign with the
+   // computed name.  We should either restrict this to only signs that are not
+   // references or to not do it at all.
+// if (!cnts.contains("=")) {
+//    String dname = computeDisplayName();
+//    for_database.addDefineName(getUserId(),dname,cnts,false);
+//  }
+   
    setupWebPage();
    updateSign(next,true,false);
 }

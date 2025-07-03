@@ -499,10 +499,6 @@ void addDefineName(Number uid,String dname,String contents,boolean useronly)
             return; 
           }
          IvyLog.logD("IQSIGN","Pattern " + p + " doesn't match " + contents);
-         if (contents.contains("=")) {
-            // disallow all reference items for now
-            return;
-          }
        }
       IQsignDefinedImage di = new IQsignDefinedImage(json);
       if (!di.getContents().equals(contents) && user) {
