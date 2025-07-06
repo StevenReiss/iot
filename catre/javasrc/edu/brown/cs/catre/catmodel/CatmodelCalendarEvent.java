@@ -266,7 +266,7 @@ String getDays()
    if (isNextDay(day,to_datetime)) usetotime = true;
    if (usetotime) {
       Calendar endt = setDateAndTime(day,to_datetime);
-      if (endt.before(dstart)) {
+      if (!endt.after(dstart)) {
          endt.add(Calendar.DAY_OF_YEAR,1);
          dend = endt;
        }
