@@ -738,7 +738,7 @@ private final class RuleConditionHandler implements CatreConditionListener {
        }
     }
    
-   CatreLog.logD("CATPROG","Used conditions: " + usedconds);
+   CatreLog.logD("CATPROG","Used conditions: " + usedconds.size() + " " + usedconds);
 
    return rslt;
 }

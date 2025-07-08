@@ -417,6 +417,13 @@ protected void fireValidated()
 
 
 
+@Override public String toString()
+{
+   return getLabel();
+}
+
+
+
 /********************************************************************************/
 /*										*/
 /*	State Tracking								*/
