@@ -90,6 +90,7 @@ private Map<CatreCondition,RuleConditionHandler> cond_handlers;
 private Updater 		active_updater;
 private SwingEventListenerList<CatreProgramListener> program_callbacks;
 private Map<String,CatprogCondition> shared_conditions;
+private Map<CatreDevice,Set<CatreCondition>> used_conditions;
 
 
 
@@ -110,6 +111,7 @@ CatprogProgram(CatreUniverse uu)
    active_updater = null;
    cond_handlers = new WeakHashMap<>();
    program_callbacks = new SwingEventListenerList<>(CatreProgramListener.class);
+   used_conditions = new HashMap<>();
 }
 
 
@@ -145,7 +147,7 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 
 /********************************************************************************/
 /*										*/
-/*	Access methods								*/
+/*	Access methods -- shared conditions                                     */
 /*										*/
 /********************************************************************************/
 
@@ -212,7 +214,22 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
     }
 }
 
- 
+
+
+CatprogCondition getSharedCondition(String name)
+{
+   return shared_conditions.get(name);
+}
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Access methods --rules                                                  */
+/*                                                                              */
+/********************************************************************************/
+
+
 @Override public List<CatreRule> getRules()
 {
    return new ArrayList<>(rule_list);
@@ -272,15 +289,16 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
 }
 
 
+
+/********************************************************************************/
+/*                                                                              */
+/*      General access methods                                                  */
+/*                                                                              */
+/********************************************************************************/
+
 @Override public CatreUniverse getUniverse()
 {
    return for_universe;
-}
-
-
-CatprogCondition getSharedCondition(String name)
-{
-   return shared_conditions.get(name);
 }
 
 
@@ -309,6 +327,8 @@ public Set<CatreParameterRef> getActiveSensors()
    
    return rslt;
 }
+
+
 
 /********************************************************************************/
 /*                                                                              */
@@ -481,6 +501,8 @@ private void updateConditions()
    CatreLog.logD("CATPROG","Update conditions " + active_conditions.size() +
          " " + rule_list.size());
    
+   used_conditions.clear();
+   
    Set<CatreCondition> del = new HashSet<>(active_conditions);
 
    for (CatreRule ur : rule_list) {
@@ -541,7 +563,11 @@ private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps
       CatreDevice cd = cpr.getTargetDevice();
       if (cd == null) continue;
       if (devices != null && devices.contains(cd)) continue;
-      if (cpr.getUsedConditions().contains(c)) {
+      if (cpr.getCheckedConditions().contains(c)) {
+         Set<CatreCondition> used = used_conditions.get(cd);
+         if (used != null && !used.contains(c)) {
+            CatreLog.logD("CATPROG","Condition isn't relevant to current value " + c);
+          }
          if (devices == null) devices = new HashSet<>();
          devices.add(cd);
        }
@@ -713,7 +739,7 @@ private final class RuleConditionHandler implements CatreConditionListener {
    boolean rslt = false;
 
    Set<CatreDevice> entities = new HashSet<>();
-   Set<CatreCondition> usedconds = new HashSet<>();
+   Map<CatreDevice,Set<CatreCondition>> usedcondmap = new HashMap<>();
 
    Collection<CatreRule> rules = new ArrayList<>(rule_list);
 
@@ -728,6 +754,11 @@ private final class RuleConditionHandler implements CatreConditionListener {
          continue;
        }
       try {
+         Set<CatreCondition> usedconds = usedcondmap.get(rent);
+         if (usedconds == null) {
+            usedconds = new HashSet<>();
+            usedcondmap.put(rent,usedconds);
+          }
 	 if (startRule(r,ctx,usedconds)) {
 	    rslt = true;
 	    entities.add(rent);
@@ -738,7 +769,8 @@ private final class RuleConditionHandler implements CatreConditionListener {
        }
     }
    
-   CatreLog.logD("CATPROG","Used conditions: " + usedconds.size() + " " + usedconds);
+   CatreLog.logD("CATPROG","Used conditions: " + usedcondmap.size() + " " + usedcondmap);
+   used_conditions.putAll(usedcondmap);
 
    return rslt;
 }

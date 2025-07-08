@@ -153,7 +153,7 @@ CatprogRule(CatreProgram pgm,CatreStore cs,Map<String,Object> map)
 /*                                                                              */
 /********************************************************************************/
 
-Set<CatreCondition> getUsedConditions()
+Set<CatreCondition> getCheckedConditions()
 {
    if (use_conditions == null) {
       Set<CatreCondition> rslt = new HashSet<>();
