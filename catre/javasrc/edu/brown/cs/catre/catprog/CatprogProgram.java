@@ -567,6 +567,7 @@ private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps
          Set<CatreCondition> used = used_conditions.get(cd);
          if (used != null && !used.contains(c)) {
             CatreLog.logD("CATPROG","Condition isn't relevant to current value " + c);
+            continue;
           }
          if (devices == null) devices = new HashSet<>();
          devices.add(cd);
