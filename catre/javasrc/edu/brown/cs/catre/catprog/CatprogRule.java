@@ -36,6 +36,7 @@
 
 package edu.brown.cs.catre.catprog;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -175,7 +176,8 @@ Set<CatreCondition> getUsedConditions()
 /*										*/
 /********************************************************************************/
 
-@Override public boolean apply(CatreTriggerContext ctx)
+@Override public boolean apply(CatreTriggerContext ctx,
+      Collection<CatreCondition> usedconds)
 	throws CatreConditionException, CatreActionException
 {
    CatreLog.logD("CATPROG","Start to apply rule " + getName());
@@ -185,6 +187,7 @@ Set<CatreCondition> getUsedConditions()
    CatrePropertySet ps = null;
    for (CatreCondition cc : for_conditions) {
       cc = cc.getActiveCondition();
+      if (usedconds != null) usedconds.add(cc);
       CatreLog.logD("CATPROG","CHECK CONDITION " + cc.getName());
       CatrePropertySet ns = null;
       if (ctx != null) ns = ctx.checkCondition(cc);

@@ -36,6 +36,7 @@
 
 package edu.brown.cs.catre.catre;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -128,10 +129,11 @@ boolean isDisabled();
  *      returns false if the rule is not applicable (the condition doesn't
  *      hold).  It can throw condition exception or action exception if
  *      there are errors.  The rule is applied asynchronously if the rule
- *      is asynchronous and the world is current.
+ *      is asynchronous and the world is current.  If usedconds is not null
+ *      any condition that is checked is added to it.
  **/
 
-boolean apply(CatreTriggerContext ctx) 
+boolean apply(CatreTriggerContext ctx,Collection<CatreCondition> usedconds) 
         throws CatreConditionException, CatreActionException;
 
 /**

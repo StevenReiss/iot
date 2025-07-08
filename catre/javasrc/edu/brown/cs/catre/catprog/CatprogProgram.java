@@ -713,6 +713,7 @@ private final class RuleConditionHandler implements CatreConditionListener {
    boolean rslt = false;
 
    Set<CatreDevice> entities = new HashSet<>();
+   Set<CatreCondition> usedconds = new HashSet<>();
 
    Collection<CatreRule> rules = new ArrayList<>(rule_list);
 
@@ -727,7 +728,7 @@ private final class RuleConditionHandler implements CatreConditionListener {
          continue;
        }
       try {
-	 if (startRule(r,ctx)) {
+	 if (startRule(r,ctx,usedconds)) {
 	    rslt = true;
 	    entities.add(rent);
 	  }
@@ -736,13 +737,16 @@ private final class RuleConditionHandler implements CatreConditionListener {
 	 CatreLog.logE("CATPROG","Problem with rule " + r.getName(),e);
        }
     }
+   
+   CatreLog.logD("CATPROG","Used conditions: " + usedconds);
 
    return rslt;
 }
 
 
 
-private boolean startRule(CatreRule r,CatreTriggerContext ctx)
+private boolean startRule(CatreRule r,CatreTriggerContext ctx,
+      Set<CatreCondition> usedconds)
 	throws CatreException
 {
    return r.apply(ctx);
