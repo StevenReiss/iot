@@ -749,7 +749,7 @@ private boolean startRule(CatreRule r,CatreTriggerContext ctx,
       Set<CatreCondition> usedconds)
 	throws CatreException
 {
-   return r.apply(ctx);
+   return r.apply(ctx,usedconds);
 }
 
 
