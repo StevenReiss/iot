@@ -573,6 +573,12 @@ private void conditionChange(CatreCondition c,boolean istrig,CatrePropertySet ps
          devices.add(cd);
        }
     }
+   
+   if (devices == null) {
+      CatreLog.logD("CATPROG","No devices affected by the change");
+      return;
+    }
+   
    CatreLog.logD("CATPROG","Relevant target devices " + devices);
    
    for_universe.updateLock();

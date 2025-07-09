@@ -235,6 +235,7 @@ String getDays()
          from_datetime.getTimeInMillis() + " " +
          day_set + " " + repeat_interval);
    
+   
    Calendar cal = Calendar.getInstance();
    cal.setTimeInMillis(when);
    if (cal.after(to_datetime)) {
@@ -253,6 +254,11 @@ String getDays()
    Calendar dstart = day;
    Calendar dend = CatreTimeSlotEvent.startOfNextDay(day);
    
+   boolean addday = false;
+   Calendar cx0 = setDateAndTime(day,from_datetime);
+   Calendar cx1 = setDateAndTime(day,to_datetime);
+   if (!cx1.after(cx0)) addday = true;
+   
    boolean usetimes = false;
    if (day_set != null && !day_set.isEmpty()) usetimes = true;
    if (repeat_interval > 0) usetimes = true;
@@ -266,7 +272,7 @@ String getDays()
    if (isNextDay(day,to_datetime)) usetotime = true;
    if (usetotime) {
       Calendar endt = setDateAndTime(day,to_datetime);
-      if (!endt.after(dstart)) {
+      if (addday || !endt.after(dstart)) {
          endt.add(Calendar.DAY_OF_YEAR,1);
          dend = endt;
        }
@@ -278,7 +284,7 @@ String getDays()
          from_datetime.getTimeInMillis() + " " + when + " " +
          from_datetime.toInstant() + " " +
          to_datetime.toInstant() + " " + 
-         usetimes + " " + usefromtime + " " + usetotime);
+         usetimes + " " + usefromtime + " " + usetotime + " " + addday);
    
    if (dend.compareTo(dstart) <= 0) {
       CatreLog.logD("CATMODEL","End time before start time");
