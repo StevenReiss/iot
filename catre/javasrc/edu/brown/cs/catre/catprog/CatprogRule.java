@@ -54,6 +54,7 @@ import edu.brown.cs.catre.catre.CatreProgram;
 import edu.brown.cs.catre.catre.CatrePropertySet;
 import edu.brown.cs.catre.catre.CatreRule;
 import edu.brown.cs.catre.catre.CatreStore;
+import edu.brown.cs.catre.catre.CatreTimeSlotEvent;
 import edu.brown.cs.catre.catre.CatreTriggerContext;
 
 
@@ -101,6 +102,8 @@ CatprogRule(CatreProgram pgm,CatreStore cs,Map<String,Object> map)
    is_disabled = false;
 
    fromJson(cs,map);
+   
+   optimizeRule();
    
    if (device_id == null && for_actions != null) {
       for (CatreAction ca : for_actions) {
@@ -293,6 +296,36 @@ private class RuleRunner implements Runnable {
        }
     }
 }
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Optimize rule to minimize processing                                    */
+/*                                                                              */
+/********************************************************************************/
+
+private void optimizeRule()
+{
+   if (!force_trigger) {
+      // non-trigger: ensure time component is first
+      CatreCondition first = null;
+      for (CatreCondition cc0 : for_conditions) {
+         CatprogCondition cc = (CatprogCondition) cc0;
+         CatreTimeSlotEvent tse = cc.getTimeSlotEvent();
+         if (tse != null) {
+            first = cc;
+            break;
+          }
+       }
+      if (first != null && for_conditions.get(0) != first) {
+         CatreLog.logD("CATPROG","Move condition " + first.getLabel() + " to start of conditions");
+         for_conditions.remove(first);
+         for_conditions.add(0,first);
+       }
+    }
+}
+
 
 
 /********************************************************************************/
