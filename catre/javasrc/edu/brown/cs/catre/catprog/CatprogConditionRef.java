@@ -43,6 +43,7 @@ import edu.brown.cs.catre.catre.CatreConditionListener;
 import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatrePropertySet;
 import edu.brown.cs.catre.catre.CatreStore;
+import edu.brown.cs.catre.catre.CatreTimeSlotEvent;
 
 class CatprogConditionRef extends CatprogCondition
 {
@@ -149,6 +150,15 @@ CatprogConditionRef(CatprogConditionRef cr)
    
    return base_condition.getCurrentStatus();
 }
+
+
+@Override public CatreTimeSlotEvent getTimeSlotEvent()
+{
+   if (base_condition == null) return super.getTimeSlotEvent();
+   
+   return base_condition.getTimeSlotEvent();
+}
+
 
 
 /********************************************************************************/
