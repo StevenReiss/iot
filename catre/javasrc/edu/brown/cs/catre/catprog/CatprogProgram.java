@@ -200,7 +200,7 @@ CatprogProgram(CatreUniverse uu,CatreStore cs,Map<String,Object> map)
           }
          if (cc != ent.getValue()) {
             reps.put(snm,cc);
-            CatreLog.logD("CATPROG","Replace refereced shared position with " + cc);
+            CatreLog.logD("CATPROG","Replace referenced shared position with " + cc);
           }
        }
     }
