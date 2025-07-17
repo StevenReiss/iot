@@ -199,8 +199,10 @@ Set<CatreCondition> getCheckedConditions()
          CatreLog.logD("CATPROG","Condition is false");
          return false;
        }
-      if (ps == null) ps = ns;
-      else ps.putAll(ns);
+      if (ps == null) {
+         ps = for_program.getUniverse().createPropertySet();
+       }
+      ps.putAll(ns);
     }
    // no conditions (ps == null) means that rule holds at this point
 // if (ps == null) {
