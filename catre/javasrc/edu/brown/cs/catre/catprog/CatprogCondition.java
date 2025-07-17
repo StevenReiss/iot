@@ -443,8 +443,19 @@ private class CondState {
    boolean setOn(CatrePropertySet ps) {
       CatreLog.logD("CATPROG","Set Condition " + getName() + " STATE ON " + ps +
             " " + on_parameters);
-      if (on_parameters != null && on_parameters.equals(ps)) return false;
-      if (ps == null && on_parameters.isEmpty()) return false;
+      boolean chng = false;
+      if (ps != null && on_parameters != null) {
+         for (Map.Entry<String,String> ent : ps.entrySet()) {
+            String nv = ent.getValue();
+            String ov = on_parameters.get(ent.getKey());
+            if (ov == null && nv != null) chng = true;
+            else if (nv != null && ov == null) chng = true;
+            else if (nv != null && !nv.equals(ov)) chng = true;
+          }
+       }
+      else if (on_parameters == null) chng = true;
+      if (!chng) return false;
+      
       error_condition = null;
       on_parameters = getUniverse().createPropertySet();
       on_parameters.putAll(ps);
