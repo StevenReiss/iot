@@ -272,7 +272,6 @@ CatreParameterRef getActiveSensor()
 
 
 
-/********************************************************************************/
 /*										*/
 /*	Trigger methods 							*/
 /*										*/
@@ -289,6 +288,7 @@ protected void fireOn(CatrePropertySet input)
    try {
       CondState cs = cond_state;
       if (!cs.setOn(input)) return;
+      CatreLog.logD("CATPROG","Condition firing");
 
       for (CatreConditionListener ch : condition_handlers) {
 	 try {
