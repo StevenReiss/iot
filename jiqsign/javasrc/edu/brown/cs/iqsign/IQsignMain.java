@@ -304,10 +304,14 @@ File getSvgLibrary()
 
 String getURLHostPrefix()	
 {
+   String pfx = "https";
    String hn = IvyExecQuery.getHostName();
-   if (is_testing) hn = "localhost";
+   if (is_testing) {
+      pfx = "http";
+      hn = "localhost";
+    }
    
-   return "http://" + hn;
+   return pfx + "://" + hn;
 }
 
 

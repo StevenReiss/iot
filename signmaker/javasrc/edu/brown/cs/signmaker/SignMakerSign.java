@@ -360,7 +360,7 @@ String useSavedImage(String name)
          return cnts;
        }
       catch (SQLException e) {
-         IvyLog.logE("SIGNMAKER","Database problem: ",e);
+         IvyLog.logE("SIGNMAKER","Database problem on saved: ",e);
          SignMaker.clearDatabase();
        }
     }

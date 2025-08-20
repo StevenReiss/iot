@@ -83,6 +83,9 @@ echo oauth start status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/catre; start.csh)'
 echo catre start status $status
 
+ssh sherpa.cs.brown.edu '(cd /vol/iot/jiqsign; lockalive.csh)'
+echo lockalive start status $status
+
 pushd devices
 echo starting devices locally
 start.csh

@@ -1,4 +1,4 @@
-#! /bin/bash -f
+a! /bin/bash -f
 
 SRD=$(dirname "${BASH_SOURCE[0]}")
 pushd $SRD > /dev/null

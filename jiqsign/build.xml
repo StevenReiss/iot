@@ -68,6 +68,18 @@
      <copy file='iqsign.jar' tofile='${IQSIGN}/../bin/iqsign.jar' />
    </target>
 
+   <target name='lockalive' depends='compile'>
+     <jar destfile='lockalive.jar'>
+	<manifest>
+	   <attribute name='Main-Class' value='edu.brown.cs.iqsign.LockAlive' />
+	</manifest>
+	<fileset dir='${IQSIGN}/java' includes='**/iqsign/Lock*.class' />
+     </jar>
+     <copy file='lockalive.jar' tofile='${IQSIGN}/../bin/lockalive.jar' />
+   </target>
+
+
+
 </project>
 
 

@@ -838,7 +838,7 @@ private String lookupImage(String name)
          break;
        }
       catch (SQLException e) {
-         IvyLog.logE("SIGNMAKER","Database problem: ",e);
+         IvyLog.logE("SIGNMAKER","Database problem on lookup: ",e);
          SignMaker.clearDatabase(); 
          // need to reconnect to sql database here
        }

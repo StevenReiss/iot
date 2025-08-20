@@ -70,7 +70,8 @@ iqsign.jar
 Podfile.lock
 opensecret*
 test.sign.png
-
+.lock*
+lockalive.jar
 
 
 # Ignore Gradle project-specific cache directory
