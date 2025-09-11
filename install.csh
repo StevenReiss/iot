@@ -67,6 +67,8 @@ ssh sherpa.cs.brown.edu '(cd /vol/iot/devices; ant)'
 echo devices ant status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/jiqsign; ant)'
 echo jiqsign ant status $status
+ssh sherpa.cs.brown.edu '(cd /vol/iot/jiqsign; ant lockalive)'
+echo lockalive ant status $status
 ssh sherpa.cs.brown.edu '(cd /vol/iot/cedes; npm update)'
 echo npm status $status
 

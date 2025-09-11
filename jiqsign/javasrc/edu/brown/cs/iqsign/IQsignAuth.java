@@ -274,10 +274,10 @@ String handleRegister(HttpExchange he,IQsignSession session)
    IQsignDatabase db = iqsign_main.getDatabaseManager();
 
    String email = BowerRouter.getParameter(he,"email");
-   email = email.toLowerCase();
+   if (email != null) email = email.toLowerCase();
    BowerRouter.setParameter(he,"email",email);
    String uid = BowerRouter.getParameter(he,"username");
-   uid = uid.toLowerCase();
+   if (uid != null) uid = uid.toLowerCase();
    BowerRouter.setParameter(he,"username",uid);
    String pwd = BowerRouter.getParameter(he,"password");
    String altpwd = BowerRouter.getParameter(he,"altpassword");
