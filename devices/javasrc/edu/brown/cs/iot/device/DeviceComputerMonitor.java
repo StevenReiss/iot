@@ -639,14 +639,14 @@ private void checkStatus()
    System.err.println("WORK STATUS: " + idle + " " + last_idle + " " + last_work);
    
    WorkOption workopt = WorkOption.WORKING;
-   if (idle < last_idle || idle < 60) {
+   if (idle < last_idle || idle < 120) {
       // if idle went down, then we are working
-      // otherwise give us 30 seconds grace to read the display
+      // otherwise give us some time grace to read the display
     }
    else if (idle >= 7200) {
       workopt = WorkOption.OFF;
     }
-   else if (idle >= 300) {
+   else if (idle >= 600) {
       workopt = WorkOption.AWAY;
     }
    else workopt = WorkOption.IDLE;
