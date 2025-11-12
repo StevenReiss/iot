@@ -120,8 +120,9 @@ Widget textField({
   } else {
     maxLines ??= 1;
   }
-  keyboardType ??=
-      (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
+  keyboardType ??= (maxLines == 1
+      ? TextInputType.text
+      : TextInputType.multiline);
 
   InputDecoration deco = getDecoration(hint: hint, label: label);
   if (collapse) {
@@ -267,7 +268,8 @@ Widget tooltipWidget(String tooltip, Widget w) {
         colors: <Color>[laf.toolTipLeftColor, laf.toolTipRightColor],
       ),
     ),
-    height: laf.toolTipHeight,
+    constraints: BoxConstraints(minHeight: laf.toolTipHeight),
+    //  height: laf.toolTipHeight,
     padding: const EdgeInsets.all(8.0),
     preferBelow: true,
     textStyle: const TextStyle(
@@ -525,8 +527,9 @@ Widget dropDownMenu(
     initialSelection: value,
     requestFocusOnTap: true,
     onSelected: onChanged,
-    dropdownMenuEntries:
-        items.map<DropdownMenuEntry<String>>((String value) {
+    dropdownMenuEntries: items.map<DropdownMenuEntry<String>>((
+      String value,
+    ) {
       return DropdownMenuEntry<String>(value: value, label: value);
     }).toList(),
   );
@@ -570,7 +573,7 @@ Widget dropDownWidget<T>(
   );
 
   DropdownButtonFormField<T?> fld = DropdownButtonFormField<T?>(
-    value: value,
+    initialValue: value,
     onChanged: onChanged,
     items: itmlst,
     isDense: true,
@@ -624,7 +627,7 @@ void goto(BuildContext context, Widget w) {
 }
 
 Future<dynamic> gotoThen(BuildContext context, Widget w) async {
-  await Navigator.of(
+  return await Navigator.of(
     context,
   ).push(MaterialPageRoute(builder: (context) => w));
 }
@@ -747,15 +750,16 @@ class DateFormField {
         //  overlayColor: Colors.brown,
       );
       _textField = Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(child: _textField),
-            ElevatedButton(
-              onPressed: _handleForever,
-              style: style,
-              child: const Icon(Icons.all_inclusive),
-            ),
-          ]);
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Expanded(child: _textField),
+          ElevatedButton(
+            onPressed: _handleForever,
+            style: style,
+            child: const Icon(Icons.all_inclusive),
+          ),
+        ],
+      );
     }
     _textField = tooltipWidget(tooltip, _textField);
   }
@@ -1063,7 +1067,7 @@ Widget numberField({
     primaryColorLight: const Color.fromARGB(73, 121, 85, 72),
     valueIndicatorTextStyle: const TextStyle(color: Colors.white),
   );
-  sd = sd.copyWith(showValueIndicator: ShowValueIndicator.always);
+  sd = sd.copyWith(showValueIndicator: ShowValueIndicator.onDrag);
   Widget w3 = SliderTheme(data: sd, child: w2);
   Widget w4 = Row(
     children: <Widget>[
@@ -1198,10 +1202,17 @@ Widget topLevelPage(
   BuildContext context,
   Widget child, [
   bool scrollable = false,
+  bool showScrollBar = false,
 ]) {
   return LayoutBuilder(
     builder: (BuildContext context, BoxConstraints cnst) {
-      return _topLevelPageBuilder(context, cnst, child, scrollable);
+      return _topLevelPageBuilder(
+        context,
+        cnst,
+        child,
+        scrollable,
+        showScrollBar,
+      );
     },
   );
 }
@@ -1211,6 +1222,7 @@ Widget _topLevelPageBuilder(
   BoxConstraints constraints,
   Widget child,
   bool scrollable,
+  bool showScrollBar,
 ) {
   BoxConstraints bc = BoxConstraints(minWidth: constraints.maxWidth);
   if (scrollable) {
@@ -1218,6 +1230,19 @@ Widget _topLevelPageBuilder(
       minWidth: constraints.maxWidth,
       maxHeight: MediaQuery.of(context).size.height * 0.8,
       // maxHeight: 400,
+    );
+  }
+  ScrollController sc = ScrollController();
+  Widget w1 = SingleChildScrollView(
+    controller: sc,
+    child: ConstrainedBox(constraints: bc, child: child),
+  );
+  if (showScrollBar) {
+    w1 = Scrollbar(
+      controller: sc,
+      trackVisibility: true,
+      thumbVisibility: true,
+      child: w1,
     );
   }
   return Container(
@@ -1229,9 +1254,7 @@ Widget _topLevelPageBuilder(
         opacity: 0.05,
       ),
     ),
-    child: SingleChildScrollView(
-      child: ConstrainedBox(constraints: bc, child: child),
-    ),
+    child: w1,
   );
 }
 
