@@ -46,7 +46,7 @@ import java.util.Base64;
 import java.util.Random;
 
 /**
- *      A set up utility routines for use in Catre
+ *	A set up utility routines for use in Catre
  **/
 
 public class CatreUtil
@@ -72,7 +72,7 @@ private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJ
 /********************************************************************************/
 
 /**
- *      Return a random string of len characters
+ *	Return a random string of len characters
  **/
 
 public static String randomString(int len)
@@ -95,7 +95,7 @@ public static String randomString(int len)
 /********************************************************************************/
 
 /**
- *      Return a string representing the SHA-512 hash of a string
+ *	Return a string representing the SHA-512 hash of a string
  **/
 
 public static String secureHash(String s)
@@ -113,8 +113,8 @@ public static String secureHash(String s)
 
 
 /**
- *      Return a short (16 chaacter) string representing the MD5 hash
- *      of a string
+ *	Return a short (16 chaacter) string representing the MD5 hash
+ *	of a string
  **/
 
 public static String shortHash(String s)
@@ -127,14 +127,14 @@ public static String shortHash(String s)
       return rslt;
     }
    catch (Exception e) {
-      throw new Error("Problem with sha-512 encoding of " + s);
+      throw new Error("Problem with MD5 encoding of " + s);
     }
 }
 
 
 
 /**
- *      Decode a URL encoded string
+ *	Decode a URL encoded string
  **/
 
 public static String unescape(String s) {
@@ -150,7 +150,7 @@ public static String unescape(String s) {
 
 
 /**
- *      Encode a string as part of a URL
+ *	Encode a string as part of a URL
  **/
 
 public static String escape(String s) {
@@ -166,19 +166,19 @@ public static String escape(String s) {
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Email methods                                                           */
-/*                                                                              */
+/*										*/
+/*	Email methods								*/
+/*										*/
 /********************************************************************************/
 
 /**
- *      Send email from CATRE to a user
+ *	Send email from CATRE to a user
  **/
 
 public static boolean sendEmail(String sendto,String subj,String body)
 {
    if (sendto == null || subj == null && body == null) return false;
-   
+
    try {
       if (subj != null) subj = URLEncoder.encode(subj,"UTF-8");
     }
@@ -187,25 +187,25 @@ public static boolean sendEmail(String sendto,String subj,String body)
       if (body != null) body = URLEncoder.encode(body,"UTF-8");
     }
    catch (UnsupportedEncodingException e) { }
-   
+
    String full = "mailto:" + sendto;
    String pfx = "?";
    try {
       if (subj != null) {
-         full += pfx + "subject=" + subj;
-         pfx = "&";
+	 full += pfx + "subject=" + subj;
+	 pfx = "&";
        }
       if (body != null) {
-         full +=  pfx + "body=" + body;
-         pfx = "&";
+	 full +=  pfx + "body=" + body;
+	 pfx = "&";
        }
       URI u = new URI(full);
-      Desktop.getDesktop().mail(u);  
+      Desktop.getDesktop().mail(u);
     }
    catch (Throwable e) {
       return false;
     }
-   
+
    return true;
 }
 
