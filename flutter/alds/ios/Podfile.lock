@@ -58,7 +58,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
 SPEC CHECKSUMS:
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_blue_plus_darwin: 09444a26fb6bdef523e55b68fc1c59af5a877ea6
   flutter_logs: 30a36079651dcdfb260dbff875bf882bbbcaa22e
   geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
@@ -69,6 +69,6 @@ SPEC CHECKSUMS:
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 4b43f60429d448867c320261b516448f09cfccaf
+PODFILE CHECKSUM: f22704fe6518fe8ec37666f7595a63c40c4bc90b
 
 COCOAPODS: 1.16.2
