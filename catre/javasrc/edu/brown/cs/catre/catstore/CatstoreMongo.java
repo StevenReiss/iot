@@ -36,9 +36,6 @@
 
 package edu.brown.cs.catre.catstore;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -104,21 +101,12 @@ public CatstoreMongo(CatreController cc)
 
    String con = "mongodb://USER:PASS@HOST:PORT/catre?maxPoolSize=20&w=majority";
 
-   Properties p = new Properties();
-   p.put("mongohost","localhost");
-   p.put("mongoport","27017");
-   p.put("mongouser","sherpa");
-   p.put("mongopass","XXX");
+   Properties p = cc.getProperties();
 
-   File f1 = cc.findBaseDirectory();
-   File f2 = new File(f1,"secret");
-   File f3 = new File(f2,"catre.props");
-   setProperties(p,f3);
-
-   con = con.replace("USER",p.getProperty("mongouser"));
-   con = con.replace("PASS",p.getProperty("mongopass"));
-   con = con.replace("HOST",p.getProperty("mongohost"));
-   con = con.replace("PORT",p.getProperty("mongoport"));
+   con = con.replace("USER",p.getProperty("mongouser","sherpa"));
+   con = con.replace("PASS",p.getProperty("mongopass","XXX"));
+   con = con.replace("HOST",p.getProperty("mongohost","localhost"));
+   con = con.replace("PORT",p.getProperty("mongoport","27017"));
 
    mongo_client = MongoClients.create(con);
    catre_database = mongo_client.getDatabase("catre");
@@ -533,26 +521,11 @@ private CatreTable getTableForUID(String uid)
 
 
 
-
-
 /********************************************************************************/
 /*										*/
 /*	Property management							*/
 /*										*/
 /********************************************************************************/
-
-private void setProperties(Properties p,File dbf)
-{
-   if (dbf.exists()) {
-      try (FileInputStream fis = new FileInputStream(dbf)) {
-	 p.loadFromXML(fis);
-       }
-      catch (IOException e) {
-	 // handle or ignore error
-       }
-    }
-}
-
 
 private Document createDocument(CatreSavableBase obj)
 {

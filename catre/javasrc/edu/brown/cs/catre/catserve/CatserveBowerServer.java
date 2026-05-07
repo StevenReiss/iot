@@ -44,7 +44,6 @@ import edu.brown.cs.ivy.file.IvyFile;
 import edu.brown.cs.karma.KarmaUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -96,6 +95,7 @@ private CatserveAuth auth_manager;
 private SessionStore session_store;
 private BowerRouter<CatserveSessionImpl> bower_router;
 private String url_prefix;
+private int https_port;
 
 
 /********************************************************************************/
@@ -113,18 +113,23 @@ public CatserveBowerServer(CatreController cc)
    File f1 = cc.findBaseDirectory();
    File f2 = new File(f1,"secret");
    File f3 = new File(f2,"catre.jks");
-   File f4 = new File(f2,"catre.props");
-   Properties p = new Properties();
-   p.put("jkspwd","XXX");
-   try (FileInputStream fis = new FileInputStream(f4)) {
-      p.loadFromXML(fis);
-    }
-   catch (IOException e) { }
+   Properties p = cc.getProperties();
    String keystorepwd = p.getProperty("jkspwd");
    if (keystorepwd != null && keystorepwd.equals("XXX")) keystorepwd = null;
+   if (keystorepwd != null && keystorepwd.isEmpty()) keystorepwd = null;
    
+   https_port = HTTPS_PORT;
+   String v = p.getProperty("https_port");
+   if (v != null && !v.isEmpty()) {
+      try {
+         https_port = Integer.parseInt(v);
+       }
+      catch (NumberFormatException e) {
+         CatreLog.logE("CATSERVE","Bad https port in resource file");
+       }
+    }
    bower_router = setupRouter();
-   http_server = new BowerServer<>(HTTPS_PORT,session_store);
+   http_server = new BowerServer<>(https_port,session_store);
    http_server.setRouter(bower_router);
    if (keystorepwd != null) {
       http_server.setupHttps(f3,keystorepwd);
@@ -172,7 +177,7 @@ private String fixUrlPrefix(String pfx)
    if (idx < 6) {
       int idx1 = pfx.indexOf(":",idx+1);
       if (idx1 < 0) {
-         pfx += ":" + HTTPS_PORT;
+         pfx += ":" + https_port;
        }
     }
    
@@ -192,7 +197,7 @@ public void start() throws IOException
 {
    http_server.start();
    
-   CatreLog.logI("CATSERVE","CATRE SERVER STARTED ON " + HTTPS_PORT);
+   CatreLog.logI("CATSERVE","CATRE SERVER STARTED ON " + https_port);
 }
 
 

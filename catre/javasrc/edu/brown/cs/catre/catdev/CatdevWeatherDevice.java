@@ -68,7 +68,7 @@ private static String  api_key = null;
 private static final String WEATHER_URL =
    "https://api.openweathermap.org/data/2.5/weather?$(WHERE)&APPID=$(APPID)&units=$(UNITS)";
 
-private static long UPDATE_RATE = 10 * T_MINUTE;
+private static final long UPDATE_RATE = 10 * T_MINUTE;
 
 
 /********************************************************************************/

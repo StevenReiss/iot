@@ -38,9 +38,11 @@ package edu.brown.cs.catre.catre;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
+
 
 
 /**
@@ -152,8 +154,10 @@ File findBaseDirectory();
 
 String getUrlPrefix();
 
-
-
+/**
+ *      Return the catre-settable properties
+ **/
+Properties getProperties();
 
 
 }       // end of interface CatreUniverse

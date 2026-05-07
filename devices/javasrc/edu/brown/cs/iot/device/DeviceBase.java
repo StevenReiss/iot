@@ -79,6 +79,7 @@ protected String device_uid;
 private Object ping_lock;
 private JSONObject device_params;
 private int device_counter;
+private String base_url;
 
 
 
@@ -97,6 +98,7 @@ protected DeviceBase()
 {
    ping_lock = new Object();
    access_token = null;
+   base_url = BASE_URL;
 
    try {
       setupAccess();
@@ -237,9 +239,11 @@ private void setupAccess() throws IOException
       f3.mkdirs();
       user_id = randomString(12);
       personal_token = randomString(16);
+      base_url = BASE_URL;
       JSONObject obj = new JSONObject();
       obj.put(CONFIG_UID,user_id);
       obj.put(CONFIG_PAT,personal_token);
+      obj.put(CONFIG_URL,base_url); 
       try (FileWriter fw = new FileWriter(f4)) {
 	 fw.write(obj.toString(2));
        }
@@ -250,6 +254,7 @@ private void setupAccess() throws IOException
 	 JSONObject obj = new JSONObject(cnts);
 	 user_id = obj.getString(CONFIG_UID);
 	 personal_token = obj.getString(CONFIG_PAT);
+         base_url = obj.optString(CONFIG_URL,BASE_URL);
        }
     }
 
@@ -521,8 +526,11 @@ protected JSONObject sendToCedes(String nm,JSONObject obj)
 protected JSONObject sendToCedes(String nm,String cnts)
 {
    System.err.println("SEND TO CEDES:" + new Date() + ": " +  cnts);
+   
+   
    try {
-      String url = BASE_URL + nm;
+      if (!base_url.endsWith("/")) base_url += "/";
+      String url = base_url + nm;
       URL u = new URI(url).toURL();
       HttpURLConnection hc = (HttpURLConnection) u.openConnection();
       hc.setUseCaches(false);

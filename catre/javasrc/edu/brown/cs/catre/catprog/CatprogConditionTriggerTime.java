@@ -70,7 +70,7 @@ private TimerTask	cur_timer;
 private boolean         is_active;
 
 private static HashMap<String,Integer> value_map;
-private static long	MAX_TIME =  T_DAY;
+private static final long	MAX_TIME =  T_DAY;
 
 
 static {

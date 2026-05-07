@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -82,6 +83,7 @@ private Map<String,CatbridgeBase> actual_bridges;
 private CatreController catre_control;
 private Set<String> active_keys;
 
+private static String cedes_url;
 private static String bridge_key = null;
 
 
@@ -103,7 +105,17 @@ public CatbridgeFactory(CatreController cc)
    template_bridges.add(new CatbridgeIQsign(cc));
    template_bridges.add(new CatbridgeGoogleCalendar(cc));
    template_bridges.add(new CatbridgeSamsung(cc));
-
+   
+   if (cedes_url == null) {
+      Properties p = cc.getProperties();
+      cedes_url = "https://" + CEDES_HOST + ":" + CEDES_PORT + "/";
+      String curl = p.getProperty("cedes_url");
+      if (curl != null && !curl.isEmpty()) {
+         if (!curl.endsWith("/")) curl += "/";
+         cedes_url = curl;
+       }
+    }
+   
    ServerThread sthrd = new ServerThread();
    sthrd.start();
    sthrd.waitForSetup();
@@ -215,7 +227,7 @@ static JSONObject sendCedesMessage(String cmd,Map<String,Object> data,CatbridgeB
     }
 
    try {
-      String url = "https://" + CEDES_HOST + ":" + CEDES_PORT + "/" + cmd;
+      String url = cedes_url + cmd;
       CatreLog.logD("CATBRIDGE","Send to CEDES: " + url + " " + obj.toString(2));
       URL u = new URI(url).toURL();
       HttpURLConnection hc = (HttpURLConnection) u.openConnection();

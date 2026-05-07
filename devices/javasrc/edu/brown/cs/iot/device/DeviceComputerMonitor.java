@@ -107,29 +107,30 @@ private String  bt_command;
 private boolean need_python_setup;
 
 
-private final String IDLE_COMMAND_1 = "xssstate -i";
-private final String IDLE_COMMAND_2 = "ioreg -c IOHIDSystem | fgrep HIDIdleTime";
-private final String IDLE_COMMAND_3 = "xprintidle";
+private static final String IDLE_COMMAND_1 = "xssstate -i";
+private static final String IDLE_COMMAND_2 = "ioreg -c IOHIDSystem | fgrep HIDIdleTime";
+private static final String IDLE_COMMAND_3 = "xprintidle";
       
 
 // private final String ZOOM_COMMAND = "ps -ax | fgrep zoom | fgrep CptHost";
-private final String ZOOM_COMMAND = "ps -ax -o lstart,command | fgrep zoom | fgrep CptHost";
+private static final String ZOOM_COMMAND = "ps -ax -o lstart,command | fgrep zoom | fgrep CptHost";
 
-private final String ALERT_COMMAND_1 = "notify-send $MSG";
-private final String ALERT_COMMAND_2 = 
+private static final String ALERT_COMMAND_1 = "notify-send $MSG";
+private static final String ALERT_COMMAND_2 = 
    "osascript -e 'display notification \"$MSG\" with title \"From Sherpa\" sound name \"Basso\" '";
-private final String ALERT_COMMAND_3 = "zenity --notification '--title=From Sherpa' '--text=$MSG'";
+private static final String ALERT_COMMAND_3 =
+   "zenity --notification '--title=From Sherpa' '--text=$MSG'";
    
 
 
-private final DateFormat PS_DATE = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy");
+private static final DateFormat PS_DATE = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy");
 
-private final String BT_COMMAND_1 = "sdptool browse $MAC";
-private final String BT_COMMAND_2 = "python3 $BTDISCOVERY";
-private final String BT_COMMAND_3 = "python $BTDISCOVERY";
-private final String BT_FILE = "btDiscovery.py";
+private static final String BT_COMMAND_1 = "sdptool browse $MAC";
+private static final String BT_COMMAND_2 = "python3 $BTDISCOVERY";
+private static final String BT_COMMAND_3 = "python $BTDISCOVERY";
+private static final String BT_FILE = "btDiscovery.py";
 
-private final long POLL_TIME = 30000;
+private static final long POLL_TIME = 30000;
 
 private static Map<String,String> carrier_table;
 

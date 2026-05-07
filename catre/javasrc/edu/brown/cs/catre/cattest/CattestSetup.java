@@ -82,7 +82,7 @@ private static final String IQSIGN = "iQsign_BGR8yt9M_1";
 private static final String MONITOR = "COMPUTER_MONITOR_Brown-F1QWPJJ9";
 
 
-private static Set<String> OK_DEVICES;
+private static final Set<String> OK_DEVICES;
 
 static {
    OK_DEVICES = new HashSet<>();

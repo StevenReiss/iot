@@ -53,6 +53,7 @@ String CONFIG_FILE = "generic.json";
 String NAME_FILE = "device_";
 String CONFIG_UID = "auth_uid";
 String CONFIG_PAT = "auth_pat";
+String CONFIG_URL = "base_url";
 String DEVICE_UID = "device_uid";
 
 String LOCK_DIR = ".locks";

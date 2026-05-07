@@ -71,7 +71,7 @@ private String          rss_url;
 
 private static DateFormat rss_date = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss ZZZZ");
 
-private static long UPDATE_RATE = 5 * T_MINUTE;
+private static final long UPDATE_RATE = 5 * T_MINUTE;
 
 
 

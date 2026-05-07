@@ -74,7 +74,7 @@ private boolean         is_temporary;
 private String          email_verifier;
 private Map<String,CatreBridgeAuthorization> bridge_auths;
 
-private static Pattern AUTH_PATTERN = Pattern.compile("AUTH_(\\d+)_(\\w+)");
+private static final Pattern AUTH_PATTERN = Pattern.compile("AUTH_(\\d+)_(\\w+)");
 
 
 

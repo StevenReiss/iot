@@ -77,7 +77,8 @@ private static TimerTask timer_task = null;
 
 private static final long POLL_RATE = 1000*60*10;		// every 10 minutes
 
-private static String METEO_URL = "https://api.open-meteo.com/v1/forecast?" +
+private static final String METEO_URL =
+   "https://api.open-meteo.com/v1/forecast?" +
       "latitude=$(LAT)&longitude=$(LONG)&current=weather_code,temperature_2m";
 
 

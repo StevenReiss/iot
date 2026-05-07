@@ -36,15 +36,16 @@
 package edu.brown.cs.catre.catmain;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
 
 import edu.brown.cs.catre.catbridge.CatbridgeFactory;
 import edu.brown.cs.catre.catmodel.CatmodelFactory;
@@ -90,6 +91,7 @@ private CatreServer rest_server;
 private CatreStore     data_store;
 private CatmodelFactory model_factory;
 private CatbridgeFactory bridge_factory;
+private Properties      catre_properties;
 
 
 
@@ -103,10 +105,10 @@ private CatmainMain(String [] args)
 {
    CatreLog.setLogLevel(LogLevel.DEBUG);
    CatreLog.setupLogging("CATRE",true);
-// CatreLog.useStdErr(true);
+   catre_properties = null;
    
    scanArgs(args);
-
+   
    thread_pool = new TimerThreadPool();
 
    CatstoreFactory cf = new CatstoreFactory(this);
@@ -192,7 +194,6 @@ public CatreStore getDatabase()
 }
 
 
-
 @Override
 public void register(CatreTable tbl)
 {
@@ -218,6 +219,23 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
 @Override public String getUrlPrefix()
 {
    return rest_server.getUrlPrefix();
+}
+
+
+@Override public synchronized Properties getProperties()
+{
+   if (catre_properties == null) {
+      File f1 = findBaseDirectory();
+      File f2 = new File(f1,"secret");
+      File f4 = new File(f2,"catre.props");
+      Properties p = new Properties();
+      try (FileInputStream fis = new FileInputStream(f4)) {
+         p.loadFromXML(fis);
+       }
+      catch (IOException e) { } 
+    }
+   
+   return catre_properties;
 }
 
 
@@ -294,19 +312,6 @@ public <T> Future<T> submit(Callable<T> task)
 /*										*/
 /********************************************************************************/
 
-//TODO -- rework this back in with HTTP
-// @Override public void addRoute(String method,String url,BiFunction<IHTTPSession,CatreSession,Response> f)
-// {
-//    rest_server.addRoute(method,url,f);
-// }
-
-
-// @Override public void addPreRoute(String method,String url,BiFunction<IHTTPSession,CatreSession,Response> f)
-// {
-//    rest_server.addPreRoute(method,url,f);
-// }
-
-
 @Override public File findBaseDirectory()
 {
    File basedir = null;
@@ -316,19 +321,25 @@ public <T> Future<T> submit(Callable<T> task)
       if (isBaseDirectory(f2)) basedir = f2;
     }
    File f3 = new File(System.getProperty("user.home"));
-   if (isBaseDirectory(f3)) basedir = f3;
-
+   if (basedir == null && isBaseDirectory(f3)) basedir = f3;
+   
+   String cp = System.getProperty("CATRE_HOME");
+   if (cp != null) {
+      File f4 = new File(cp);
+      if (basedir == null && isBaseDirectory(f4)) basedir = f4;
+    }   
+   
    File fc = new File("/vol");
    File fd = new File(fc,"iot");
-   if (isBaseDirectory(fd)) basedir = fd;
+   if (basedir == null && isBaseDirectory(fd)) basedir = fd;
 
    File fa = new File("/pro");
    File fb = new File(fa,"iot");
-   if (isBaseDirectory(fb)) basedir = fb;
+   if (basedir == null && isBaseDirectory(fb)) basedir = fb;
 
    File fe = new File("/private");
    File ff = new File(fe,"iot");
-   if (isBaseDirectory(ff)) basedir = ff;
+   if (basedir == null && isBaseDirectory(ff)) basedir = ff;
 
    return basedir;
 }
