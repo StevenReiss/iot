@@ -277,7 +277,11 @@ protected void setDeviceId(String did)		{ device_uid = did; }
 public CatreParameter addParameter(CatreParameter p)
 {
    for (CatreParameter up : parameter_set) {
-      if (up.getName().equals(p.getName())) return up;
+      if (up.getName().equals(p.getName())) {
+         CatreLog.logI("CATDEV","Map parameter by name " + p.getName() +
+               " " + up.hashCode() + " " + p.hashCode());
+         return up;
+       }
     }
    
    if (p.getName().startsWith("Samsung.")) {
@@ -457,8 +461,6 @@ protected void localStopDevice()			{ }
    checkCurrentState();
    
    if (!parameter_set.contains(p)) {
-      CatreLog.logX("CATDEV","Attempt to get invalid parameter " +
-            p + " " + p.hashCode());
       p = addParameter(p);
       if (p == null) return null;
     }

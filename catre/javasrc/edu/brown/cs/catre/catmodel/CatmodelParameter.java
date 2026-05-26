@@ -88,6 +88,7 @@ protected CatreParameterRef range_ref;
 private String parameter_data;
 private boolean is_volatile;
 
+
 private static final DateFormat [] DATE_FORMATS = new DateFormat [] {
    DateFormat.getDateTimeInstance(DateFormat.LONG,DateFormat.LONG),
    DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT),

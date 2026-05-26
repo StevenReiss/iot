@@ -69,14 +69,14 @@ private Map<String,JSONObject> action_map;
 private Map<String,String> reference_map;
 private Set<String> referenced_set;
 
-private static String [] PARAM_FIELDS = { 
+private static final String [] PARAM_FIELDS = { 
    "DEFAULT_UNIT","MIN","MAX","ISSENSOR",
       "UNITS","TYPE","NAME","FIELDS",
       "LABEL","DESCRIPTION","VALUES",
       "RANGEREF",
 };
 
-private static String [] TRANSITION_FIELDS = {
+private static final String [] TRANSITION_FIELDS = {
    "NAME","TYPE","LABEL","DESCRIPTION",
 // "COMPONENTID","CAPABILITYID",
 };
