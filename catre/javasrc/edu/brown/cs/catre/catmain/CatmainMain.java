@@ -233,6 +233,7 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
          p.loadFromXML(fis);
        }
       catch (IOException e) { } 
+      catre_properties = p;
     }
    
    return catre_properties;
