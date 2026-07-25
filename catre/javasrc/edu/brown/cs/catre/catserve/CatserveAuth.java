@@ -44,6 +44,10 @@ import edu.brown.cs.catre.catre.CatreUser;
 import edu.brown.cs.catre.catre.CatreUtil;
 import edu.brown.cs.ivy.bower.BowerRouter;
 
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.sun.net.httpserver.HttpExchange;
 
 
@@ -60,6 +64,11 @@ class CatserveAuth implements CatserveConstants
 
 private CatreStore	data_store;
 private CatreController catre_control;
+
+private static final String EMAIL_REGEX = 
+   "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+
+private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
 
 
@@ -95,20 +104,27 @@ public String handleRegister(HttpExchange he, CatserveSessionImpl session)
       return BowerRouter.errorResponse(he,session,400,
             "Can't register while logged in");
    }
-
+   
    String userid = BowerRouter.getParameter(he,"username");
    String email = BowerRouter.getParameter(he,"email");
    String pwd = BowerRouter.getParameter(he,"password");
    String unm = BowerRouter.getParameter(he,"universe");
 
    CatreLog.logD("AUTH", "userid: " + userid + " email: " + email + " pwd: " + pwd + " unm: " + unm);
-
+   
+   Matcher m = EMAIL_PATTERN.matcher(email);
+   if (!m.matches()) {
+      return BowerRouter.errorResponse(he,session,402,
+            "Invalid email string");
+    }
+   
    CatreUser cu = null;
    boolean remove = false;
    try {
       cu = data_store.createUser(userid,email,pwd);
       remove = true;
-
+      
+      // this saves the user in the database as a side effect
       if (catre_control.createUniverse(unm,cu) == null) {
          return BowerRouter.errorResponse(he,session,500,
                "problem creating universe");
@@ -120,9 +136,29 @@ public String handleRegister(HttpExchange he, CatserveSessionImpl session)
       msg += "email=" + CatreUtil.escape(email);
       msg += "&code=" + code;
       msg += "\n"; 
-      if (!CatreUtil.sendEmail(email,"Complete SHERPA registration",msg)) {
-         return BowerRouter.errorResponse(he,session,500,
-               "problem sending email");
+      
+      Properties p = catre_control.getProperties();
+      String safeuser = p.getProperty("safeEmail");
+      boolean skipvalid = false;
+      if (safeuser != null) {
+         Pattern pat = Pattern.compile(safeuser);
+         Matcher mat = pat.matcher(email);
+         if (mat.matches()) {
+            skipvalid = true;
+          }
+       }
+      
+      if (skipvalid) {
+         if (!cu.validateUser(code)) {
+             skipvalid = false;
+          }
+       }
+      
+      if (!skipvalid) {
+         if (!CatreUtil.sendEmail(email,"Complete SHERPA registration",msg)) {
+            return BowerRouter.errorResponse(he,session,500,
+                  "problem sending email");
+          }
        }
       
       remove = false;
