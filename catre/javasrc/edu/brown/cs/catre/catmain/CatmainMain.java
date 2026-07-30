@@ -313,7 +313,14 @@ public <T> Future<T> submit(Callable<T> task)
 /*										*/
 /********************************************************************************/
 
+
 @Override public File findBaseDirectory()
+{
+   return getBaseDirectory();
+}
+
+
+public static File getBaseDirectory()
 {
    File basedir = null;
 

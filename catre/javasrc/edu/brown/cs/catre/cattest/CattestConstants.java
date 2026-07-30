@@ -1,34 +1,34 @@
 /********************************************************************************/
-/*										*/
-/*		CattestConstants.java						*/
-/*										*/
-/*	Constants for using CATRE testing					*/
-/*										*/
+/*                                                                              */
+/*              CattestConstants.java                                           */
+/*                                                                              */
+/*      Constants for using CATRE testing                                       */
+/*                                                                              */
 /********************************************************************************/
-/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
+/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /*********************************************************************************
- *  Copyright 2023, Brown University, Providence, RI.				 *
- *										 *
- *			  All Rights Reserved					 *
- *										 *
- *  Permission to use, copy, modify, and distribute this software and its	 *
- *  documentation for any purpose other than its incorporation into a		 *
- *  commercial product is hereby granted without fee, provided that the 	 *
- *  above copyright notice appear in all copies and that both that		 *
- *  copyright notice and this permission notice appear in supporting		 *
- *  documentation, and that the name of Brown University not be used in 	 *
- *  advertising or publicity pertaining to distribution of the software 	 *
- *  without specific, written prior permission. 				 *
- *										 *
- *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
- *  OF THIS SOFTWARE.								 *
- *										 *
+ *  Copyright 2023, Brown University, Providence, RI.                            *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of Brown University not be used in          *
+ *  advertising or publicity pertaining to distribution of the software          *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
  ********************************************************************************/
 
 
@@ -41,14 +41,26 @@ package edu.brown.cs.catre.cattest;
 public interface CattestConstants
 {
 
-String	TEST_HOST = "http://localhost:3334";
+String  TEST_HOST = "http://localhost:3334";
 String TEST_HOST1 = "https://sherpa.cs.brown.edu:3334";
 
 
+/********************************************************************************/
+/*                                                                              */
+/*      Constants for large-scale testing                                       */
+/*                                                                              */
+/********************************************************************************/
+
+String SCALE_DIRECTORY = "scaletest";
+String USER_NAME = "USER_#";
+String USER_EMAIL = "user#@catretest.edu";
+String USER_PWD = "pwd#dwp";
+String SCALE_HOST = "http://localhost:PORT";
+String USER_UNIVERSE = "World_#";      
 
 
 
-}	// end of interface CattestConstants
+}       // end of interface CattestConstants
 
 
 

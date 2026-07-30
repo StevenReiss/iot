@@ -45,6 +45,7 @@ import java.util.concurrent.ScheduledFuture;
 
 
 
+
 /**
  *      This calls represents the main control for CATRE.  It provides a set of
  *      operations that are generally useful for multiple portions of the system.
@@ -117,6 +118,13 @@ CatreStore getDatabase();
 void register(CatreTable tbl);
 
 
+/**
+ *      Find the base directory
+ **/
+
+File findBaseDirectory();
+
+
 
 /**
  *      Return the set of active bridges for the current universe.
@@ -141,11 +149,7 @@ CatreBridge createBridge(String name,CatreUniverse universe);
 CatreUniverse createUniverse(String name,CatreUser user);
 
 
-/**
- *      Return the base directory so we can find various resources as needed
- **/
 
-File findBaseDirectory();
 
 
 /**

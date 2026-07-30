@@ -1,34 +1,34 @@
 /********************************************************************************/
-/*										*/
-/*		CattestSetup.java						*/
-/*										*/
-/*	Setup CATRE for our own home						*/
-/*										*/
+/*                                                                              */
+/*              CattestSetup.java                                               */
+/*                                                                              */
+/*      Setup CATRE for our own home                                            */
+/*                                                                              */
 /********************************************************************************/
 /* Copyright 2023 Brown University -- Steven P. Reiss, Molly E. McHenry         */
 /*********************************************************************************
- *  Copyright 2023, Brown University, Providence, RI.				 *
- *										 *
- *			  All Rights Reserved					 *
- *										 *
- *  Permission to use, copy, modify, and distribute this software and its	 *
- *  documentation for any purpose other than its incorporation into a		 *
- *  commercial product is hereby granted without fee, provided that the 	 *
- *  above copyright notice appear in all copies and that both that		 *
- *  copyright notice and this permission notice appear in supporting		 *
- *  documentation, and that the name of Brown University not be used in 	 *
- *  advertising or publicity pertaining to distribution of the software 	 *
- *  without specific, written prior permission. 				 *
- *										 *
- *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
- *  OF THIS SOFTWARE.								 *
- *										 *
+ *  Copyright 2023, Brown University, Providence, RI.                            *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of Brown University not be used in          *
+ *  advertising or publicity pertaining to distribution of the software          *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
  ********************************************************************************/
 
 
@@ -57,9 +57,9 @@ public final class CattestSetup implements CattestConstants, CatreJson
  
 
 /********************************************************************************/
-/*										*/
-/*	Main program								*/
-/*										*/
+/*                                                                              */
+/*      Main program                                                            */
+/*                                                                              */
 /********************************************************************************/
 
 public static void main(String [] args)
@@ -71,9 +71,9 @@ public static void main(String [] args)
 
 
 /********************************************************************************/
-/*										*/
-/*	Private Storage 							*/
-/*										*/
+/*                                                                              */
+/*      Private Storage                                                         */
+/*                                                                              */
 /********************************************************************************/
 
 private boolean do_clean = false;
@@ -96,9 +96,9 @@ static {
 
 
 /********************************************************************************/
-/*										*/
-/*	Constructors								*/
-/*										*/
+/*                                                                              */
+/*      Constructors                                                            */
+/*                                                                              */
 /********************************************************************************/
 
 private CattestSetup(String [] args)
@@ -129,9 +129,9 @@ private CattestSetup(String [] args)
 
 
 /********************************************************************************/
-/*										*/
-/*	Running methods 							*/
-/*										*/
+/*                                                                              */
+/*      Running methods                                                         */
+/*                                                                              */
 /********************************************************************************/
 
 private void runSetup() 
@@ -171,30 +171,30 @@ private void runSetup()
    String v5 = CatreUtil.secureHash(v4);
    
    JSONObject rslt3 = CattestUtil.sendJson("POST","/login",
-	 "CATRESESSION",sid,"SALT",salt,
-	 "username",user,"password",v5);
+         "CATRESESSION",sid,"SALT",salt,
+         "username",user,"password",v5);
    if (!rslt3.getString("STATUS").equals("OK")) {
       // if login fails, try to register
       sid = rslt3.getString("CATRESESSION");
       JSONObject rslt1 = CattestUtil.sendJson("POST","/register",
-	    "CATRESESSION",sid,
-	    "username",user,
-	    "email",email,
-	    "password",v3,
-	    "universe","MyWorld");
+            "CATRESESSION",sid,
+            "username",user,
+            "email",email,
+            "password",v3,
+            "universe","MyWorld");
        sid = rslt1.getString("CATRESESSION");
     }
 
    JSONObject rslt5 = CattestUtil.sendJson("POST","/bridge/add",
-	 "CATRESESSION",sid,"BRIDGE","generic",
-	 "AUTH_UID",genuid,
-	 "AUTH_PAT",genpat);
+         "CATRESESSION",sid,"BRIDGE","generic",
+         "AUTH_UID",genuid,
+         "AUTH_PAT",genpat);
    sid = rslt5.getString("CATRESESSION");
 
    JSONObject rslt6 = CattestUtil.sendJson("POST","/bridge/add",
-	 "CATRESESSION",sid,"BRIDGE","iqsign",
-	 "AUTH_UID",iqsuid,
-	 "AUTH_PAT",iqspat);
+         "CATRESESSION",sid,"BRIDGE","iqsign",
+         "AUTH_UID",iqsuid,
+         "AUTH_PAT",iqspat);
    sid = rslt6.getString("CATRESESSION");
 
    JSONObject calauth = buildJson("CATRESESSION",sid,"BRIDGE","gcal");
@@ -231,18 +231,18 @@ private void runSetup()
    CatreLog.logI("CATTEST","Bridge List = " + rslt6b.toString(2));
          
    JSONObject rslt7 = CattestUtil.sendJson("GET","/universe",
-	 "CATRESESSION",sid);
+         "CATRESESSION",sid);
    CatreLog.logI("CATTEST","Universe = " + rslt7.toString(2));
    
 
    JSONObject devjson = buildJson("VTYPE","Weather","CITY","Rehoboth,MA,US",
-	 "UNITS","imperial");
+         "UNITS","imperial");
    JSONObject rslt8 = CattestUtil.sendJson("POST","/universe/addvirtual",
-	 "CATRESESSION",sid,"DEVICE",devjson);
+         "CATRESESSION",sid,"DEVICE",devjson);
    CatreLog.logI("CATTEST","Add Virtual = " + rslt8.toString(2));
 
    JSONObject rslt9 = CattestUtil.sendJson("GET","/universe",
-	 "CATRESESSION",sid);
+         "CATRESESSION",sid);
    CatreLog.logI("CATTEST","Universe = " + rslt9.toString(2));
    
    JSONObject rslt9a = CattestUtil.sendJson("POST","/universe/discover",
@@ -250,7 +250,7 @@ private void runSetup()
    CatreLog.logI("CATTEST","Discover = " + rslt9a.toString(2));
    
    JSONObject rslt9b = CattestUtil.sendJson("GET","/universe",
-	 "CATRESESSION",sid);
+         "CATRESESSION",sid);
    CatreLog.logI("CATTEST","Universe = " + rslt9b.toString(2));  
    
    if (do_clean) {
@@ -270,11 +270,11 @@ private void runSetup()
     }
 
    JSONObject rslt11 = CattestUtil.sendJson("GET","/rules",
-	 "CATRESESSION",sid);
+         "CATRESESSION",sid);
    CatreLog.logI("CATTEST","Rules: " + rslt11.toString(2));
    
    JSONObject rslt12 = CattestUtil.sendJson("GET","/universe",
-	 "CATRESESSION",sid);
+         "CATRESESSION",sid);
    CatreLog.logI("CATTEST","Universe = " + rslt12.toString(2));
    
    System.exit(0);
@@ -368,7 +368,7 @@ private void cleanUniverse(JSONObject u,String sid)
 
 
 
-}	// end of class CattestSetup
+}       // end of class CattestSetup
 
 
 

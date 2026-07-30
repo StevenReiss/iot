@@ -107,9 +107,11 @@ public CatstoreMongo(CatreController cc)
    con = con.replace("PASS",p.getProperty("mongopass","XXX"));
    con = con.replace("HOST",p.getProperty("mongohost","localhost"));
    con = con.replace("PORT",p.getProperty("mongoport","27017"));
+   
+   String dbname = p.getProperty("mongodatabase","catre");
 
    mongo_client = MongoClients.create(con);
-   catre_database = mongo_client.getDatabase("catre");
+   catre_database = mongo_client.getDatabase(dbname);
 
    object_cache = new WeakHashMap<>();
 
@@ -128,7 +130,7 @@ public CatstoreMongo(CatreController cc)
 
 @Override public CatreController getCatre()	{ return catre_control; }
 
-@Override public CatreOauth getOauth()		{ return oauth_control; }
+@Override public CatreOauth getOauth()	{ return oauth_control; }
 
 
 

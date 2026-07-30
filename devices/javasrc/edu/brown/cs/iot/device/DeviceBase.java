@@ -229,7 +229,7 @@ protected void handlePoll()				{ }
 /*										*/
 /********************************************************************************/
 
-private void setupAccess() throws IOException 
+protected void setupAccess() throws IOException 
 {
    File f1 = new File(System.getProperty("user.home"));
    File f2 = new File(f1,".config");

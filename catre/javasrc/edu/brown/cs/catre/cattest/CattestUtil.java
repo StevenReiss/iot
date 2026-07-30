@@ -1,34 +1,34 @@
 /********************************************************************************/
-/*										*/
-/*		CattestUtil.java						*/
-/*										*/
-/*	Utility methods for testing						*/
-/*										*/
+/*                                                                              */
+/*              CattestUtil.java                                                */
+/*                                                                              */
+/*      Utility methods for testing                                             */
+/*                                                                              */
 /********************************************************************************/
-/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
+/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
 /*********************************************************************************
- *  Copyright 2023, Brown University, Providence, RI.				 *
- *										 *
- *			  All Rights Reserved					 *
- *										 *
- *  Permission to use, copy, modify, and distribute this software and its	 *
- *  documentation for any purpose other than its incorporation into a		 *
- *  commercial product is hereby granted without fee, provided that the 	 *
- *  above copyright notice appear in all copies and that both that		 *
- *  copyright notice and this permission notice appear in supporting		 *
- *  documentation, and that the name of Brown University not be used in 	 *
- *  advertising or publicity pertaining to distribution of the software 	 *
- *  without specific, written prior permission. 				 *
- *										 *
- *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
- *  OF THIS SOFTWARE.								 *
- *										 *
+ *  Copyright 2023, Brown University, Providence, RI.                            *
+ *                                                                               *
+ *                        All Rights Reserved                                    *
+ *                                                                               *
+ *  Permission to use, copy, modify, and distribute this software and its        *
+ *  documentation for any purpose other than its incorporation into a            *
+ *  commercial product is hereby granted without fee, provided that the          *
+ *  above copyright notice appear in all copies and that both that               *
+ *  copyright notice and this permission notice appear in supporting             *
+ *  documentation, and that the name of Brown University not be used in          *
+ *  advertising or publicity pertaining to distribution of the software          *
+ *  without specific, written prior permission.                                  *
+ *                                                                               *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
+ *  OF THIS SOFTWARE.                                                            *
+ *                                                                               *
  ********************************************************************************/
 
 
@@ -60,21 +60,21 @@ class CattestUtil implements CattestConstants
  
 
 /********************************************************************************/
-/*										*/
-/*	Private storage 							*/
-/*										*/
+/*                                                                              */
+/*      Private storage                                                         */
+/*                                                                              */
 /********************************************************************************/
 
-private static String	test_host = TEST_HOST;
+private static String   test_host = TEST_HOST;
 
 private static final Charset UTF8 = Charset.forName("UTF-8");
 
 
 
 /********************************************************************************/
-/*										*/
-/*	Access methodsm 							*/
-/*										*/
+/*                                                                              */
+/*      Access methodsm                                                         */
+/*                                                                              */
 /********************************************************************************/
 
 static void setTestHost(String host)
@@ -84,9 +84,9 @@ static void setTestHost(String host)
 
 
 /********************************************************************************/
-/*										*/
-/*	Send a message and get JSON response					*/
-/*										*/
+/*                                                                              */
+/*      Send a message and get JSON response                                    */
+/*                                                                              */
 /********************************************************************************/
 
 static JSONObject sendGet(String file,Object... val) 
@@ -109,9 +109,9 @@ static JSONObject sendJson(String method,String file,Object... val)
    Map<String,Object> map = new HashMap<>();
    if (val.length > 1) {
       for (int i = 0; i+1 < val.length; i += 2) {
-	 String key = val[i].toString();
-	 Object v = val[i+1];
-	 map.put(key,v);
+         String key = val[i].toString();
+         Object v = val[i+1];
+         map.put(key,v);
        }
     }
 
@@ -153,9 +153,9 @@ static JSONObject sendJson(String method,String file,JSONObject jo)
    if (method.equals("GET")) {
       String sep = "?";
       for (String key : JSONObject.getNames(jo)) {
-	 String val = jo.getString(key);
-	 url += sep + key + "=" + val;
-	 sep = "?";
+         String val = jo.getString(key);
+         url += sep + key + "=" + val;
+         sep = "?";
        }
     }
    else {
@@ -209,9 +209,9 @@ private static JSONObject send(String method,String url,String body,boolean erro
 
 
 /********************************************************************************/
-/*										*/
-/*	Methods to start web server in CATRE					*/
-/*										*/
+/*                                                                              */
+/*      Methods to start web server in CATRE                                    */
+/*                                                                              */
 /********************************************************************************/
 
 static void startCatre()
@@ -247,9 +247,9 @@ private static class CatreRunner extends Thread {
       CatmainMain.main(new String[] { });
     }
 
-}	// end of inner class CatreRunner
+}       // end of inner class CatreRunner
 
-}	// end of class CattestUtil
+}       // end of class CattestUtil
 
 
 
