@@ -323,10 +323,18 @@ public <T> Future<T> submit(Callable<T> task)
 public static File getBaseDirectory()
 {
    File basedir = null;
+   
+   CatreLog.logD("CATMAIN","GET BASEDIR " + 
+         System.getProperty("user.dir") + " " +
+         System.getProperty("user.home") + " " +
+         System.getProperty("CATRE_HOME"));
 
    File f1 = new File(System.getProperty("user.dir"));
    for (File f2 = f1; f2 != null; f2 = f2.getParentFile()) {
-      if (isBaseDirectory(f2)) basedir = f2;
+      if (isBaseDirectory(f2)) {
+         basedir = f2;
+         break;
+       }
     }
    File f3 = new File(System.getProperty("user.home"));
    if (basedir == null && isBaseDirectory(f3)) basedir = f3;
@@ -349,6 +357,8 @@ public static File getBaseDirectory()
    File ff = new File(fe,"iot");
    if (basedir == null && isBaseDirectory(ff)) basedir = ff;
 
+   CatreLog.logD("CATMAIN","Base directory: " + basedir);
+   
    return basedir;
 }
 

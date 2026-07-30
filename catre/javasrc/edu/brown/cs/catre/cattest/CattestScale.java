@@ -51,10 +51,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
 import edu.brown.cs.catre.catmain.CatmainMain;
+import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.catre.catre.CatreUtil;
 import edu.brown.cs.ivy.exec.IvyExec;
+import edu.brown.cs.ivy.exec.IvyExecQuery;
+import edu.brown.cs.ivy.file.IvyLog.LogLevel;
 
-public class CattestScale implements CattestConstants
+public final class CattestScale implements CattestConstants
 {
 
 
@@ -96,6 +99,9 @@ private Map<String,String> user_session;
 
 private CattestScale(String [] args)
 {
+   CatreLog.setLogLevel(LogLevel.DEBUG);
+   CatreLog.setupLogging("CATSCALE",true);
+   
    user_count = 100;
    base_directory = null;
  
@@ -103,10 +109,19 @@ private CattestScale(String [] args)
    
    if (base_directory == null) {
       File f1 = CatmainMain.getBaseDirectory();
-      iot_directory = f1;
-      File f2 = new File(f1,SCALE_DIRECTORY);
-      if (f2.exists() && f2.isDirectory()) base_directory = f2;
-      else base_directory = f1;
+      if (f1.getName().equals(SCALE_DIRECTORY)) {
+         base_directory = f1;
+         File f4 = f1.getParentFile();          // catre
+         File f5 = f4.getParentFile();          // iot
+         iot_directory = f5;
+       }
+      else {
+         iot_directory = f1;
+         File f2 = new File(f1,"catre");
+         File f3 = new File(f2,SCALE_DIRECTORY);
+         if (f3.exists() && f3.isDirectory()) base_directory = f3;
+         else base_directory = f1;
+       }
     }
    
    File f2 = new File(base_directory,"secret");
@@ -172,23 +187,34 @@ private void process()
    // First provide a clean database
    cleanDatabase();
    
-   // Next start Catre locally
-   startCatre();
-   
-   // Next register all the users
-   registerUsers();
-   
-   // Next setup each user's devices
-   
-   // Next define each user's programs
-   
-   // Next run the system for a long time
-   
-   // then remove users
-   removeUsers();
-   
-   // Stop local catre at the end
-   stopCatre();
+   try {
+      // Next start cedes
+      startCedes();
+      
+      // Next start Catre locally
+      startCatre();
+      
+      // Next register all the users
+      registerUsers();
+      
+      // Next setup each user's devices
+      
+      // Next define each user's programs
+      
+      // Next run the system for a long time
+      
+      // then remove users
+      removeUsers();
+    }
+   finally {
+      // Stop all devices
+      
+      // Stop local catre at the end
+      stopCatre();
+      
+      // Stop local cedes 
+      stopCedes();
+    }
 }
 
 
@@ -201,9 +227,10 @@ private void process()
 
 private void cleanDatabase()
 {
-   String con = "mongodb://USER:PASS@HOST:PORT/catre?maxPoolSize=20&w=majority";
+   String con = "mongodb://USER:PASS@HOST:PORT/DATABASE?maxPoolSize=20&w=majority";
    
-   con = con.replace("USER",catre_props.getProperty("mongouser","sherpa"));
+   con = con.replace("USER",
+         catre_props.getProperty("mongouser","sherpa"));
    con = con.replace("PASS",
          catre_props.getProperty("mongopass","XXX"));
    con = con.replace("HOST",
@@ -211,12 +238,14 @@ private void cleanDatabase()
    con = con.replace("PORT",
          catre_props.getProperty("mongoport","27017"));
    
-   String dbname = catre_props.getProperty("mongodatabase","catre");
+   String dbname = catre_props.getProperty("mongodatabase","catretest");
+   con = con.replace("DATABASE",dbname);
    
    MongoClient client = MongoClients.create(con);
    MongoDatabase catredb = client.getDatabase(dbname);
-   for (String collectionName : catredb.listCollectionNames()) {
-      MongoCollection<Document> collection = catredb.getCollection(collectionName);
+  
+   for (String cname : catredb.listCollectionNames()) {
+      MongoCollection<Document> collection = catredb.getCollection(cname);
       collection.deleteMany(new Document());
     }
 }
@@ -233,25 +262,18 @@ private void startCatre()
 {
    catre_exec = null;
    
-   String cmd = null;
-   File f1 = new File(base_directory,"bin");
-   File f2 = new File(f1,"catserver.sh");
-   File f3 = new File(iot_directory,"bin");
-   File f4 = new File(f3,"catserver.sh");
-   if (f2.exists() && f2.canExecute()) {
-      cmd = f2.getAbsolutePath();
-    }
-   else if (f4.exists() && f4.canExecute()) {
-      cmd = f4.getAbsolutePath();
-    }
-   else {
-      System.err.println("CattestStream: Can't find CATRE");
-      System.exit(1);
-    }
-   cmd = "/bin/bash " + cmd;
+   String cp = System.getProperty("java.class.path");
+   StringBuffer buf = new StringBuffer();
+   buf.append("'" + IvyExecQuery.getJavaPath() + "'");
+   buf.append(" -cp '" + cp + "'");
+   buf.append(" edu.brown.cs.catre.catmain.CatmainMain");
+   buf.append(" -server");
+   buf.append(" -L catserver.log -S -LD");
+   String cmd = buf.toString();
    
    try {
-      catre_exec = new IvyExec(cmd);
+      catre_exec = new IvyExec(cmd,base_directory);
+      CatreLog.logD("CATTEST","Catre started as " + catre_exec.getPid());
     }
    catch (IOException e) {
       System.err.println("CattestStream: Problem running CATRE: " + e);
@@ -262,7 +284,7 @@ private void startCatre()
    String url = SCALE_HOST.replace("PORT",port);
    CattestUtil.setTestHost(url);
    
-   for (int i = 0; i < 100; ++i) {
+   for (int i = 0; i < 20; ++i) {
       if (!catre_exec.isRunning()) break;
       JSONObject r1 = CattestUtil.sendGetOptional("/ping",null,true);
       if (r1 != null && r1.optBoolean("pong")) {
@@ -283,8 +305,47 @@ private void startCatre()
 private void stopCatre()
 {
    if (catre_exec != null) {
+      CatreLog.logD("CATTEST","Remove Catre process " + catre_exec.getPid());
       catre_exec.destroy();
       catre_exec = null;
+    }
+}
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Cedes control methods                                                   */
+/*                                                                              */
+/********************************************************************************/
+
+private void startCedes()
+{
+   File f1 = new File(iot_directory,"cedes");
+   File f2 = new File(f1,"start.csh");
+   String cmd = "/bin/csh " + f2.getPath();
+   try {
+      IvyExec cedes = new IvyExec(cmd);
+      CatreLog.logD("CATTEST","Start Cedes " + cedes.getPid());
+    }
+   catch (IOException e) {
+      System.err.println("CattestStream: Problem running CEDES: " + e);
+      System.exit(1);
+    }
+}
+
+
+private void stopCedes() 
+{
+   File f1 = new File(iot_directory,"cedes");
+   File f2 = new File(f1,"stop.csh");
+   String cmd = "/bin/csh " + f2.getPath();
+   try {
+      IvyExec cedes = new IvyExec(cmd);
+      CatreLog.logD("CATTEST","Stop Cedes " + cedes.getPid());
+    }
+   catch (IOException e) {
+      System.err.println("CattestStream: Problem running CEDES: " + e);
+      System.exit(1);
     }
 }
 
@@ -301,10 +362,12 @@ private void registerUsers()
       JSONObject rslt2 = CattestUtil.sendGet("/login");
       String sid = rslt2.getString("CATRESESSION");
       
-      String user = USER_NAME.replace("#",String.valueOf(i));
-      String email = USER_EMAIL.replace("#",String.valueOf(i));
-      String pwd = USER_PWD.replace("#",String.valueOf(i));
-      String univ = USER_UNIVERSE.replace("#",String.valueOf(i));
+      String un = String.valueOf(i);
+      
+      String user = USER_NAME.replace("#",un);
+      String email = USER_EMAIL.replace("#",un);
+      String pwd = USER_PWD.replace("#",un);
+      String univ = USER_UNIVERSE.replace("#",un);
       String v1 = CatreUtil.secureHash(pwd);
       String v2 = v1 + user;
       String v3 = CatreUtil.secureHash(v2);
@@ -320,7 +383,17 @@ private void registerUsers()
             "password",v3,
             "universe",univ);
       sid = rslt1.getString("CATRESESSION");
+      
+      String genuid = USER_GENERIC_UID.replace("#",un);
+      String genpat = USER_GENERIC_PAT.replace("#",un);
+      JSONObject rslt3 = CattestUtil.sendJson("POST","/bridge/add",
+            "CATRESESSION",sid,"BRIDGE","generic",
+            "AUTH_UID",genuid,
+            "AUTH_PAT",genpat);
+      sid = rslt3.getString("CATRESESSION");
+      
       user_session.put(user,sid);
+      CatreLog.logD("CATTEST","Register user " + user);
     }
 }
 
@@ -332,6 +405,7 @@ private void removeUsers()
       String sid = user_session.get(user);
       CattestUtil.sendJson("POST","/removeuser",
          "CATRESESSION",sid);
+      CatreLog.logD("CATTEST","Remove user " + user);
     }
 }
 

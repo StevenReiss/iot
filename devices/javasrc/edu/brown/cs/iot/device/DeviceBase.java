@@ -527,7 +527,6 @@ protected JSONObject sendToCedes(String nm,String cnts)
 {
    System.err.println("SEND TO CEDES:" + new Date() + ": " +  cnts);
    
-   
    try {
       if (!base_url.endsWith("/")) base_url += "/";
       String url = base_url + nm;

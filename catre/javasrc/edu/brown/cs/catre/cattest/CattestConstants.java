@@ -56,7 +56,9 @@ String USER_NAME = "USER_#";
 String USER_EMAIL = "user#@catretest.edu";
 String USER_PWD = "pwd#dwp";
 String SCALE_HOST = "http://localhost:PORT";
-String USER_UNIVERSE = "World_#";      
+String USER_UNIVERSE = "World_#";    
+String USER_GENERIC_UID = "Generic_#";
+String USER_GENERIC_PAT = "DevCode_#";
 
 
 

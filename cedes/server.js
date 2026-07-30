@@ -1,34 +1,34 @@
 /********************************************************************************/
-/*                                                                              */
-/*              server.js                                                       */
-/*                                                                              */
-/*       Main server code of Catre External Device Environment Server           */
-/*                                                                              */
+/*										*/
+/*		server.js							*/
+/*										*/
+/*	 Main server code of Catre External Device Environment Server		*/
+/*										*/
 /********************************************************************************/
-/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
+/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
 /*********************************************************************************
- *  Copyright 2023, Brown University, Providence, RI.                            *
- *                                                                               *
- *                        All Rights Reserved                                    *
- *                                                                               *
- *  Permission to use, copy, modify, and distribute this software and its        *
- *  documentation for any purpose other than its incorporation into a            *
- *  commercial product is hereby granted without fee, provided that the          *
- *  above copyright notice appear in all copies and that both that               *
- *  copyright notice and this permission notice appear in supporting             *
- *  documentation, and that the name of Brown University not be used in          *
- *  advertising or publicity pertaining to distribution of the software          *
- *  without specific, written prior permission.                                  *
- *                                                                               *
- *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
- *  OF THIS SOFTWARE.                                                            *
- *                                                                               *
+ *  Copyright 2023, Brown University, Providence, RI.				 *
+ *										 *
+ *			  All Rights Reserved					 *
+ *										 *
+ *  Permission to use, copy, modify, and distribute this software and its	 *
+ *  documentation for any purpose other than its incorporation into a		 *
+ *  commercial product is hereby granted without fee, provided that the 	 *
+ *  above copyright notice appear in all copies and that both that		 *
+ *  copyright notice and this permission notice appear in supporting		 *
+ *  documentation, and that the name of Brown University not be used in 	 *
+ *  advertising or publicity pertaining to distribution of the software 	 *
+ *  without specific, written prior permission. 				 *
+ *										 *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
+ *  OF THIS SOFTWARE.								 *
+ *										 *
  ********************************************************************************/
 
 "use strict";
@@ -56,40 +56,40 @@ const oauth = require("./oauth");
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Module storage                                                          */
-/*                                                                              */
+/*										*/
+/*	Module storage								*/
+/*										*/
 /********************************************************************************/
 
 const bearer_token = config.randomString(24);
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Express setup                                                           */
-/*                                                                              */
+/*										*/
+/*	Express setup								*/
+/*										*/
 /********************************************************************************/
 
 function setup()
 {
     const app = express();
-    
+
     app.engine('handlebars', handlebars.engine);
     app.set('view engine','handlebars');
-    
+
     const iqsignrouter = iqsign.getRouter(express.Router());
     const genericrouter = generic.getRouter(express.Router());
     const smartthingsrouter = smartthings.getRouter(express.Router());
     const oauthrouter = oauth.getRouter(express.Router());
     const samsungrouter = samsung.getRouter(express.Router());
     const aldsrouter = alds.getRouter(express.Router());
-    
+
     app.use(logger('combined'));
 
     app.use(bodyparser.urlencoded({ extended: true } ));
     app.use(bodyparser.json());
     app.use(bearerToken());
-    
+
     app.all('/iqsign/*',iqsignrouter);
     app.all('/generic/*',genericrouter);
     app.all('/smartthings',smartthingsrouter);
@@ -97,7 +97,7 @@ function setup()
     app.all("/samsung/*",samsungrouter);
     app.all("/alds/*",aldsrouter);
     app.all('/oauth/*',oauthrouter);
-    
+
     app.all("/catre/setup",handleSetup);
 
     app.all("/catre/*",authenticate);
@@ -110,21 +110,23 @@ function setup()
     app.use(config.handleError);
 
     try {
-        const httpsserver = https.createServer(config.getHttpsCredentials(),app);
-        httpsserver.listen(config.HTTPS_PORT);
-        console.log(`HTTPS Server listening on port ${config.HTTPS_PORT}`);
+	const httpsserver = https.createServer(config.getHttpsCredentials(),app);
+	httpsserver.listen(config.HTTPS_PORT);
+	console.log(`HTTPS Server listening on port ${config.HTTPS_PORT}`);
      }
     catch (error) {
-        console.log("Did not launch https server",error);
+	console.log("Did not launch https server",error);
+	const httpserver = app.listen(config.HTTPS_PORT);
+	console.log(`HTTP Server listening on port ${config.HTTPS_PORT}`);
      }
 }
 
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Authenticate for general messages from CATRE server                     */
-/*                                                                              */
+/*										*/
+/*	Authenticate for general messages from CATRE server			*/
+/*										*/
 /********************************************************************************/
 
 function authenticate(req,res,next)
@@ -134,13 +136,13 @@ function authenticate(req,res,next)
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Catre commands                                                          */
-/*                                                                              */
+/*										*/
+/*	Catre commands								*/
+/*										*/
 /********************************************************************************/
 
 /**
- *      addBridge { bridge: NAME, id: ID, authdata: {...} }
+ *	addBridge { bridge: NAME, id: ID, authdata: {...} }
  **/
 
 async function addBridge(req,res)
@@ -151,21 +153,21 @@ async function addBridge(req,res)
 
    switch (req.body.bridge) {
       case "generic" :
-         succ = await generic.addBridge(req.body.authdata,req.body.bridgeid);
-         break;
+	 succ = await generic.addBridge(req.body.authdata,req.body.bridgeid);
+	 break;
       case "smarrthings" :
-         succ = await smartthings.addBridge(req.body.authdata,req.body.bridgeid);
-         break;
+	 succ = await smartthings.addBridge(req.body.authdata,req.body.bridgeid);
+	 break;
       case "iqsign" :
-         succ = await iqsign.addBridge(req.body.authdata,req.body.bridgeid);
-         break
+	 succ = await iqsign.addBridge(req.body.authdata,req.body.bridgeid);
+	 break
       case "samsung" :
-         succ = await samsung.addBridge(req.body.authdata,req.body.bridgeid);
-         break;
+	 succ = await samsung.addBridge(req.body.authdata,req.body.bridgeid);
+	 break;
       default :
-         console.log("NO SUCH BRIDGE: ",req.body.bridge);
-         config.handleFail(req,res,"No such bridge");
-         return;
+	 console.log("NO SUCH BRIDGE: ",req.body.bridge);
+	 config.handleFail(req,res,"No such bridge");
+	 return;
     }
 
    console.log("DONE WITH ADD BRIDGE",req.body.bridge,succ);
@@ -176,7 +178,7 @@ async function addBridge(req,res)
 
 
 /**
- *      COMMAND { bridge: NAME, id: ID, uid: USER, command: {..} }
+ *	COMMAND { bridge: NAME, id: ID, uid: USER, command: {..} }
  **/
 
 async function bridgeCommand(req,res)
@@ -187,28 +189,28 @@ async function bridgeCommand(req,res)
 
    switch (req.body.bridge) {
       case "generic" :
-         succ = await generic.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.command,req.body.values);
-         break;
+	 succ = await generic.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.command,req.body.values);
+	 break;
       case "smartthings" :
-         succ = await smartthings.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.command,req.body.values);
-         break;
+	 succ = await smartthings.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.command,req.body.values);
+	 break;
       case "iqsign" :
-         succ = await iqsign.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.command,req.body.values);
-         break
+	 succ = await iqsign.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.command,req.body.values);
+	 break
       case "samsung" :
-         succ = await samsung.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.command,req.body.values);
-         break;
+	 succ = await samsung.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.command,req.body.values);
+	 break;
       case "alds" :
-         succ = await alds.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.command,req.body.values);
-         break;
+	 succ = await alds.handleCommand(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.command,req.body.values);
+	 break;
       default :
-         config.handleFail(req,res,"No such bridge");
-         return;
+	 config.handleFail(req,res,"No such bridge");
+	 return;
     }
 
    config.handleSuccess(req,res,succ);
@@ -219,25 +221,25 @@ async function bridgeCommand(req,res)
 async function bridgeActiveSensors(req,res)
 {
    console.log("CATRE BRIDGE ACTIVE SENSORS",req.body);
-   
+
    let succ = null;
-   
+
    switch (req.body.bridge) {
       case "generic" :
-         succ = await generic.handleActiveSensors(req.body.bridgeid,req.body.uid,req.body.active);
-         break;
+	 succ = await generic.handleActiveSensors(req.body.bridgeid,req.body.uid,req.body.active);
+	 break;
       case "iqsign" :
-         break
+	 break
       case "samsung" :
-         succ = await samsung.handleActiveSensors(req.body.bridgeid,req.body.uid,req.body.active);
-         break;
+	 succ = await samsung.handleActiveSensors(req.body.bridgeid,req.body.uid,req.body.active);
+	 break;
       case "alds" :
-         break;
+	 break;
       default :
-         config.handleFail(req,res,"No such bridge");
-         return;
+	 config.handleFail(req,res,"No such bridge");
+	 return;
     }
-   
+
    config.handleSuccess(req,res,succ);
 }
 
@@ -246,40 +248,40 @@ async function bridgeActiveSensors(req,res)
 async function bridgeParameter(req,res)
 {
    console.log("CATRE BRIDGE PARAMETER",req.body);
-   
+
    let succ = null;
-   
+
    switch (req.body.bridge) {
       case "generic" :
-         succ = await generic.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.parameters);
-         break;
+	 succ = await generic.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.parameters);
+	 break;
       case "iqsign" :
-         succ = await iqsign.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.parameters);
-         break
+	 succ = await iqsign.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.parameters);
+	 break
       case "samsung" :
-         succ = await samsung.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.parameters);
-         break;
+	 succ = await samsung.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.parameters);
+	 break;
       case "alds" :
-         succ = await alds.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
-               req.body.parameters);
-         break;
+	 succ = await alds.handleParameters(req.body.bridgeid,req.body.uid,req.body.deviceid,
+	       req.body.parameters);
+	 break;
       default :
-         config.handleFail(req,res,"No such bridge");
-         return;
+	 config.handleFail(req,res,"No such bridge");
+	 return;
     }
-   
+
    config.handleSuccess(req,res,succ);
 }
 
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Handle setup                                                            */
-/*                                                                              */
+/*										*/
+/*	Handle setup								*/
+/*										*/
 /********************************************************************************/
 
 async function handleSetup(req,res)
@@ -299,9 +301,9 @@ async function setupCatre()
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Main routine                                                            */
-/*                                                                              */
+/*										*/
+/*	Main routine								*/
+/*										*/
 /********************************************************************************/
 
 setup();
@@ -311,9 +313,9 @@ setupCatre();
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Exports                                                                 */
-/*                                                                              */
+/*										*/
+/*	Exports 								*/
+/*										*/
 /********************************************************************************/
 
 

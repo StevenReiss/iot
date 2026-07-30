@@ -99,7 +99,7 @@ public CatstoreMongo(CatreController cc)
 {
    catre_control = cc;
 
-   String con = "mongodb://USER:PASS@HOST:PORT/catre?maxPoolSize=20&w=majority";
+   String con = "mongodb://USER:PASS@HOST:PORT/DATABASE?maxPoolSize=20&w=majority";
 
    Properties p = cc.getProperties();
 
@@ -109,6 +109,7 @@ public CatstoreMongo(CatreController cc)
    con = con.replace("PORT",p.getProperty("mongoport","27017"));
    
    String dbname = p.getProperty("mongodatabase","catre");
+   con = con.replace("DATABASE",dbname);
 
    mongo_client = MongoClients.create(con);
    catre_database = mongo_client.getDatabase(dbname);
@@ -118,6 +119,8 @@ public CatstoreMongo(CatreController cc)
    known_tables = new HashMap<>();
 
    oauth_control = new CatstoreOauth(this);
+   
+   CatreLog.logD("CATSTORE","OPEN " + dbname + " " + con);
 }
 
 

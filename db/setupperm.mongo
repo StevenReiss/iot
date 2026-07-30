@@ -30,3 +30,21 @@ db.createUser(
 )
 
 
+
+use catretest
+
+db.dropUser("sherpa")
+
+
+db.createUser(
+   {
+      user: "sherpa",
+      pwd: "Dead3$Set",
+      roles: [ "readWrite", "dbAdmin" ],
+      mechanisms: [ "SCRAM-SHA-1", "SCRAM-SHA-256" ],
+      passwordDigestor: "server",
+   }
+)
+
+
+
