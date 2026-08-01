@@ -38,7 +38,9 @@ package edu.brown.cs.catre.cattest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -83,11 +85,11 @@ public static void main(String [] args)
 /********************************************************************************/
 
 private int     user_count;
-private File    iot_directory;
 private File    base_directory;
 private Properties catre_props;
 private IvyExec catre_exec;
 private Map<String,String> user_session;
+private List<IvyExec> device_execs;
 
 
 
@@ -108,24 +110,11 @@ private CattestScale(String [] args)
    scanArgs(args);
    
    if (base_directory == null) {
-      File f1 = CatmainMain.getBaseDirectory();
-      if (f1.getName().equals(SCALE_DIRECTORY)) {
-         base_directory = f1;
-         File f4 = f1.getParentFile();          // catre
-         File f5 = f4.getParentFile();          // iot
-         iot_directory = f5;
-       }
-      else {
-         iot_directory = f1;
-         File f2 = new File(f1,"catre");
-         File f3 = new File(f2,SCALE_DIRECTORY);
-         if (f3.exists() && f3.isDirectory()) base_directory = f3;
-         else base_directory = f1;
-       }
+      base_directory = CatmainMain.getBaseDirectory();
     }
    
    File f2 = new File(base_directory,"secret");
-   File f4 = new File(f2,"catre.props");
+   File f4 = new File(f2,PROPS_FILE);
    Properties p = new Properties();
    try (FileInputStream fis = new FileInputStream(f4)) {
       p.loadFromXML(fis);
@@ -134,6 +123,7 @@ private CattestScale(String [] args)
    catre_props = p;
    
    user_session = new LinkedHashMap<>();
+   device_execs = new ArrayList<>();
 }
 
 
@@ -156,9 +146,6 @@ private void scanArgs(String [] args)
                badArgs();
              }
           }
-         else if (args[i].startsWith("-d") && i+1 < args.length) {      // -dir <base dir<
-            base_directory = new File(args[++i]);
-          }
          else badArgs();
        }
       else {
@@ -170,7 +157,7 @@ private void scanArgs(String [] args)
 
 private void badArgs()
 {
-   System.err.println("CattestScale [-users <#users>] [-dir <basedir>]");
+   System.err.println("CattestScale [-users <#users>]");
    System.exit(1);
 }
 
@@ -198,6 +185,10 @@ private void process()
       registerUsers();
       
       // Next setup each user's devices
+      for (int i = 0; i < user_count; i += DEVICE_USER_COUNT) {
+         int ct = Math.min(DEVICE_USER_COUNT,user_count-i);
+         startDevices(i,ct);
+       }
       
       // Next define each user's programs
       
@@ -208,6 +199,7 @@ private void process()
     }
    finally {
       // Stop all devices
+      stopDevices();
       
       // Stop local catre at the end
       stopCatre();
@@ -268,11 +260,11 @@ private void startCatre()
    buf.append(" -cp '" + cp + "'");
    buf.append(" edu.brown.cs.catre.catmain.CatmainMain");
    buf.append(" -server");
-   buf.append(" -L catserver.log -S -LD");
+   buf.append(CATRE_ARGS);
    String cmd = buf.toString();
    
    try {
-      catre_exec = new IvyExec(cmd,base_directory);
+      catre_exec = new IvyExec(cmd);
       CatreLog.logD("CATTEST","Catre started as " + catre_exec.getPid());
     }
    catch (IOException e) {
@@ -320,7 +312,7 @@ private void stopCatre()
 
 private void startCedes()
 {
-   File f1 = new File(iot_directory,"cedes");
+   File f1 = new File(base_directory,"cedes");
    File f2 = new File(f1,"start.csh");
    String cmd = "/bin/csh " + f2.getPath();
    try {
@@ -336,7 +328,7 @@ private void startCedes()
 
 private void stopCedes() 
 {
-   File f1 = new File(iot_directory,"cedes");
+   File f1 = new File(base_directory,"cedes");
    File f2 = new File(f1,"stop.csh");
    String cmd = "/bin/csh " + f2.getPath();
    try {
@@ -409,6 +401,46 @@ private void removeUsers()
     }
 }
 
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Device methods                                                          */
+/*                                                                              */
+/********************************************************************************/
+
+private void startDevices(int start,int ct)
+{
+   String cp = System.getProperty("java.class.path");
+   StringBuffer buf = new StringBuffer();
+   buf.append("'" + IvyExecQuery.getJavaPath() + "'");
+   buf.append(" -cp '" + cp + "'");
+   buf.append(" edu.brown.cs.catre.cattest.CattestScalDevices");
+   buf.append(" -u ");
+   buf.append(start);
+   buf.append(" -n ");
+   buf.append(ct);
+   String cmd = buf.toString();
+   
+   try {
+      IvyExec ex = new IvyExec(cmd);
+      CatreLog.logD("CATTEST","Devices " + start + " started as " + ex.getPid());
+      device_execs.add(ex);
+    }
+   catch (IOException e) {
+      System.err.println("CattestStream: Problem running DEVICES: " + e);
+      System.exit(1);
+    }
+}
+
+
+private void stopDevices()
+{
+   for (IvyExec ex : device_execs) {
+      ex.destroy();
+    }
+   device_execs.clear();
+}
 
 
 }       // end of class CattestScale

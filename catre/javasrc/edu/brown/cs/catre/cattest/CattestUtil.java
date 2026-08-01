@@ -42,10 +42,11 @@ import edu.brown.cs.ivy.file.IvyFile;
 
 import org.json.JSONObject;
 import java.util.Map;
-
-
+import java.util.Random;
+import java.util.Base64;
 import java.util.HashMap;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
 import java.net.URLEncoder;
 import java.net.URL;
 import java.net.ConnectException;
@@ -204,13 +205,9 @@ private static JSONObject send(String method,String url,String body,boolean erro
 }
 
 
-
-
-
-
 /********************************************************************************/
 /*                                                                              */
-/*      Methods to start web server in CATRE                                    */
+/*      Methods to start CATRE in a thread                                      */
 /*                                                                              */
 /********************************************************************************/
 
@@ -248,6 +245,87 @@ private static class CatreRunner extends Thread {
     }
 
 }       // end of inner class CatreRunner
+
+
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Random number generator                                                 */
+/*                                                                              */
+/********************************************************************************/
+
+private static Random our_random = new Random();
+private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+static void setRandomSeed(long v) 
+{
+   our_random.setSeed(v);
+}
+
+
+static double nextRandomExp(double mean)
+{
+   double u = our_random.nextDouble(); 
+   return -Math.log(u) * mean;
+}
+
+
+
+static int nextRandom(int v) 
+{
+   if (v <= 1) return 0;
+   
+   return our_random.nextInt(v);
+}
+
+
+static double nextRandom()
+{
+   return our_random.nextDouble();
+}
+
+
+public static String randomString(int len)
+{
+   StringBuffer buf = new StringBuffer();
+   int cln = RANDOM_CHARS.length();
+   for (int i = 0; i < len; ++i) {
+      int idx = our_random.nextInt(cln);
+      buf.append(RANDOM_CHARS.charAt(idx));
+    }
+   
+   return buf.toString();
+}
+
+
+public static String secureHash(String s)
+{
+   try {
+      MessageDigest md = MessageDigest.getInstance("SHA-512");
+      byte [] dvl = md.digest(s.getBytes());
+      String rslt = Base64.getEncoder().encodeToString(dvl);
+      return rslt;
+    }
+   catch (Exception e) {
+      throw new Error("Problem with sha-512 encoding of " + s);
+    }
+}
+
+
+public static JSONObject buildJson(Object... args)
+{
+   JSONObject rslt = new JSONObject();
+   for (int i = 0; i < args.length-1; i += 2) {
+      String key = args[i].toString();
+      Object val = args[i+1];
+      rslt.put(key,val);
+    }
+   
+   return rslt;
+}
+
+
 
 }       // end of class CattestUtil
 

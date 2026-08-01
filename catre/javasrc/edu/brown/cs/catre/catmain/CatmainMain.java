@@ -92,6 +92,7 @@ private CatreStore     data_store;
 private CatmodelFactory model_factory;
 private CatbridgeFactory bridge_factory;
 private Properties      catre_properties;
+private String          catre_mode;
 
 
 
@@ -106,6 +107,7 @@ private CatmainMain(String [] args)
    CatreLog.setLogLevel(LogLevel.DEBUG);
    CatreLog.setupLogging("CATRE",true);
    catre_properties = null;
+   catre_mode = null;
    
    scanArgs(args);
    
@@ -162,6 +164,9 @@ private void scanArgs(String [] args)
 	 else if (args[i].startsWith("-S")) {                           // -Stderr
 	    CatreLog.useStdErr(true);
 	  }
+         else if (args[i].startsWith("-m") && i+1 < args.length) {      // -mode <mode>
+            catre_mode = args[++i];
+          }
 	 else {
 	    badArgs();
 	  }
@@ -228,6 +233,13 @@ public CatreBridge createBridge(String name,CatreUniverse cu)
       File f1 = findBaseDirectory();
       File f2 = new File(f1,"secret");
       File f4 = new File(f2,"catre.props");
+      if (catre_mode != null) {
+         f4 = new File(f2,"catre." + catre_mode + ".props");
+       }
+      if (!f4.exists()) {
+         System.err.println("Property file " + f4 + " not accessible");
+         System.exit(1);
+       }
       Properties p = new Properties();
       try (FileInputStream fis = new FileInputStream(f4)) {
          p.loadFromXML(fis);

@@ -51,7 +51,8 @@ String TEST_HOST1 = "https://sherpa.cs.brown.edu:3334";
 /*                                                                              */
 /********************************************************************************/
 
-String SCALE_DIRECTORY = "scaletest";
+String SCALE_MODE = "scale";
+String PROPS_FILE = "catre.scale.props";
 String USER_NAME = "USER_#";
 String USER_EMAIL = "user#@catretest.edu";
 String USER_PWD = "pwd#dwp";
@@ -59,7 +60,15 @@ String SCALE_HOST = "http://localhost:PORT";
 String USER_UNIVERSE = "World_#";    
 String USER_GENERIC_UID = "Generic_#";
 String USER_GENERIC_PAT = "DevCode_#";
+String CATRE_ARGS = " -L catserver.log -S -LD -m scale";
 
+String CEDES_URL = "http://localhost:3333/generic/";
+long ACCESS_TIME = 60000;
+long PING_TIME = 30000;
+int DEVICE_USER_COUNT = 20;
+
+double TIME_COMPRESSION = 0.1;
+      
 
 
 }       // end of interface CattestConstants
