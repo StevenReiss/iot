@@ -60,7 +60,7 @@ String SCALE_HOST = "http://localhost:PORT";
 String USER_UNIVERSE = "World_#";    
 String USER_GENERIC_UID = "Generic_#";
 String USER_GENERIC_PAT = "DevCode_#";
-String CATRE_ARGS = " -L catserver.log -S -LD -m scale";
+String CATRE_ARGS = "-L catserver.log -S -LD -m scale";
 
 String CEDES_URL = "http://localhost:3333/generic/";
 long ACCESS_TIME = 60000;

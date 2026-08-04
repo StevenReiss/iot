@@ -115,7 +115,6 @@ function setup()
 	console.log(`HTTPS Server listening on port ${config.HTTPS_PORT}`);
      }
     catch (error) {
-	console.log("Did not launch https server",error);
 	const httpserver = app.listen(config.HTTPS_PORT);
 	console.log(`HTTP Server listening on port ${config.HTTPS_PORT}`);
      }

@@ -1,7 +1,12 @@
-#! /bin/bash
+#! /bin/bash -vx
 
-source ~/.bashrc1
+if [ "$HOST" = "sprhome" ];  then
+   cd /pro/iot/cedes
+   node server.js
+else
+   source ~/.bashrc1
+   cd /vol/iot/cedes
+   nvm run default server.js
+fi
 
-cd /vol/iot/cedes
-
-nvm run default server.js
+echo cedes running

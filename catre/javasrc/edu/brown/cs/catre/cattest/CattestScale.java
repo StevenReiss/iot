@@ -90,6 +90,8 @@ private Properties catre_props;
 private IvyExec catre_exec;
 private Map<String,String> user_session;
 private List<IvyExec> device_execs;
+private boolean  run_local;
+private String log_file;
 
 
 
@@ -104,8 +106,10 @@ private CattestScale(String [] args)
    CatreLog.setLogLevel(LogLevel.DEBUG);
    CatreLog.setupLogging("CATSCALE",true);
    
-   user_count = 100;
+   user_count = 20;
    base_directory = null;
+   run_local = false;
+   log_file = null;
  
    scanArgs(args);
    
@@ -146,6 +150,28 @@ private void scanArgs(String [] args)
                badArgs();
              }
           }
+         else if (args[i].startsWith("-l")) {                           // -local   
+            run_local = true;
+          }
+         else if (args[i].startsWith("-LD")) {                          // -LDebug
+	    CatreLog.setLogLevel(CatreLog.LogLevel.DEBUG);
+	  }
+	 else if (args[i].startsWith("-LI")) {                          // -LInfo
+	    CatreLog.setLogLevel(CatreLog.LogLevel.INFO);
+	  }
+	 else if (args[i].startsWith("-LW")) {                          // -LWarning
+	    CatreLog.setLogLevel(CatreLog.LogLevel.WARNING);
+	  }
+         else if (args[i].startsWith("-LE")) {                          // -LError
+	    CatreLog.setLogLevel(CatreLog.LogLevel.ERROR);
+	  }
+	 else if (args[i].startsWith("-L") && i+1 < args.length) {      // -Log <file>
+            log_file = args[++i];
+	    CatreLog.setLogFile(log_file);
+	  }
+	 else if (args[i].startsWith("-S")) {                           // -Stderr
+	    CatreLog.useStdErr(true);
+	  }
          else badArgs();
        }
       else {
@@ -207,6 +233,8 @@ private void process()
       // Stop local cedes 
       stopCedes();
     }
+   
+   System.exit(0);
 }
 
 
@@ -254,12 +282,21 @@ private void startCatre()
 {
    catre_exec = null;
    
+   String port = catre_props.getProperty("https_port","3334");
+   String url = SCALE_HOST.replace("PORT",port);
+   CattestUtil.setTestHost(url);
+   
+   if (run_local) {
+      CattestUtil.startCatre(CATRE_ARGS);
+      return;
+    }
+    
    String cp = System.getProperty("java.class.path");
    StringBuffer buf = new StringBuffer();
    buf.append("'" + IvyExecQuery.getJavaPath() + "'");
    buf.append(" -cp '" + cp + "'");
    buf.append(" edu.brown.cs.catre.catmain.CatmainMain");
-   buf.append(" -server");
+   buf.append(" -server ");
    buf.append(CATRE_ARGS);
    String cmd = buf.toString();
    
@@ -271,10 +308,6 @@ private void startCatre()
       System.err.println("CattestStream: Problem running CATRE: " + e);
       System.exit(1);
     }
-   
-   String port = catre_props.getProperty("https_port","3334");
-   String url = SCALE_HOST.replace("PORT",port);
-   CattestUtil.setTestHost(url);
    
    for (int i = 0; i < 20; ++i) {
       if (!catre_exec.isRunning()) break;
@@ -316,7 +349,7 @@ private void startCedes()
    File f2 = new File(f1,"start.csh");
    String cmd = "/bin/csh " + f2.getPath();
    try {
-      IvyExec cedes = new IvyExec(cmd);
+      IvyExec cedes = new IvyExec(cmd,f1);
       CatreLog.logD("CATTEST","Start Cedes " + cedes.getPid());
     }
    catch (IOException e) {
@@ -411,6 +444,13 @@ private void removeUsers()
 
 private void startDevices(int start,int ct)
 {
+   if (run_local) {
+      String args = "-u " + start + " -n " + ct;
+      DeviceRunner dr = new DeviceRunner(args);
+      dr.start();
+      return;
+    }
+   
    String cp = System.getProperty("java.class.path");
    StringBuffer buf = new StringBuffer();
    buf.append("'" + IvyExecQuery.getJavaPath() + "'");
@@ -421,6 +461,14 @@ private void startDevices(int start,int ct)
    buf.append(" -n ");
    buf.append(ct);
    String cmd = buf.toString();
+   
+   if (log_file != null) {
+      int idx = log_file.lastIndexOf(".");
+      String nf = log_file.substring(0,idx) +
+            "_" + start + log_file.substring(idx);
+      buf.append(" -L " + nf);
+      buf.append(" -LD");
+    }
    
    try {
       IvyExec ex = new IvyExec(cmd);
@@ -442,6 +490,26 @@ private void stopDevices()
    device_execs.clear();
 }
 
+
+private static class DeviceRunner extends Thread {
+   
+   private String [] device_args;
+   
+   DeviceRunner(String args) {
+      super("CatreDeviceThread");
+      if (args == null) {
+         device_args = new String [] {};
+       }
+      else {
+         device_args = args.split("\\s+");
+       }
+    }
+   
+   @Override public void run() {
+      CattestScaleDevices.main(device_args);
+    }
+
+}       // end of inner class CatreRunner
 
 }       // end of class CattestScale
 

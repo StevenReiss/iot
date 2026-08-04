@@ -52,7 +52,9 @@ import java.util.TimerTask;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.ivy.file.IvyFile;
+import edu.brown.cs.ivy.file.IvyLog.LogLevel;
 
 public final class CattestScaleDevices implements CattestConstants
 {
@@ -97,6 +99,9 @@ private Map<String,List<ScaleDevice>> user_devices;
 
 private CattestScaleDevices(String [] args)
 {
+   CatreLog.setLogLevel(LogLevel.DEBUG);
+   CatreLog.setupLogging("CATSCALEDEV",true);
+   
    first_user = 0;
    user_count = 1;
    device_timer = new Timer("DeviceTimer",false);
@@ -138,6 +143,24 @@ private void scanArgs(String [] args)
          else if (args[i].startsWith("-c") && i+1 < args.length) {      // -c <cedes url>    
             cedes_url = args[++i];
           }
+         else if (args[i].startsWith("-LD")) {                          // -LDebug
+	    CatreLog.setLogLevel(CatreLog.LogLevel.DEBUG);
+	  }
+	 else if (args[i].startsWith("-LI")) {                          // -LInfo
+	    CatreLog.setLogLevel(CatreLog.LogLevel.INFO);
+	  }
+	 else if (args[i].startsWith("-LW")) {                          // -LWarning
+	    CatreLog.setLogLevel(CatreLog.LogLevel.WARNING);
+	  }
+         else if (args[i].startsWith("-LE")) {                          // -LError
+	    CatreLog.setLogLevel(CatreLog.LogLevel.ERROR);
+	  }
+	 else if (args[i].startsWith("-L") && i+1 < args.length) {      // -Log <file>
+	    CatreLog.setLogFile(args[++i]);
+	  }
+	 else if (args[i].startsWith("-S")) {                           // -Stderr
+	    CatreLog.useStdErr(true);
+	  }
          else badArgs();
        }
       else {
@@ -149,6 +172,7 @@ private void scanArgs(String [] args)
 
 private void badArgs()
 {
+   CatreLog.logE("CATSCALEDEV","Bad arguments");
    System.err.println("CATTESTSCALEDEVICES -u <user> -n <count>");
    System.exit(1);
 }
@@ -196,25 +220,27 @@ private boolean authenticate(String userid)
 {
    String acctok = access_tokens.get(userid);
    if (acctok != null) return true;
-   System.err.println("Device start authentication " + userid);
-   JSONObject rslt = sendToCedes("attach","uid",userid);
+   
+   String uid = USER_GENERIC_UID.replace("#",userid);
+   
+   CatreLog.logD("CATSCALEDEV","Device start authentication " + userid);
+   JSONObject rslt = sendToCedes(userid,"attach","uid",uid);
    if (rslt == null) {
-      System.err.println("Failed to attach to cedes at " + new Date());
+      CatreLog.logE("CATSCALEDEV","Failed to attach to cedes at " + new Date());
       return false;
     }
    
-   System.err.println("Attach result " + rslt.toString(2));
+   CatreLog.logD("CATSCALEDEV","Attach result " + rslt.toString(2));
    
    String seed = rslt.optString("seed",null);
    if (seed == null) {
-      System.err.println("Did not receive seed from cedes: " + rslt + " " +
+      CatreLog.logE("CATSCALDEV","Did not receive seed from cedes: " + rslt + " " +
             new Date());
       return false;
     }
-   System.err.println("Received seed " + seed);
+   CatreLog.logD("CATSCALEDEV","Received seed " + seed);
    
    String pat = USER_GENERIC_PAT.replace("#",userid);
-   String uid = USER_GENERIC_UID.replace("#",userid);
    
    String p0 = CattestUtil.secureHash(pat);
    String p1 = CattestUtil.secureHash(p0 + uid);
@@ -224,16 +250,16 @@ private boolean authenticate(String userid)
          "patencoded",p2);
    String tok = rslt1.optString("token",null);
    if (tok == null) {
-      System.err.println("Failed to get access token from cedes: " +
+      CatreLog.logE("CATSCALEDEV","Failed to get access token from cedes: " +
             rslt1 + " " + new Date());
       return false;
     }
    
-   System.err.println("Device received access token " + tok);
+   CatreLog.logD("CATSCALDEV","Device received access token " + tok);
    
    access_tokens.put(userid,tok);
    
-   System.err.println("Computer Monitor: cedes access token " + tok + " " +
+   CatreLog.logD("CATSCALDEV","Cedes access token " + tok + " " +
          new Date());
    
    return true;
@@ -256,7 +282,7 @@ private JSONObject sendToCedes(String uid,String nm,JSONObject obj)
 
 private JSONObject sendToCedes(String uid,String nm,String cnts) 
 {
-   System.err.println("SEND TO CEDES:" + new Date() + ": " +  cnts);
+   CatreLog.logD("CATSCALDEV","SEND TO CEDES:" + new Date() + ": " +  cnts);
    
    try {
       if (!cedes_url.endsWith("/")) cedes_url += "/";
@@ -281,11 +307,11 @@ private JSONObject sendToCedes(String uid,String nm,String cnts)
       
       InputStream ins = hc.getInputStream();
       String rslts = IvyFile.loadFile(ins);
-      System.err.println("Cedes Response: " + nm + ": " + rslts);
+      CatreLog.logD("CATSCALEDEV","Cedes Response: " + nm + ": " + rslts);
       return new JSONObject(rslts);
     }
    catch (Throwable e) {
-      System.err.println("Computer Monitor error: " + e);
+      CatreLog.logE("CATSCALEDEV","Error sending to Cedes",e);
       // report error?
     }
    
@@ -526,7 +552,7 @@ private class PingTask extends TimerTask {
       String acctok = access_tokens.get(user_id);
       try {
          if (acctok == null) {
-            System.err.println("Device ping " + acctok + " " + new Date() + " " +
+            CatreLog.logD("CATSCALEDEV","Device ping " + acctok + " " + new Date() + " " +
                   last_time + " " + (System.currentTimeMillis() - last_time));
             if (last_time > 0 && System.currentTimeMillis() - last_time > ACCESS_TIME) {
                authenticate(user_id);
@@ -546,7 +572,7 @@ private class PingTask extends TimerTask {
             switch (sts) {
                case "DEVICES" :
                   int ctr = obj.optInt("counter",0);
-                  System.err.println("Device Ping DEVICES " + 
+                  CatreLog.logD("CATSCALEDEV","Device Ping DEVICES " + 
                         for_device.getDeviceCounter() + " " + ctr);
                   if (ctr > 0) {
                      for_device.setDeviceCounter(ctr);
@@ -560,7 +586,7 @@ private class PingTask extends TimerTask {
                case "OK" :
                   break;
                default :
-                  System.err.println("Device lost access token: " + sts);
+                  CatreLog.logI("CATSCALEDEV","Device lost access token: " + sts);
                   access_tokens.remove(user_id);
                   break;
              }
@@ -568,8 +594,7 @@ private class PingTask extends TimerTask {
           }
        }
       catch (Throwable t) {
-         System.err.println("PROBLEM HANDLING PING: " + t);
-         t.printStackTrace();
+         CatreLog.logE("CATSCALEDEV","PROBLEM HANDLING PING",t);
        }
     }
    

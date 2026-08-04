@@ -213,7 +213,12 @@ private static JSONObject send(String method,String url,String body,boolean erro
 
 static void startCatre()
 {
-   CatreRunner cr = new CatreRunner();
+   startCatre(null);
+}
+
+static void startCatre(String args)
+{   
+   CatreRunner cr = new CatreRunner(args);
 
    cr.start();
 
@@ -236,12 +241,20 @@ static void startCatre()
 
 private static class CatreRunner extends Thread {
 
-   CatreRunner() {
+   private String [] catre_args;
+   
+   CatreRunner(String args) {
       super("CatreRunnerThread");
+      if (args == null) {
+         catre_args = new String [] {};
+       }
+      else {
+         catre_args = args.split("\\s+");
+       }
     }
 
    @Override public void run() {
-      CatmainMain.main(new String[] { });
+      CatmainMain.main(catre_args);
     }
 
 }       // end of inner class CatreRunner
