@@ -339,6 +339,12 @@ public static JSONObject buildJson(Object... args)
 }
 
 
+public static String getDeviceUid(String userno,String name)
+{
+   String key = userno + name;
+   int hc = Math.abs(key.hashCode());
+   return name + "-" + hc;
+}
 
 }       // end of class CattestUtil
 

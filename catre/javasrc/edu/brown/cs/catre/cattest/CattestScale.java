@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.bson.Document;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.mongodb.client.MongoClient;
@@ -210,20 +211,38 @@ private void process()
       // Next register all the users
       registerUsers();
       
-      // Next setup each user's devices
+      // Next setup each user's devices and programs
       for (int i = 0; i < user_count; i += DEVICE_USER_COUNT) {
          int ct = Math.min(DEVICE_USER_COUNT,user_count-i);
          startDevices(i,ct);
        }
       
-      // Next define each user's programs
+      // might need a delay here to allow all devices to be defined externally
+      try {
+         Thread.sleep(90*1000);
+       }
+      catch (InterruptedException e) { }
       
+      CatreLog.logD("CATSCALE","DEFINING RULES");
+      // next define rules for each user
+      for (int i = 0; i < user_count; ++i) {
+         setupRules(i);
+       }
+      
+      CatreLog.logD("CATSCALE","STARTING EXPERIMENT");
       // Next run the system for a long time
-      
-      // then remove users
-      removeUsers();
+      try {
+         Thread.sleep(1*60*1000);
+       }
+      catch (InterruptedException e) { }
+    }
+   catch (Throwable t) {
+      CatreLog.logE("CATSCALE","Problem with scale test",t);
     }
    finally {
+      // remove users
+      removeUsers();
+      
       // Stop all devices
       stopDevices();
       
@@ -232,9 +251,11 @@ private void process()
       
       // Stop local cedes 
       stopCedes();
+      
+      // and exit
+      System.exit(0);
     }
    
-   System.exit(0);
 }
 
 
@@ -418,6 +439,7 @@ private void registerUsers()
       sid = rslt3.getString("CATRESESSION");
       
       user_session.put(user,sid);
+      user_session.put(un,sid);
       CatreLog.logD("CATTEST","Register user " + user);
     }
 }
@@ -444,8 +466,10 @@ private void removeUsers()
 
 private void startDevices(int start,int ct)
 {
+   String curl = catre_props.getProperty("cedes_url","http://localhost:3333");
+   
    if (run_local) {
-      String args = "-u " + start + " -n " + ct;
+      String args = "-u " + start + " -n " + ct + " -c " + curl;
       DeviceRunner dr = new DeviceRunner(args);
       dr.start();
       return;
@@ -460,6 +484,8 @@ private void startDevices(int start,int ct)
    buf.append(start);
    buf.append(" -n ");
    buf.append(ct);
+   buf.append(" -c ");
+   buf.append(curl);
    String cmd = buf.toString();
    
    if (log_file != null) {
@@ -510,6 +536,67 @@ private static class DeviceRunner extends Thread {
     }
 
 }       // end of inner class CatreRunner
+
+
+/********************************************************************************/
+/*                                                                              */
+/*      Setup rules                                                             */
+/*                                                                              */
+/********************************************************************************/
+
+private void setupRules(int user)
+{
+   String uid = String.valueOf(user);
+   for (int j = 0; j < RULES_PER_USER; ++j) {
+      List<DeviceInfo> dis = new ArrayList<>();
+      List<String> sds = new ArrayList<>();
+      for (int k = 0; k < 3; ++k) {
+         int idx = CattestUtil.nextRandom(DEVICE_SET.length);
+         DeviceInfo di = DEVICE_SET[idx];
+         if (!dis.contains(di)) {
+            dis.add(di);
+            sds.add(CattestUtil.getDeviceUid(uid,di.getDeviceName()));
+          }
+       }
+      JSONArray conds = new JSONArray();
+      for (int i = 0; i < dis.size(); ++i) {
+         DeviceInfo di = dis.get(i);
+         String sduid = sds.get(i);
+         JSONObject cond = di.getCondition(sduid,"Value");
+         conds.put(cond);
+       }
+      String sduid0 = sds.get(0);
+      JSONArray acts = new JSONArray();
+      JSONObject act = CattestUtil.buildJson("NEEDSNAME",false,
+            "DESCRIPTION","Rule " + j + " action",
+            "USERDESC",false,
+            "TRIGGER",false,
+            "LABEL","Rule " + j + " action",
+            "NAME","Rule " + j + " action",
+            "PARAMETERS", new JSONObject(),
+            "TRANSITION", CattestUtil.buildJson("TRANSITION","noteSet",
+                  "DEVICE",sduid0)
+      );
+      acts.put(act);
+      
+      JSONObject rule = CattestUtil.buildJson("DEVICEID",sduid0,
+            "DESCRIPTION","Rule " + j,
+            "USERDESC",false,
+            "TRIGGER",false,
+            "NAME","Rule " + j,
+            "CONDITIONS", conds,
+            "ACTIONS",acts,
+            "PRIORITY",200 + 100* j,
+            "LABEL","Rule " + j
+      );
+      
+      JSONObject rslt3 = CattestUtil.sendJson("POST","/rule/add",
+            "CATRESESSION",user_session.get(uid),
+            "RULE",rule);
+      CatreLog.logD("CATTESTSCALE","Add rule " + rslt3.toString(2));
+    }
+}
+
 
 }       // end of class CattestScale
 

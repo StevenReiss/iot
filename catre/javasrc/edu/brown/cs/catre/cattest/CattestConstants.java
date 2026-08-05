@@ -36,7 +36,7 @@
 
 package edu.brown.cs.catre.cattest;
 
-
+import org.json.JSONObject;
 
 public interface CattestConstants
 {
@@ -67,8 +67,127 @@ long ACCESS_TIME = 60000;
 long PING_TIME = 30000;
 int DEVICE_USER_COUNT = 20;
 
+int RULES_PER_USER = 3;
+
 double TIME_COMPRESSION = 0.1;
       
+
+/********************************************************************************/
+/*                                                                              */
+/*      Device Definitions                                                      */
+/*                                                                              */
+/********************************************************************************/
+
+enum DeviceType { ENUM, RANGE };
+
+abstract class DeviceInfo {
+   
+   private DeviceType device_type;
+   private String device_name;
+   
+   DeviceInfo(DeviceType typ,String name) {
+      device_type = typ;
+      device_name = name;
+    }
+   
+   DeviceType getDeviceType()                   { return device_type; }
+   String getDeviceName()                       { return device_name; }
+   
+   abstract JSONObject getCondition(String deviceid,String param);
+   
+}       // end of inner class DeviceInfo
+
+
+class DeviceEnumInfo extends DeviceInfo {
+   
+   private long off_time;
+   private long on_time;
+   private String [] device_states;
+   
+   DeviceEnumInfo(String name,long off,long on,String... state) {
+      super(DeviceType.ENUM,name);
+      off_time = off;
+      on_time = on;
+      device_states = state;
+    }
+   
+   long getOffTime()                            { return off_time; }
+   long getOnTime()                             { return on_time; }
+   String [] getStates()                        { return device_states; }
+   
+   JSONObject getCondition(String deviceid,String param) {
+      int cidx = CattestUtil.nextRandom(device_states.length);
+      String st = device_states[cidx];
+      JSONObject rslt = CattestUtil.buildJson("SHARED",false,
+            "OPERATOR","EQL",
+            "DESCRIPTION","Check " + getDeviceName() + " is " + st,
+            "USERDESC",false,
+            "TRIGGER",false,
+            "LABEL","Check " + getDeviceName() + " is " + st,
+            "STATE",st,
+            "TYPE","Parameter",
+            "NAME", getDeviceName() + " is " + st,
+            "PARAMREF",CattestUtil.buildJson("DEVICE",deviceid,
+                  "LABEL","Monitor " + deviceid + "." + param,
+                  "PARAMETER",param)
+      );            
+      return rslt;
+    }
+   
+}       // end of inner class DeviceEnumInfo
+
+
+class DeviceRangeInfo extends DeviceInfo {
+   
+   private long change_time;
+   private double min_value;
+   private double max_value;
+   
+   DeviceRangeInfo(String name,long delta,double min,double max) {
+      super(DeviceType.RANGE,name);
+      change_time = delta;
+      min_value = min;
+      max_value = max;
+    }
+   
+   long getChangeTime()                         { return change_time; }
+   double getMinValue()                         { return min_value; }
+   double getMaxValue()                         { return max_value; }
+   
+   JSONObject getCondition(String deviceid,String param) {
+      double v1 = CattestUtil.nextRandom();
+      double v2 = CattestUtil.nextRandom();
+      double lv = Math.min(v1,v2);
+      double hv = Math.max(v1,v2);
+      double rng = max_value - min_value;
+      double low = min_value + rng*lv;
+      double high = min_value + rng*hv;
+      JSONObject rslt = CattestUtil.buildJson("SHARED",false,
+            "DESCRIPTION","Check " + getDeviceName() + " between " + low + " and " + high,
+            "USERDESC",false,
+            "TRIGGER",false,
+            "LABEL","Check " + getDeviceName() + " between " + low + " and " + high,
+            "TYPE","Range",
+            "NAME", getDeviceName() + " is in range",
+            "LOW",low,
+            "HIGH",high,
+            "PARAMREF",CattestUtil.buildJson("DEVICE",deviceid,
+                  "LABEL","Monitor " + deviceid + "." + param,
+                  "PARAMETER",param)
+      );            
+      return rslt;
+    }
+   
+}       // end of inner class DeviceRangeInfo
+
+
+
+DeviceInfo [] DEVICE_SET = new DeviceInfo [] {
+      new DeviceEnumInfo("OnPhone",60,10,"NOT_ON_PHONE","ON_PHONE"),
+      new DeviceEnumInfo("WithSomeone",90,15,"ALONE","WITH_SOMEONE"),
+      new DeviceEnumInfo("Active",60,30, "IDLE","WORKING","AWAY","OFF"),
+      new DeviceRangeInfo("Temperature",1,40,90),
+};
 
 
 }       // end of interface CattestConstants

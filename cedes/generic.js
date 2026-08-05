@@ -1,36 +1,36 @@
 /********************************************************************************/
-/*                                                                              */
-/*              generic.js                                                      */
-/*                                                                              */
-/*      Handle RESTful interface for generic devices and CATRE                  */
-/*                                                                              */
-/*      Written by spr                                                          */
-/*                                                                              */
+/*										*/
+/*		generic.js							*/
+/*										*/
+/*	Handle RESTful interface for generic devices and CATRE			*/
+/*										*/
+/*	Written by spr								*/
+/*										*/
 /********************************************************************************/
-/*      Copyright 2023 Brown University -- Steven P. Reiss                      */
+/*	Copyright 2023 Brown University -- Steven P. Reiss			*/
 /*********************************************************************************
- *  Copyright 2023, Brown University, Providence, RI.                            *
- *                                                                               *
- *                        All Rights Reserved                                    *
- *                                                                               *
- *  Permission to use, copy, modify, and distribute this software and its        *
- *  documentation for any purpose other than its incorporation into a            *
- *  commercial product is hereby granted without fee, provided that the          *
- *  above copyright notice appear in all copies and that both that               *
- *  copyright notice and this permission notice appear in supporting             *
- *  documentation, and that the name of Brown University not be used in          *
- *  advertising or publicity pertaining to distribution of the software          *
- *  without specific, written prior permission.                                  *
- *                                                                               *
- *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS                *
- *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND            *
- *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY      *
- *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY          *
- *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,              *
- *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS               *
- *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE          *
- *  OF THIS SOFTWARE.                                                            *
- *                                                                               *
+ *  Copyright 2023, Brown University, Providence, RI.				 *
+ *										 *
+ *			  All Rights Reserved					 *
+ *										 *
+ *  Permission to use, copy, modify, and distribute this software and its	 *
+ *  documentation for any purpose other than its incorporation into a		 *
+ *  commercial product is hereby granted without fee, provided that the 	 *
+ *  above copyright notice appear in all copies and that both that		 *
+ *  copyright notice and this permission notice appear in supporting		 *
+ *  documentation, and that the name of Brown University not be used in 	 *
+ *  advertising or publicity pertaining to distribution of the software 	 *
+ *  without specific, written prior permission. 				 *
+ *										 *
+ *  BROWN UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS		 *
+ *  SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND		 *
+ *  FITNESS FOR ANY PARTICULAR PURPOSE.  IN NO EVENT SHALL BROWN UNIVERSITY	 *
+ *  BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY 	 *
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,		 *
+ *  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS		 *
+ *  ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE 	 *
+ *  OF THIS SOFTWARE.								 *
+ *										 *
  ********************************************************************************/
 
 "use strict";
@@ -42,9 +42,9 @@ const catre = require("./catre");
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Module storage                                                          */
-/*                                                                              */
+/*										*/
+/*	Module storage								*/
+/*										*/
 /********************************************************************************/
 
 let users = { };
@@ -53,9 +53,9 @@ let queues = { };
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Setup Router                                                            */
-/*                                                                              */
+/*										*/
+/*	Setup Router								*/
+/*										*/
 /********************************************************************************/
 
 function getRouter(restful)
@@ -63,7 +63,7 @@ function getRouter(restful)
    restful.post("/generic/attach",handleAttach);
    restful.post("/generic/authorize",handleAuthorize);
    restful.post("/generic/log",handleLog);
-   
+
    restful.use(authenticate);
 
    restful.post("/generic/devices",handleDevices);
@@ -80,9 +80,9 @@ function getRouter(restful)
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Authentication for generic devices                                      */
-/*                                                                              */
+/*										*/
+/*	Authentication for generic devices					*/
+/*										*/
 /********************************************************************************/
 
 function authenticate(req,res,next)
@@ -98,7 +98,7 @@ function authenticate(req,res,next)
 }
 
 /**
- *      ADDBRIDGE { authdata{ uid: user_id, pat: encoded PAT }, bridgeid: ID }
+ *	ADDBRIDGE { authdata{ uid: user_id, pat: encoded PAT }, bridgeid: ID }
  **/
 
 function addBridge(authdata,bid)
@@ -109,15 +109,15 @@ function addBridge(authdata,bid)
    let pat = authdata.pat;
 
    users[uid] = { uid: uid,
-         seed: config.randomString(24),
-         pat : pat,
-         token: config.randomString(24),
-         bridgeid: bid,
-         devices : [ ],
-         active: null,
-         saved: null,
-         lastping: { },
-         devicecounter : 1 };
+	 seed: config.randomString(24),
+	 pat : pat,
+	 token: config.randomString(24),
+	 bridgeid: bid,
+	 devices : [ ],
+	 active: null,
+	 saved: null,
+	 lastping: { },
+	 devicecounter : 1 };
    queues[uid] = [];
 
    return true;
@@ -125,14 +125,14 @@ function addBridge(authdata,bid)
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Request handlers                                                        */
-/*                                                                              */
+/*										*/
+/*	Request handlers							*/
+/*										*/
 /********************************************************************************/
 
 /**
- *      ATTACH { uid : <user> }
- *         -> { status: OK, seed: SEED }
+ *	ATTACH { uid : <user> }
+ *	   -> { status: OK, seed: SEED }
  **/
 
 function handleAttach(req,res)
@@ -153,8 +153,8 @@ function handleAttach(req,res)
 
 
 /**
- *      AUTHORIZE { uid: <user>, patencoded: H(H(H(pat) + uid) + seed)}
- *         -> { status: OK, token : TOKEN}
+ *	AUTHORIZE { uid: <user>, patencoded: H(H(H(pat) + uid) + seed)}
+ *	   -> { status: OK, token : TOKEN}
  **/
 
 function handleAuthorize(req,res)
@@ -170,13 +170,13 @@ function handleAuthorize(req,res)
       let p2 = config.hasher(p1 + user.seed);
       // console.log("GENERIC CHECK PWD",p1,p2,user.seed,patencode);
       if (p2 != patencode) {
-         config.handleFail(req,res,"Bad uid or password",404);
+	 config.handleFail(req,res,"Bad uid or password",404);
        }
       else {
-         let rslt = { status: "OK", token : user.token };
-         config.handleSuccess(req,res,rslt);
-         tokens[user.token] = user;
-         user.devicecounter++;
+	 let rslt = { status: "OK", token : user.token };
+	 config.handleSuccess(req,res,rslt);
+	 tokens[user.token] = user;
+	 user.devicecounter++;
        }
     }
 }
@@ -184,8 +184,8 @@ function handleAuthorize(req,res)
 
 
 /**
- *      DEVICES { devices: [ {JSON} ] }
- *              add devices from a single source
+ *	DEVICES { devices: [ {JSON} ] }
+ *		add devices from a single source
  **/
 
 async function handleDevices(req,res)
@@ -197,30 +197,30 @@ async function handleDevices(req,res)
    for (let dev of devs) {
       let d1 = null;
       for (let d0 of user.devices) {
-         if (d0.UID == dev.UID) {
-            d1 = d0;
-            d1.LABEL = dev.LABEL;
-            d1.NAME = dev.NAME;
-            d1.TRANSITIONS = dev.TRANSITIONS;
-            d1.PARAMETERS = dev.PARAMETERS;
-            break;
-          }
+	 if (d0.UID == dev.UID) {
+	    d1 = d0;
+	    d1.LABEL = dev.LABEL;
+	    d1.NAME = dev.NAME;
+	    d1.TRANSITIONS = dev.TRANSITIONS;
+	    d1.PARAMETERS = dev.PARAMETERS;
+	    break;
+	  }
        }
       if (d1 == null) user.devices.push(dev);
     }
 
    let msg = { command: "DEVICES", uid: user.uid,
-         bridge: "generic",
-         bid: user.bridgeid,
-         devices: user.devices };
+	 bridge: "generic",
+	 bid: user.bridgeid,
+	 devices: user.devices };
    await catre.sendToCatre(msg);
    config.handleSuccess(req,res);
 }
 
 
 /**
- *      PING { }
- *         -> { status: OK } or { status: COMMAND, command : {..} } or { status: DEVICES }
+ *	PING { }
+ *	   -> { status: OK } or { status: COMMAND, command : {..} } or { status: DEVICES }
  **/
 
 function handlePing(req,res)
@@ -236,7 +236,7 @@ function handlePing(req,res)
    if (dev != null) {
       user.lastping[dev] = Date.now();
     }
-   
+
    if (c != null) {
       rslt = { status: "COMMAND", command: c };
     }
@@ -250,7 +250,7 @@ function handlePing(req,res)
 
 
 /**
- *      EVENT { event: <json> }
+ *	EVENT { event: <json> }
  **/
 
 async function handleEvent(req,res)
@@ -264,28 +264,28 @@ async function handleEvent(req,res)
       let devid = event.DEVICE;
       let param = event.PARAMETER;
       if (user.active[devid] != null) {
-         if (!user.active[devid].has(param)) {
-            report = false;     // uncomment this when data is correct
-            if (user.saved == null) user.saved = {};
-            if (user.saved[devid] == null) user.saved[devid] = {};
-            user.saved[devid][param] = event;
-          }
-         else {
-            if (user.saved != null && user.saved[devid] != null) {
-               delete user.saved[devid][param];
-             }
-          }
+	 if (!user.active[devid].has(param)) {
+	    report = false;	// uncomment this when data is correct
+	    if (user.saved == null) user.saved = {};
+	    if (user.saved[devid] == null) user.saved[devid] = {};
+	    user.saved[devid][param] = event;
+	  }
+	 else {
+	    if (user.saved != null && user.saved[devid] != null) {
+	       delete user.saved[devid][param];
+	     }
+	  }
        }
       console.log("GENERIC EVENT CHECK",devid,param,report);
     }
-   
+
    if (report) {
       let msg = { command: "EVENT", uid : user.uid, bridge: "generic",
-            bid: user.bridgeid,
-            event: event };
+	    bid: user.bridgeid,
+	    event: event };
       await catre.sendToCatre(msg);
     }
-   
+
    config.handleSuccess(req,res);
 }
 
@@ -332,48 +332,48 @@ function handleActiveSensors(bid,uid,active)
       let devid = param.DEVICE;
       let nm = param.PARAMETER;
       if (!isActive(user,param)) {
-         todo.push(param);
+	 todo.push(param);
        }
        newactive[devid].add(nm);
     }
-   
+
    for (let dev in newactive) {
       user.active[dev] = newactive[dev];
     }
-   
+
    for (let param of todo) {
-      sendEvent(user,param);            // these are done in background
+      sendEvent(user,param);		// these are done in background
     }
 }
 
 
-function isActive(user,param) 
+function isActive(user,param)
 {
    console.log("CHECK ACTIVE",param,user.active[param.DEVICE]);
-   
+
    let devid = param.DEVICE;
    if (user.active[devid] == null) return false;
    if (user.active[devid].has(param)) return true;
    return false;
 }
 
-async function sendEvent(user,param) 
+async function sendEvent(user,param)
 {
    let devid = param.DEVICE;
    let nm = param.PARAMTER;
-   
+
    if (user.saved == null) return;
    if (user.saved[devid] == null) return;
    let event = user.saved[devid][param];
    if (event == null) return;
-   
-   let msg = { command: "EVENT", 
-         uid : user.uid,
-         bridge: "generic",
-         bid: user.bridgeid,
-         event: event,
+
+   let msg = { command: "EVENT",
+	 uid : user.uid,
+	 bridge: "generic",
+	 bid: user.bridgeid,
+	 event: event,
     };
-   await catre.sendToCatre(msg);              
+   await catre.sendToCatre(msg);
 }
 
 
@@ -381,39 +381,39 @@ function handleLog(req,res)
 {
    // log request
    console.log("GENERIC LOG",req.body.user,req.body.message);
-   
+
    config.handleSuccess(req,res);
 }
 
 
 
-
+												
 /********************************************************************************/
-/*                                                                              */
-/*      Initializers                                                            */
-/*                                                                              */
+/*										*/
+/*	Initializers								*/
+/*										*/
 /********************************************************************************/
 
-async function checkUpdates() 
+async function checkUpdates()
 {
    let now = Date.now();
-   
+
    console.log("GENERIC CHECK UPDATES",now);
-   
+
    for (let uid in users) {
       let user = users[uid];
       for (let dev of user.devices) {
-         // might want to check if device is active
-         if (dev.PINGTIME != null && dev.PINGTIME > 0) {
-            let lp = user.lastping[dev.UID];
-            if (lp != null && lp > 0 && (now-lp) > 4 * dev.PINGTIME) {
-               console.log("GENERIC LOST DEVICE",dev);
-               user.lastping[dev.UID] = 0;
-               for (let par of dev.PARAMETERS) {
-                  await noPingEvent(user,dev,par);
-                }
-             }
-          }
+	 // might want to check if device is active
+	 if (dev.PINGTIME != null && dev.PINGTIME > 0) {
+	    let lp = user.lastping[dev.UID];
+	    if (lp != null && lp > 0 && (now-lp) > 4 * dev.PINGTIME) {
+	       console.log("GENERIC LOST DEVICE",dev);
+	       user.lastping[dev.UID] = 0;
+	       for (let par of dev.PARAMETERS) {
+		  await noPingEvent(user,dev,par);
+		}
+	     }
+	  }
        }
     }
 }
@@ -422,15 +422,15 @@ async function checkUpdates()
 async function noPingEvent(user,dev,par)
 {
    if (par.NOPING == null) return;
-   let event = { DEVICE: dev.UID, 
-         TYPE: "PARAMETER",
-         PARAMETER: par.NAME, 
-         VALUE: par.NOPING };
-   let msg = { command: "EVENT", 
-         uid : user.uid,
-         bridge: "generic",
-         bid : user.bridgeid, 
-         event: event };
+   let event = { DEVICE: dev.UID,
+	 TYPE: "PARAMETER",
+	 PARAMETER: par.NAME,
+	 VALUE: par.NOPING };
+   let msg = { command: "EVENT",
+	 uid : user.uid,
+	 bridge: "generic",
+	 bid : user.bridgeid,
+	 event: event };
    await catre.sendToCatre(msg);
 }
 
@@ -440,9 +440,9 @@ setInterval(checkUpdates,5*60*1000);
 
 
 /********************************************************************************/
-/*                                                                              */
-/*      Exports                                                                 */
-/*                                                                              */
+/*										*/
+/*	Exports 								*/
+/*										*/
 /********************************************************************************/
 
 exports.addBridge = addBridge;

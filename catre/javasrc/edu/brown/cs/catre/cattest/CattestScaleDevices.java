@@ -134,7 +134,7 @@ private void scanArgs(String [] args)
           }
          else if (args[i].startsWith("-n") && i+1 < args.length) {      // -n <user_count>
             try {
-               first_user = Integer.parseInt(args[++i]);
+               user_count = Integer.parseInt(args[++i]);
              }
             catch (NumberFormatException e) {
                badArgs();
@@ -188,25 +188,41 @@ private void badArgs()
 private void start()
 {
    for (int i = 0; i < user_count; ++i) {
-      int user = first_user + i;
-      String uid = String.valueOf(user);
-      ScaleDevice d1 = new ScaleDeviceEnum(uid,"OnPhone",
-            60,10,
-            "NOT_ON_PHONE","ON_PHONE");
-      ScaleDevice d2 = new ScaleDeviceEnum(uid,"WithSomeone",
-            90,15,
-            "ALONE","WITH_SOMEONE");
-      ScaleDevice d3 = new ScaleDeviceEnum(uid,"Active",
-            60,30, "IDLE","WORKING","AWAY","OFF");
-      ScaleDevice d4 = new ScaleDeviceRange(uid,"Temperature",
-            1,40,90);
-      List<ScaleDevice> devs = List.of(d1,d2,d3,d4);
-      user_devices.put(uid,devs);
-      for (ScaleDevice sd : devs) {
-         sd.start();
-       }
+      setupDevices(first_user + i);
     }
 }
+
+
+private void setupDevices(int user)
+{
+   String uid = String.valueOf(user);
+   CatreLog.logD("CATSCALEDEV","Setup Devices for " + uid);
+
+   List<ScaleDevice> devs = new ArrayList<>();
+   for (DeviceInfo di : DEVICE_SET) {
+      ScaleDevice sd = null;
+      switch (di.getDeviceType()) {
+         case ENUM :
+            DeviceEnumInfo dei = (DeviceEnumInfo) di;
+            sd = new ScaleDeviceEnum(uid,dei.getDeviceName(),
+                  dei.getOffTime(),dei.getOnTime(),
+                  dei.getStates());
+            break;
+         case RANGE :
+            DeviceRangeInfo dri = (DeviceRangeInfo) di;
+            sd = new  ScaleDeviceRange(uid,dri.getDeviceName(),
+                  dri.getChangeTime(),
+                  dri.getMinValue(),dri.getMaxValue());
+            break;
+       }
+      if (sd != null) devs.add(sd);
+    }
+   user_devices.put(uid,devs);
+   for (ScaleDevice sd : devs) {
+      sd.start();
+    }
+}
+
 
 
 
@@ -224,7 +240,7 @@ private boolean authenticate(String userid)
    String uid = USER_GENERIC_UID.replace("#",userid);
    
    CatreLog.logD("CATSCALEDEV","Device start authentication " + userid);
-   JSONObject rslt = sendToCedes(userid,"attach","uid",uid);
+   JSONObject rslt = sendToCedes(userid,"generic/attach","uid",uid);
    if (rslt == null) {
       CatreLog.logE("CATSCALEDEV","Failed to attach to cedes at " + new Date());
       return false;
@@ -234,7 +250,7 @@ private boolean authenticate(String userid)
    
    String seed = rslt.optString("seed",null);
    if (seed == null) {
-      CatreLog.logE("CATSCALDEV","Did not receive seed from cedes: " + rslt + " " +
+      CatreLog.logE("CATSCALEDEV","Did not receive seed from cedes: " + rslt + " " +
             new Date());
       return false;
     }
@@ -246,7 +262,7 @@ private boolean authenticate(String userid)
    String p1 = CattestUtil.secureHash(p0 + uid);
    String p2 = CattestUtil.secureHash(p1 + seed);
    
-   JSONObject rslt1 = sendToCedes(userid,"authorize","uid",uid,
+   JSONObject rslt1 = sendToCedes(userid,"generic/authorize","uid",uid,
          "patencoded",p2);
    String tok = rslt1.optString("token",null);
    if (tok == null) {
@@ -255,11 +271,11 @@ private boolean authenticate(String userid)
       return false;
     }
    
-   CatreLog.logD("CATSCALDEV","Device received access token " + tok);
+   CatreLog.logD("CATSCALEDEV","Device received access token " + tok);
    
    access_tokens.put(userid,tok);
    
-   CatreLog.logD("CATSCALDEV","Cedes access token " + tok + " " +
+   CatreLog.logD("CATSCALEDEV","Cedes access token " + tok + " " +
          new Date());
    
    return true;
@@ -282,12 +298,14 @@ private JSONObject sendToCedes(String uid,String nm,JSONObject obj)
 
 private JSONObject sendToCedes(String uid,String nm,String cnts) 
 {
-   CatreLog.logD("CATSCALDEV","SEND TO CEDES:" + new Date() + ": " +  cnts);
+   CatreLog.logD("CATSCALEDEV","SEND TO CEDES:" + new Date() + ": " +
+         uid + " " + cnts);
    
    try {
       if (!cedes_url.endsWith("/")) cedes_url += "/";
       String url = cedes_url + nm;
       URL u = new URI(url).toURL(); 
+      CatreLog.logD("CATSCALEDEV","CEDES url " + u);
       HttpURLConnection hc = (HttpURLConnection) u.openConnection();
       hc.setUseCaches(false);
       hc.addRequestProperty("content-type","application/json");
@@ -326,7 +344,7 @@ private JSONObject sendToCedes(String uid,String nm,String cnts)
 /*                                                                              */
 /********************************************************************************/
 
-private abstract class ScaleDevice extends TimerTask {
+private abstract class ScaleDevice implements Runnable {
    
    private String device_name;
    private String user_id;
@@ -336,7 +354,7 @@ private abstract class ScaleDevice extends TimerTask {
    protected ScaleDevice(String user,String name) {
       device_name = name + "_" + user;
       user_id = user;
-      device_uid = name + "-" + CattestUtil.randomString(16);
+      device_uid = CattestUtil.getDeviceUid(user,name); 
       device_counter = 0;
       authenticate(user);
     }
@@ -357,13 +375,12 @@ private abstract class ScaleDevice extends TimerTask {
       JSONArray jarr = new JSONArray();
       jarr.put(dev);
       
-      sendToCedes(user_id,"devices","devices",jarr);
+      sendToCedes(user_id,"generic/devices","devices",jarr);
     }
    
    abstract JSONObject getDeviceJson();
    
    void handleCommand(JSONObject cmd)  { }
-   
    
    abstract void start();
    public abstract void run(); 
@@ -373,7 +390,7 @@ private abstract class ScaleDevice extends TimerTask {
             "TYPE","PARAMETER",
             "PARAMETER","Value",
             "VALUE",getCurrentValue());
-      sendToCedes("event","event",evt);
+      sendToCedes(user_id,"generic/event","event",evt);
     }
    
    abstract Object getCurrentValue();
@@ -384,7 +401,7 @@ private abstract class ScaleDevice extends TimerTask {
       v = v*TIME_COMPRESSION;
       v = Math.round(v);
       long delay = (long) v;
-      device_timer.schedule(this,delay);
+      device_timer.schedule(new DeviceTask(this),delay);
     }
    
 }       // end of inner class CattestScaleDevice
@@ -527,7 +544,23 @@ private final class ScaleDeviceRange extends ScaleDevice {
    
    @Override Object getCurrentValue()          { return show_value; }
    
-}
+}       // end of inner class ScaleDeviceRange
+
+
+private class DeviceTask extends TimerTask {
+   
+   private ScaleDevice for_device;
+   
+   DeviceTask(ScaleDevice sd) {
+      for_device = sd;
+    }
+   
+   @Override public void run() {
+      for_device.run();
+    }
+   
+}       // end of inner class DeviceTask
+
 
 
 /********************************************************************************/
@@ -563,8 +596,9 @@ private class PingTask extends TimerTask {
              }
           }
          else {
-            JSONObject obj = sendToCedes("ping",
-                  "uid",user_id,
+            String usernm = USER_GENERIC_UID.replace("#",user_id);
+            JSONObject obj = sendToCedes(user_id,"generic/ping",
+                  "user",usernm,
                   "device",for_device.getDeviceUid(),
                   "counter",for_device.getDeviceCounter());
             String sts = "FAIL";
@@ -598,7 +632,7 @@ private class PingTask extends TimerTask {
        }
     }
    
-}
+}       // end of inner class PingTask
 
 
 }       // end of class CattestScaleDevices

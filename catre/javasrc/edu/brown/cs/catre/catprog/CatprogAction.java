@@ -254,6 +254,9 @@ protected void setValid(boolean fg)
    else if (obj instanceof JSONObject) {
       pmap = ((JSONObject) obj).toMap();
     }
+   else {
+      pmap = new HashMap<>();
+    }
    for (String k : pmap.keySet()) {
       Object v = pmap.get(k);
       parameter_values.put(k,v);
