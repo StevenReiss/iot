@@ -269,13 +269,14 @@ private class RuleRunner implements Runnable {
       try {
          try {
             for (CatreAction a : for_actions) {
-               CatreLog.logD("CATPROG","Apply rule action " + a.getLabel());
+               CatreLog.logD("CATPROG","Apply rule action " + a.getLabel() + " " +
+                     param_set);
                a.perform(param_set);
                synchronized (this) {
-        	  if (Thread.currentThread().isInterrupted() || is_aborted) {
-        	     break;
-        	   }
-        	}
+                  if (Thread.currentThread().isInterrupted() || is_aborted) {
+                     break;
+                   }
+                }
              }
           }
          catch (CatreActionException ex) {

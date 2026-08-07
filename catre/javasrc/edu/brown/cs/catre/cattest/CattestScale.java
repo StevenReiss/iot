@@ -65,6 +65,7 @@ public final class CattestScale implements CattestConstants
 
 
 
+
 /********************************************************************************/
 /*                                                                              */
 /*      Main program for testing at scale                                       */
@@ -232,7 +233,7 @@ private void process()
       CatreLog.logD("CATSCALE","STARTING EXPERIMENT");
       // Next run the system for a long time
       try {
-         Thread.sleep(1*60*1000);
+         Thread.sleep(5*60*1000);
        }
       catch (InterruptedException e) { }
     }
@@ -576,26 +577,26 @@ private void setupRules(int user)
             DEVICE_SET[0].getDeviceName());
       JSONArray acts = new JSONArray();
       JSONObject act = CattestUtil.buildJson("NEEDSNAME",false,
-            "DESCRIPTION","Rule " + j + " action",
+            "DESCRIPTION","Rule " + uid + "-" + j + " action",
             "USERDESC",false,
             "TRIGGER",false,
-            "LABEL","Rule " + j + " action",
-            "NAME","Rule " + j + " action",
+            "LABEL","Rule " + uid + "-" + j + " action",
+            "NAME","Rule " + uid + "-" + j + " action",
             "PARAMETERS", new JSONObject(),
-            "TRANSITION", CattestUtil.buildJson("TRANSITION","noteSet",
+            "TRANSITION", CattestUtil.buildJson("TRANSITION","Notify",
                   "DEVICE",sduid0)
       );
       acts.put(act);
       
       JSONObject rule = CattestUtil.buildJson("DEVICEID",sduid0,
-            "DESCRIPTION","Rule " + j,
+            "DESCRIPTION","Rule " + user + "-" + j,
             "USERDESC",false,
             "TRIGGER",false,
             "NAME","Rule " + j,
             "CONDITIONS", conds,
             "ACTIONS",acts,
             "PRIORITY",200 + 100* j,
-            "LABEL","Rule " + j
+            "LABEL","Rule " + user + "-" +  j
       );
       
       JSONObject rslt3 = CattestUtil.sendJson("POST","/rule/add",

@@ -148,6 +148,8 @@ private void setActionName()
 
 protected void setValid(boolean fg)
 {
+   CatreLog.logD("CATPROG","Action valid " + getName() + " " + fg);
+   
    is_valid = fg;
 }
 
@@ -207,7 +209,10 @@ protected void setValid(boolean fg)
 @Override public void perform(CatrePropertySet ps)
 	throws CatreActionException
 {
-   if (!isValid()) throw new CatreActionException("Invalid Action");
+   if (!isValid()) {
+      CatreLog.logD("CATPROG","Action " + getName() + " not valid");
+      throw new CatreActionException("Invalid Action");
+    }
    
    CatreParameterSet params = getParameters();
 

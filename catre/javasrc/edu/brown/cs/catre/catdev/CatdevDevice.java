@@ -387,7 +387,7 @@ public CatreTransition addTransition(CatreTransition t)
 protected void fireChanged(CatreParameter p)
 {
    CatreLog.logD("CATDEV","Handle device changed " + 
-         device_handlers.getListenerCount());
+         getDeviceId() + " " + device_handlers.getListenerCount());
    
    for_universe.startUpdate();
    try {

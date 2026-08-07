@@ -99,7 +99,6 @@ private Map<String,List<ScaleDevice>> user_devices;
 
 private CattestScaleDevices(String [] args)
 {
-   CatreLog.setLogLevel(LogLevel.DEBUG);
    CatreLog.setupLogging("CATSCALEDEV",true);
    
    first_user = 0;
@@ -298,14 +297,13 @@ private JSONObject sendToCedes(String uid,String nm,JSONObject obj)
 
 private JSONObject sendToCedes(String uid,String nm,String cnts) 
 {
-   CatreLog.logD("CATSCALEDEV","SEND TO CEDES:" + new Date() + ": " +
-         uid + " " + cnts);
+   CatreLog.logD("CATSCALEDEV","SEND TO CEDES:" + 
+         nm + " " + uid + " " + cnts);
    
    try {
       if (!cedes_url.endsWith("/")) cedes_url += "/";
       String url = cedes_url + nm;
       URL u = new URI(url).toURL(); 
-      CatreLog.logD("CATSCALEDEV","CEDES url " + u);
       HttpURLConnection hc = (HttpURLConnection) u.openConnection();
       hc.setUseCaches(false);
       hc.addRequestProperty("content-type","application/json");
@@ -380,7 +378,10 @@ private abstract class ScaleDevice implements Runnable {
    
    abstract JSONObject getDeviceJson();
    
-   void handleCommand(JSONObject cmd)  { }
+   void handleCommand(JSONObject cmd)  {
+      CatreLog.logI("CATSCALEDEV","Handle Command " + getDeviceUid() + " " +
+            getDeviceUser() + " " + cmd.toString(2));
+    }
    
    abstract void start();
    public abstract void run(); 
@@ -585,7 +586,8 @@ private class PingTask extends TimerTask {
       String acctok = access_tokens.get(user_id);
       try {
          if (acctok == null) {
-            CatreLog.logD("CATSCALEDEV","Device ping " + acctok + " " + new Date() + " " +
+            CatreLog.logD("CATSCALEDEV",
+                  "Device ping " + acctok + " " + new Date() + " " +
                   last_time + " " + (System.currentTimeMillis() - last_time));
             if (last_time > 0 && System.currentTimeMillis() - last_time > ACCESS_TIME) {
                authenticate(user_id);
@@ -603,6 +605,7 @@ private class PingTask extends TimerTask {
                   "counter",for_device.getDeviceCounter());
             String sts = "FAIL";
             if (obj != null) sts = obj.optString("status","FAIL");
+            CatreLog.logD("CATSCALEDEV","CEDESPING " + obj.toString(2));
             switch (sts) {
                case "DEVICES" :
                   int ctr = obj.optInt("counter",0);

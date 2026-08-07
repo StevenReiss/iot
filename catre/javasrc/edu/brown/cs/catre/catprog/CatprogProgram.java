@@ -740,8 +740,9 @@ private final class RuleConditionHandler implements CatreConditionListener {
 
 @Override public synchronized boolean runOnce(CatreTriggerContext ctx,Set<CatreDevice> relevant)
 {
-   CatreLog.logD("CATPROG","Run program " +
-         rule_list.size() + " " + ctx + " " + relevant);
+   CatreLog.logD("CATPROG","Run program " + 
+         for_universe.getUser().getUserName() +
+         " " +  rule_list.size() + " " + ctx + " " + relevant);
    
    boolean rslt = false;
 
