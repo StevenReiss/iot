@@ -54,7 +54,6 @@ import org.json.JSONObject;
 
 import edu.brown.cs.catre.catre.CatreLog;
 import edu.brown.cs.ivy.file.IvyFile;
-import edu.brown.cs.ivy.file.IvyLog.LogLevel;
 
 public final class CattestScaleDevices implements CattestConstants
 {
