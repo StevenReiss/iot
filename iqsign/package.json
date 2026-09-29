@@ -38,7 +38,7 @@
     "serve-favicon": "^2.5.0",
     "st-schema": "^1.4.2",
     "tmp-promise": "^3.0.3",
-    "uuid": "^11.1.1",
+    "uuid": "^9.0.1",
     "wkhtmltoimage": "^0.1.5",
     "xmlbuilder": "^15.1.1"
   }

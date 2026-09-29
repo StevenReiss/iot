@@ -293,8 +293,13 @@ async function handleEvent(req,res)
 
 function handleCommand(bid,uid,devid,command,values)
 {
+   console.log("GENERIC COMMAND",bid,uid,devid,command,values);
+
    let x = queues[uid];
-   if (x == null) queues[uid] = [];
+   if (x == null) {
+      queues[uid] = [];
+      console.log("START QUEUE",uid);
+    }
    queues[uid].push( { command: command, values: values } );
 }
 
@@ -387,7 +392,7 @@ function handleLog(req,res)
 
 
 
-												
+											
 /********************************************************************************/
 /*										*/
 /*	Initializers								*/
@@ -454,4 +459,161 @@ exports.getRouter = getRouter;
 
 
 /* end of generic.js */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

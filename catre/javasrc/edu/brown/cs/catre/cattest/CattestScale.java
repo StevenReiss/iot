@@ -65,6 +65,7 @@ public final class CattestScale implements CattestConstants
 
 
 
+
 /********************************************************************************/
 /*                                                                              */
 /*      Main program for testing at scale                                       */
@@ -107,7 +108,7 @@ private CattestScale(String [] args)
    CatreLog.setLogLevel(LogLevel.DEBUG);
    CatreLog.setupLogging("CATSCALE",true);
    
-   user_count = 20;
+   user_count = 200;
    base_directory = null;
    run_local = false;
    log_file = null;
@@ -232,7 +233,7 @@ private void process()
       CatreLog.logD("CATSCALE","STARTING EXPERIMENT");
       // Next run the system for a long time
       try {
-         Thread.sleep(1*60*1000);
+         Thread.sleep(5*60*1000);
        }
       catch (InterruptedException e) { }
     }
@@ -470,7 +471,7 @@ private void startDevices(int start,int ct)
    
    if (run_local) {
       String args = "-u " + start + " -n " + ct + " -c " + curl;
-      DeviceRunner dr = new DeviceRunner(args);
+      DeviceRunner dr = new DeviceRunner(args,start/ct);
       dr.start();
       return;
     }
@@ -517,11 +518,13 @@ private void stopDevices()
 }
 
 
-private static class DeviceRunner extends Thread {
+private static class DeviceRunner extends Thread 
+      implements CatreLog.LoggerThread {
    
    private String [] device_args;
+   private int log_id;
    
-   DeviceRunner(String args) {
+   DeviceRunner(String args,int id) {
       super("CatreDeviceThread");
       if (args == null) {
          device_args = new String [] {};
@@ -529,10 +532,15 @@ private static class DeviceRunner extends Thread {
       else {
          device_args = args.split("\\s+");
        }
+      log_id = id;
     }
    
    @Override public void run() {
       CattestScaleDevices.main(device_args);
+    }
+   
+   @Override public int getLogId() {
+      return log_id;
     }
 
 }       // end of inner class CatreRunner
@@ -565,29 +573,30 @@ private void setupRules(int user)
          JSONObject cond = di.getCondition(sduid,"Value");
          conds.put(cond);
        }
-      String sduid0 = sds.get(0);
+      String sduid0 = CattestUtil.getDeviceUid(uid,
+            DEVICE_SET[0].getDeviceName());
       JSONArray acts = new JSONArray();
       JSONObject act = CattestUtil.buildJson("NEEDSNAME",false,
-            "DESCRIPTION","Rule " + j + " action",
+            "DESCRIPTION","Rule " + uid + "-" + j + " action",
             "USERDESC",false,
             "TRIGGER",false,
-            "LABEL","Rule " + j + " action",
-            "NAME","Rule " + j + " action",
+            "LABEL","Rule " + uid + "-" + j + " action",
+            "NAME","Rule " + uid + "-" + j + " action",
             "PARAMETERS", new JSONObject(),
-            "TRANSITION", CattestUtil.buildJson("TRANSITION","noteSet",
+            "TRANSITION", CattestUtil.buildJson("TRANSITION","Notify",
                   "DEVICE",sduid0)
       );
       acts.put(act);
       
       JSONObject rule = CattestUtil.buildJson("DEVICEID",sduid0,
-            "DESCRIPTION","Rule " + j,
+            "DESCRIPTION","Rule " + user + "-" + j,
             "USERDESC",false,
             "TRIGGER",false,
             "NAME","Rule " + j,
             "CONDITIONS", conds,
             "ACTIONS",acts,
             "PRIORITY",200 + 100* j,
-            "LABEL","Rule " + j
+            "LABEL","Rule " + user + "-" +  j
       );
       
       JSONObject rslt3 = CattestUtil.sendJson("POST","/rule/add",
