@@ -120,9 +120,8 @@ Widget textField({
   } else {
     maxLines ??= 1;
   }
-  keyboardType ??= (maxLines == 1
-      ? TextInputType.text
-      : TextInputType.multiline);
+  keyboardType ??=
+      (maxLines == 1 ? TextInputType.text : TextInputType.multiline);
 
   InputDecoration deco = getDecoration(hint: hint, label: label);
   if (collapse) {
@@ -215,6 +214,7 @@ Widget itemWithMenu<T>(
   void Function()? onDoubleTap,
   void Function()? onLongPress,
   String tooltip = "",
+  String? id,
 }) {
   Widget btn = PopupMenuButton(
     icon: const Icon(Icons.menu_open_rounded),
@@ -235,14 +235,13 @@ Widget itemWithMenu<T>(
   }
 
   Widget w1 = GestureDetector(
-    key: Key(lbl),
-    onTap: onTap,
-    onDoubleTap: onDoubleTap,
-    onLongPress: onLongPress,
-    onSecondaryTap: onDoubleTap,
-    onTertiaryTapUp: _dummyTapUp(onLongPress),
-    child: w,
-  );
+      key: Key(lbl),
+      onTap: onTap,
+      onDoubleTap: onDoubleTap,
+      onLongPress: onLongPress,
+      onSecondaryTap: onDoubleTap,
+      onTertiaryTapUp: _dummyTapUp(onLongPress),
+      child: w);
   return w1;
 }
 
@@ -268,7 +267,7 @@ Widget tooltipWidget(String tooltip, Widget w) {
         colors: <Color>[laf.toolTipLeftColor, laf.toolTipRightColor],
       ),
     ),
-    constraints: BoxConstraints(minHeight: laf.toolTipHeight),
+    constraints: const BoxConstraints(minHeight: laf.toolTipHeight),
     //  height: laf.toolTipHeight,
     padding: const EdgeInsets.all(8.0),
     preferBelow: true,

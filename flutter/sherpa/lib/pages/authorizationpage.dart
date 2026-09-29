@@ -41,7 +41,8 @@ class SherpaAuthorizeWidget extends StatefulWidget {
   const SherpaAuthorizeWidget(this._theUniverse, {super.key});
 
   @override
-  State<SherpaAuthorizeWidget> createState() => _SherpaAuthorizeWidgetState();
+  State<SherpaAuthorizeWidget> createState() =>
+      _SherpaAuthorizeWidgetState();
 }
 
 class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
@@ -82,6 +83,8 @@ class _SherpaAuthorizeWidgetState extends State<SherpaAuthorizeWidget> {
                 ],
               ),
               ..._getBridgeAuthorizations(),
+              widgets.fieldSeparator(),
+              Text(_bridgeData!.getHelpText()),
               widgets.fieldSeparator(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

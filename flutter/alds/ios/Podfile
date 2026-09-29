@@ -32,7 +32,7 @@ target 'Runner' do
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
-    inherit! :search_paths
+    inherit! :search_paths					
   end
 end
 
@@ -49,7 +49,7 @@ post_install do |installer|
 
        ## dart: PermissionGroup.calendar
        'PERMISSION_EVENTS=1',
-					
+			
        ## dart: PermissionGroup.calendarFullAccess
        'PERMISSION_EVENTS_FULL_ACCESS=1',
 

@@ -345,7 +345,7 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
         rules.add(cr.getLabel());
         tips.add(cr.getDescription());
       } else if (ct == globals.numRulesToDisplay + 1) {
-        String s = rules[globals.numRulesToDisplay - 2];
+        //   String s = rules[globals.numRulesToDisplay - 2];
         rules[globals.numRulesToDisplay - 2] = "< ADDITIONAL RULES >";
         tips[globals.numRulesToDisplay - 2] =
             "Click to see all the rules";
