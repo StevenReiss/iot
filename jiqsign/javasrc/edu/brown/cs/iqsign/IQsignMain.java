@@ -101,9 +101,9 @@ private File            default_borders;
 private String          url_prefix;
 private boolean 	is_testing;
 
-private static Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
-private static Pattern HTML_PATTERN = Pattern.compile("sign(.*)\\.html");
-private static Pattern PREVIEW_PATTERN = Pattern.compile("imagePREVIEW(.*)\\.png");
+private static final Pattern IMAGE_PATTERN = Pattern.compile("image(.*)\\.png");
+private static final Pattern HTML_PATTERN = Pattern.compile("sign(.*)\\.html");
+private static final Pattern PREVIEW_PATTERN = Pattern.compile("imagePREVIEW(.*)\\.png");
 
 private static Random rand_gen = new Random();
 private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

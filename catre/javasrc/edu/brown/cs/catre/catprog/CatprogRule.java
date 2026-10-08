@@ -37,6 +37,7 @@
 package edu.brown.cs.catre.catprog;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -183,7 +184,7 @@ Set<CatreCondition> getCheckedConditions()
       Collection<CatreCondition> usedconds)
 	throws CatreConditionException, CatreActionException
 {
-   CatreLog.logD("CATPROG","Start to apply rule " + getName());
+   CatreLog.logD("CATPROG","Start to apply rule " + getName() + " " + is_disabled);
    
    if (is_disabled) return false;
    
@@ -270,7 +271,7 @@ private class RuleRunner implements Runnable {
          try {
             for (CatreAction a : for_actions) {
                CatreLog.logD("CATPROG","Apply rule action " + a.getLabel() + " " +
-                     param_set);
+                     param_set + " AT " + new Date());
                a.perform(param_set);
                synchronized (this) {
                   if (Thread.currentThread().isInterrupted() || is_aborted) {
@@ -283,7 +284,7 @@ private class RuleRunner implements Runnable {
             fail_code = ex;
           }
          catch (Throwable t) {
-            CatreLog.logE("CATPROG","Problem execution action",t);
+            CatreLog.logE("CATPROG","Problem executing action",t);
             t.printStackTrace();
             fail_code = t;
           }

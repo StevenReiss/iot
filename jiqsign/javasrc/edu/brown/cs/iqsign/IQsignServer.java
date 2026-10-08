@@ -152,6 +152,7 @@ BowerRouter<IQsignSession> setupRouter()
    br.addRoute("POST","/rest/newpassword",iqsign_auth::handleResetPassword);
 
    br.addRoute("USE",new Authenticator());
+   // user has been authenticated at this point
 
    br.addRoute("ALL","/rest/signs",new GetAllSignsAction());
    SetSignAction ssa = new SetSignAction();

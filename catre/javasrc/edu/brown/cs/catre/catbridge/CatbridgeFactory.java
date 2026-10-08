@@ -279,7 +279,7 @@ static JSONObject sendCedesMessage(String cmd,Map<String,Object> data,CatbridgeB
 static String getBridgeKey()			{ return bridge_key; }
 
 
-private class ServerThread extends Thread {
+private class ServerThread extends Thread implements CatreLog.LoggerThread {
 
    private ServerSocket server_socket;
    private boolean server_setup;
@@ -335,6 +335,7 @@ private class ServerThread extends Thread {
        }
     }
    
+   @Override public int getLogId()                              { return 99; }
 
 }	// end of inner class ServerThread
 
@@ -353,7 +354,7 @@ private void createClient(Socket s)
 }
 
 
-private class ClientThread extends Thread {
+private class ClientThread extends Thread implements CatreLog.LoggerThread {
 
    private Socket client_socket;
 
@@ -454,6 +455,8 @@ private class ClientThread extends Thread {
         
        }
     }
+   
+   @Override public int getLogId()                              { return 98; }
 
 }	// end of inner class ClientThread
 

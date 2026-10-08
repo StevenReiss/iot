@@ -239,7 +239,7 @@ static void startCatre(String args)
 
 
 
-private static class CatreRunner extends Thread {
+private static class CatreRunner extends Thread implements CatreLog.LoggerThread {
 
    private String [] catre_args;
    
@@ -256,6 +256,8 @@ private static class CatreRunner extends Thread {
    @Override public void run() {
       CatmainMain.main(catre_args);
     }
+   
+   @Override public int getLogId()                      { return 100; }
 
 }       // end of inner class CatreRunner
 
