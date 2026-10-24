@@ -204,7 +204,7 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
     devs.sort(_deviceSorter);
     return widgets.dropDownWidget<CatreDevice>(
       devs,
-      labeler: (CatreDevice d) => d.getLabel(),
+      labeler: _deviceLabel,
       onChanged: onChanged,
       value: _forDevice,
       nullValue: nullValue,
@@ -217,4 +217,9 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
     String s2 = cd2.getLabel().toLowerCase();
     return s1.compareTo(s2);
   }
+
+  String _deviceLabel(CatreDevice d) {
+    return d.getLabel();
+  }
 }
+

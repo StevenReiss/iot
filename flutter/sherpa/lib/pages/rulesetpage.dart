@@ -57,8 +57,7 @@ class SherpaRulesetWidget extends StatefulWidget {
   });
 
   @override
-  State<SherpaRulesetWidget> createState() =>
-      _SherpaRulesetWidgetState();
+  State<SherpaRulesetWidget> createState() => _SherpaRulesetWidgetState();
 }
 
 class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
@@ -159,8 +158,7 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
       acts.add(
         widgets.MenuAction(
           "Move to ${pl1.name}",
-          () => _changeRulePriority(
-              cr, pl1a.highPriority - 1, true, pl1a),
+          () => _changeRulePriority(cr, pl1a.highPriority - 1, true, pl1a),
           "Move this rule to a the lower priority level ${pl1.name}",
         ),
       );
@@ -344,11 +342,10 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     bool below = false;
 
     if (cr == null) {
-      List<CatreRule> rules =
-          _forUniverse.getProgram().getSelectedRules(
-                _priority,
-                _forDevice,
-              );
+      List<CatreRule> rules = _forUniverse.getProgram().getSelectedRules(
+            _priority,
+            _forDevice,
+          );
       if (rules.isNotEmpty) {
         if (after) {
           cr = rules.last;
@@ -457,3 +454,4 @@ class _SherpaRulesetWidgetState extends State<SherpaRulesetWidget> {
     widgets.goto(context, SherpaAuthorizeWidget(_forUniverse));
   }
 }
+

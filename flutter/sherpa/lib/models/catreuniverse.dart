@@ -63,8 +63,7 @@ class CatreUniverse extends CatreData {
 
   void addBridges(dynamic obj) {
     List<dynamic> data = obj["BRIDGES"];
-    List<CatreBridge> brl =
-        buildListFromObject(data, CatreBridge.build);
+    List<CatreBridge> brl = buildListFromObject(data, CatreBridge.build);
     _bridgeData = {};
     for (CatreBridge br in brl) {
       String nm = br.getBridgeName();
@@ -147,3 +146,4 @@ class CatreUniverse extends CatreData {
 
   List<String> getBridgeNames() => getStringList("BRIDGES");
 } // end of class CatreUniverse
+

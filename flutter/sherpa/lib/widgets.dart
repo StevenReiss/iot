@@ -264,7 +264,7 @@ Widget tooltipWidget(String tooltip, Widget w) {
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(10),
       gradient: LinearGradient(
-        colors: <Color>[laf.toolTipLeftColor, laf.toolTipRightColor],
+        colors: <Color>[laf.toolTipRightColor, laf.toolTipRightColor],
       ),
     ),
     constraints: const BoxConstraints(minHeight: laf.toolTipHeight),

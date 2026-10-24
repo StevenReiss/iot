@@ -46,6 +46,7 @@ import 'package:sherpa/pages/addweatherpage.dart';
 import 'package:sherpa/pages/addrsspage.dart';
 import 'loginpage.dart' as login;
 import 'rulesetpage.dart';
+import 'rulepage.dart';
 import 'package:sherpa/lookandfeel.dart' as laf;
 import 'package:file_picker/file_picker.dart';
 
@@ -257,12 +258,23 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     onChanged ??= _deviceSelected;
     return widgets.dropDownWidget<CatreDevice>(
       devs,
-      labeler: (CatreDevice d) => d.getLabel(),
+      labeler: _deviceLabeler,
       onChanged: onChanged,
       value: _forDevice,
       nullValue: nullValue,
       tooltip: tooltip,
     );
+  }
+
+  String _deviceLabeler(CatreDevice d) {
+    CatreProgram pgm = _theUniverse.getProgram();
+    int ct = 0;
+    for (CatreRule cr in pgm.getRules()) {
+      CatreDevice? cd = cr.getDevice();
+      if (cd == d) ++ct;
+    }
+
+    return '${d.getLabel()} ($ct)';
   }
 
   int _deviceSorter(CatreDevice cd1, CatreDevice cd2) {
@@ -328,11 +340,20 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     await widgets.gotoThen(context, SherpaAddRssPage(_theUniverse));
   }
 
+  String _getRuleLabel(CatreRule cr) {
+    String s = cr.getLabel();
+    if (_forDevice == null) {
+      s += " (${cr.getDevice().getName()})";
+    }
+    return s;
+  }
+
   Widget? _createPriorityView(levels.PriorityLevel lvl, bool optional) {
     CatreProgram pgm = _theUniverse.getProgram();
     int ct = 0;
     List<String> rules = [];
     List<String> tips = [];
+    List<CatreRule?> use = [];
     for (CatreRule cr in pgm.getRules()) {
       if (cr.getPriority() < lvl.lowPriority ||
           cr.getPriority() >= lvl.highPriority) {
@@ -342,19 +363,26 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       if (_forDevice != null && cd != _forDevice) continue;
       ++ct;
       if (ct <= globals.numRulesToDisplay) {
-        rules.add(cr.getLabel());
+        rules.add(_getRuleLabel(cr));
         tips.add(cr.getDescription());
-      } else if (ct == globals.numRulesToDisplay + 1) {
-        //   String s = rules[globals.numRulesToDisplay - 2];
-        rules[globals.numRulesToDisplay - 2] = "< ADDITIONAL RULES >";
-        tips[globals.numRulesToDisplay - 2] =
-            "Click to see all the rules";
-        rules[globals.numRulesToDisplay - 1] = cr.getLabel();
-        tips[globals.numRulesToDisplay - 1] = cr.getDescription();
+        use.add(cr);
       } else {
-        rules[globals.numRulesToDisplay - 1] = cr.getLabel();
-        tips[globals.numRulesToDisplay - 1] = cr.getDescription();
+        rules[globals.numRulesToDisplay - 1] =
+            "... And Additional Rules ...";
+        tips[globals.numRulesToDisplay - 1] =
+            "Click to see all the rules";
+        use[globals.numRulesToDisplay - 1] = null;
       }
+      // else if (ct == globals.numRulesToDisplay + 1) {
+      //   rules[globals.numRulesToDisplay - 2] = "< ADDITIONAL RULES >";
+      //   tips[globals.numRulesToDisplay - 2] =
+      //       "Click to see all the rules";
+      //   rules[globals.numRulesToDisplay - 1] = _getRuleLabel(cr);
+      //   tips[globals.numRulesToDisplay - 1] = cr.getDescription();
+      // } else {
+      //   rules[globals.numRulesToDisplay - 1] = _getRuleLabel(cr);
+      //   tips[globals.numRulesToDisplay - 1] = cr.getDescription();
+      // }
     }
     if (ct == 0 && optional) return null;
     String nrul = "$ct Rule${(ct == 1) ? '' : 's'}";
@@ -365,7 +393,9 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
     );
     List<Widget> rulew = [];
     for (int i = 0; i < rules.length; ++i) {
-      Widget tw = Text(rules[i]);
+      Widget tw = SelectableText(rules[i], onTap: () {
+        _handleRuleSelect(use[i]);
+      });
       Widget tw1 = widgets.tooltipWidget(tips[i], tw);
       rulew.add(tw1);
     }
@@ -406,6 +436,19 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
       w1,
     );
     return w2;
+  }
+
+  void _handleRuleSelect(CatreRule? cr) async {
+    if (cr == null) return;
+    setState(() {
+      _forDevice = cr.getDevice();
+    });
+    BuildContext dcontext = context;
+    await cr.getDevice().updateValues();
+    if (dcontext.mounted) {
+      await widgets.gotoThen(dcontext, SherpaRuleWidget(cr));
+      setState(() {});
+    }
   }
 
   // ignore: unused_element
