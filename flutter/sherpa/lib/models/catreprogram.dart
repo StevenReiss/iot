@@ -1035,9 +1035,15 @@ class CatreTimeSlot extends CatreData {
     rslt += " - ${calTime(_toDateTime)}";
     String? s = getDays();
     if (s != null &&
-        s != "Mon,Tue,Wed,Thu,Fri,Sat,Sun" &&
+        s != "MON,TUE,WED,THU,FRI,SAT,SUN" &&
         s.isNotEmpty) {
-      rslt += " on $s";
+      if (s == "MON,TUE,WED,THU,FRI") {
+        rslt += " Weekdays";
+      } else if (s == "SAT,SUN") {
+        rslt += " Weekends";
+      } else {
+        rslt += " on $s";
+      }
     }
     num r = getRepeatInterval();
     switch (r) {

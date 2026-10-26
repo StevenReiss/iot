@@ -248,6 +248,7 @@ private BowerRouter<CatserveSessionImpl> setupRouter()
    br.addRoute("POST","/universe/removedevice",this::handleRemoveDevice);
    br.addRoute("POST","/universe/enabledevice",this::handleEnableDevice);
    br.addRoute("POST","/universe/deviceStates",this::handleDeviceStates);
+   br.addRoute("POST","/universe/updateDevice",this::handleUpdateDevice);
    br.addRoute("POST","/universe/shareCondition",this::handleShareCondition);
    br.addRoute("POST","/universe/unshareCondition",this::handleUnshareCondition);
    br.addRoute("POST","/universe/cleanShared",this::handleCleanSharedConditions);
@@ -559,6 +560,45 @@ private String handleEnableDevice(HttpExchange e,CatserveSessionImpl cs)
 }
 
 
+private String handleUpdateDevice(HttpExchange e,CatserveSessionImpl cs)
+{
+   CatreUniverse cu = cs.getUniverse(catre_control);
+   
+   String devid = BowerRouter.getParameter(e, "DEVICEID");
+   CatreDevice cd = cu.findDevice(devid);
+   if (cd == null) {
+      return BowerRouter.errorResponse(e,cs,400,"Device not found");
+    }
+   
+   String devtxt = BowerRouter.getParameter(e,"DEVICE");
+   JSONObject jobj = new JSONObject(devtxt);
+   
+   String fgv = jobj.optString("ENABLE",null);
+   if (fgv != null && !fgv.isBlank()) {
+      Boolean fg = jobj.optBoolean("ENABLE");
+      if (fg != null) {
+         cd.setEnabled(fg);
+       }
+    }
+   String nm  = jobj.optString("NAME",null);
+   if (nm != null && !nm.isBlank() && !nm.equals(cd.getName())) {
+      cd.setName(nm);
+    }
+   String lbl  = jobj.optString("LABEL",null);
+   if (lbl != null && !lbl.isBlank() && !lbl.equals(cd.getLabel())) {
+      cd.setLabel(nm);
+    }
+   String desc = jobj.optString("DESCRIPTION",null);
+   if (desc != null && !desc.isBlank() && !desc.equals(cd.getDescription())) {
+      cd.setDescription(desc);
+    }
+   
+   cu.updateDevice(cd);
+   
+   return BowerRouter.jsonOKResponse(cs);
+}
+
+
 private String handleDeviceStates(HttpExchange e,CatserveSessionImpl cs)
 {
    CatreUniverse cu = cs.getUniverse(catre_control);
@@ -569,7 +609,6 @@ private String handleDeviceStates(HttpExchange e,CatserveSessionImpl cs)
     }
    
    // probably want to get the latest device state here
-   
    cd.updateParameterValues();
    
    JSONObject rslt = buildJson("NAME",cd.getName(),

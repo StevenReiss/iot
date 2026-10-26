@@ -124,15 +124,6 @@ boolean hasTransitions();
 
 
 /**
- *	Find a transition by name
- **/
-
-// CatreTransition findTransition(String name);
-
-
-
-
-/**
  *	Actually apply a transition to the entity in the given world
  **/
 
@@ -210,6 +201,30 @@ CatreTransition createTransition(CatreStore cs,Map<String,Object> map);
  **/
 
 void setEnabled(boolean fg);
+
+
+/**
+ *      Give device a name from the user
+ **/
+
+void setName(String nm);
+
+
+
+/**
+ *      Give device a label from the user
+ **/
+
+void setLabel(String nm);
+
+
+
+/**
+ *      Give device a description from the user
+ **/
+
+void setDescription(String nm);
+
 
 
 /**

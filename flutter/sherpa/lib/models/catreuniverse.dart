@@ -63,7 +63,8 @@ class CatreUniverse extends CatreData {
 
   void addBridges(dynamic obj) {
     List<dynamic> data = obj["BRIDGES"];
-    List<CatreBridge> brl = buildListFromObject(data, CatreBridge.build);
+    List<CatreBridge> brl =
+        buildListFromObject(data, CatreBridge.build);
     _bridgeData = {};
     for (CatreBridge br in brl) {
       String nm = br.getBridgeName();
@@ -136,6 +137,11 @@ class CatreUniverse extends CatreData {
     return false;
   }
 
+  Future<bool> updateDevice(CatreDevice? cd) async {
+    if (cd == null) return false;
+    return true;
+  }
+
   CatreProgram getProgram() => _theProgram;
 
   Map<String, CatreCondition> getSharedConditions() {
@@ -146,4 +152,3 @@ class CatreUniverse extends CatreData {
 
   List<String> getBridgeNames() => getStringList("BRIDGES");
 } // end of class CatreUniverse
-

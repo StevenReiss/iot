@@ -176,6 +176,12 @@ void updateDevices(boolean disable);
 
 
 /**
+ *      Update a particular device (e.g. change name)
+ **/
+
+void updateDevice(CatreDevice device);
+
+/**
  *      Add a new device to the universe.
  **/
 

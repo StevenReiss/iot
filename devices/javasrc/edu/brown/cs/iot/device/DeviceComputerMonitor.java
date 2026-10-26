@@ -384,7 +384,7 @@ private boolean checkCommand(String rslt,String... cmd)
 
 @Override protected String getDeviceName()
 {
-   return "COMPUTER_MONITOR_" + getHostName();
+   return getHostName();
 }
 
 
@@ -429,12 +429,23 @@ private boolean checkCommand(String rslt,String... cmd)
    if (zoom_command != null) paramlist.add(param1);
    if (bt_command != null) {
       for (BluetoothDevice bd : active_devices) {
-         JSONObject param2 = buildJson("NAME","Presence-" + bd.getName(),
+         JSONObject param2 = null;
+         if (active_devices.size() == 1) {
+            param2 = buildJson("NAME","Presence",
+                  "TYPE","ENUM",
+                  "ISSENSOR",true,
+                  "ISTARGET",false,
+                  "NOPING",PresenceOption.NOT_PRESENT,
+                  "VALUES",List.of(PresenceOption.values()));
+          }
+         else {
+            param2 = buildJson("NAME","Presence-" + bd.getName(),
                "TYPE","ENUM",
                "ISSENSOR",true,
                "ISTARGET",false,
                "NOPING",PresenceOption.NOT_PRESENT,
                "VALUES",List.of(PresenceOption.values()));
+          }
          paramlist.add(param2);
        }
     }

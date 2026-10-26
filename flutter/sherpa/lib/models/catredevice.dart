@@ -122,6 +122,32 @@ class CatreDevice extends CatreData {
       }
     }
   }
+
+  void setEnabled(bool enabled) {
+    setField("ENABLED", enabled);
+  }
+
+  void updateName(String name) {
+    if (name != "") {
+      setName(name);
+    }
+  }
+
+  void updateLabel(String lbl) {
+    if (lbl != "") {
+      setLabel(lbl);
+    }
+  }
+
+  void updateDescription(String desc) {
+    if (desc != "") {
+      setDescription(desc, true);
+    }
+  }
+
+  Future<void> updateDevice() async {
+    await issueCommand("/universe/updateDevice", "DEVICE");
+  }
 } // end of CatreDevice
 
 /********************************************************************************/

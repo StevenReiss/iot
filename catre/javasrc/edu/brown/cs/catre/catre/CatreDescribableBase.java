@@ -104,7 +104,7 @@ protected CatreDescribableBase(CatreStore cs,Map<String,Object> map)
 }
 
 
-protected void setName(String nm)
+public void setName(String nm)
 {
    base_name = nm;
 }

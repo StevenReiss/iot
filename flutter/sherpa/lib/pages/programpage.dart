@@ -106,9 +106,9 @@ class _SherpaProgramWidgetState extends State<SherpaProgramWidget> {
               "View or change the authorizations for devices in your universe.",
             ),
             widgets.MenuAction(
-              'Show Device Status',
+              'Show/Edit Device Status',
               _showStates,
-              "Show the current status of the device",
+              "Show the current status of the device or edit its properties",
             ),
             widgets.MenuAction(
               'Create Weather Device',

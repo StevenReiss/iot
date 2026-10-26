@@ -123,7 +123,7 @@ List<DayInWeek> getDays({String? given}) {
 
 List<String> mapDays(List<String> days) {
   List<String> rslt = [];
-  List<String> std = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  List<String> std = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   DateFormat fmt = DateFormat.E();
   DateTime dt = DateTime.now();
   while (dt.weekday != 1) {

@@ -436,9 +436,20 @@ private void setupBridges()
       fireUniverseSetup();
     }
 }
+  
 
 
 
+@Override public void updateDevice(CatreDevice cd)
+{
+   if (cd == null) return;
+   if (all_devices.contains(cd)) {
+      updateStored();
+    }
+   else {
+      addDevice(cd);
+    }
+}
 /********************************************************************************/
 /*										*/
 /*	Model Access methods							*/

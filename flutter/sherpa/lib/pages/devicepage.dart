@@ -56,6 +56,10 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
   late final CatreUniverse _forUniverse;
   late CatreDevice _forDevice;
   late Map<String, dynamic> _states;
+  final TextEditingController _namectrl = TextEditingController();
+  final TextEditingController _lblctrl = TextEditingController();
+  final TextEditingController _descctrl = TextEditingController();
+  late bool _isEnabled;
 
   _SherpaDevicePageState();
 
@@ -85,11 +89,31 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
 
   @override
   Widget build(BuildContext context) {
+    _namectrl.text = _forDevice.getName();
+    _lblctrl.text = _forDevice.getLabel();
+    _descctrl.text = _forDevice.getDescription();
+    _isEnabled = _forDevice.isEnabled();
     List<TableRow> rows = [];
-    addRow(rows, "Name", _forDevice.getName());
-    addRow(rows, "Label", _forDevice.getLabel());
-    addRow(rows, "Description", _forDevice.getDescription());
-    addRow(rows, "Enabled", _forDevice.isEnabled() ? "true" : "false");
+    _addWidgetRow(
+        rows, "Name", widgets.textFormField(controller: _namectrl));
+    _addWidgetRow(
+        rows,
+        "Label",
+        widgets.textField(
+          controller: _lblctrl,
+        ));
+    _addWidgetRow(
+        rows,
+        "Description",
+        widgets.textField(
+          controller: _descctrl,
+        ));
+    _addWidgetRow(
+        rows,
+        "Enabled",
+        widgets.booleanField(
+            value: _forDevice.isEnabled(), onChanged: _updateEnabled));
+
     for (CatreParameter cp in _forDevice.getParameters()) {
       if (!cp.isSensor()) continue;
       dynamic v1 = _states[cp.getName()];
@@ -133,6 +157,18 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
       border: TableBorder.all(),
     );
 
+    Widget bottom = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        widgets.submitButton(
+          "Save Changes",
+          _saveChanges,
+          tooltip:
+              "Save changes to name, label, description, or enabled",
+        )
+      ],
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Device Status"),
@@ -147,6 +183,8 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
               sel,
               widgets.fieldSeparator(),
               table,
+              widgets.fieldSeparator(16),
+              bottom,
               // possibly add bottom buttons to go back
             ],
           ),
@@ -156,15 +194,19 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
   }
 
   void addRow(List<TableRow> rows, String lbl, String value) {
+    Widget fldw = Text(
+      value,
+      overflow: TextOverflow.visible,
+    );
+    _addWidgetRow(rows, lbl, fldw);
+  }
+
+  void _addWidgetRow(List<TableRow> rows, String lbl, Widget fldw) {
     Widget lblw = Text(
       lbl,
       style: const TextStyle(
         fontWeight: FontWeight.bold,
       ),
-    );
-    Widget fldw = Text(
-      value,
-      overflow: TextOverflow.visible,
     );
     Widget w1 = Container(
       margin: const EdgeInsets.only(left: 5, right: 5, bottom: 2),
@@ -221,5 +263,19 @@ class _SherpaDevicePageState extends State<SherpaDevicePage> {
   String _deviceLabel(CatreDevice d) {
     return d.getLabel();
   }
-}
 
+  void _saveChanges() async {
+    _forDevice.updateName(_namectrl.text);
+    _forDevice.updateLabel(_lblctrl.text);
+    _forDevice.updateDescription(_descctrl.text);
+    _forDevice.setEnabled(_isEnabled);
+    await _forDevice.updateDevice();
+  }
+
+  void _updateEnabled(bool? fg) {
+    if (fg != null) {
+      _isEnabled = fg;
+    }
+    setState(() {});
+  }
+}
