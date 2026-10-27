@@ -67,7 +67,12 @@ class CatreData {
     setup();
   }
 
-  String getName() => getString("NAME");
+  String getName() {
+    String? nm = optString("NAME");
+    nm ??= "UNKNOWN";
+    return nm;
+  }
+
   CatreUniverse getUniverse() => catreUniverse;
   String getLabel() => getString("LABEL");
   String getSavedDescription() {
@@ -97,7 +102,8 @@ class CatreData {
     return catreData;
   }
 
-  List<Map<String, dynamic>>? listCatreOutput(Iterable<CatreData>? itms) {
+  List<Map<String, dynamic>>? listCatreOutput(
+      Iterable<CatreData>? itms) {
     if (itms == null) return null;
     List<Map<String, dynamic>> rslt = [];
     for (CatreData cd in itms) {
@@ -113,10 +119,12 @@ class CatreData {
   }
 
   @protected
-  List<T> buildList<T>(String id, T Function(CatreUniverse, dynamic) fun) {
+  List<T> buildList<T>(
+      String id, T Function(CatreUniverse, dynamic) fun) {
     List<dynamic>? rdevs = catreData[id] as List<dynamic>?;
     if (rdevs == null) return <T>[];
-    List<T> devs = rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
+    List<T> devs =
+        rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
     return devs;
   }
 
@@ -126,12 +134,14 @@ class CatreData {
     T Function(CatreUniverse, dynamic) fun,
   ) {
     if (rdevs == null) return <T>[];
-    List<T> devs = rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
+    List<T> devs =
+        rdevs.map<T>(((x) => fun(catreUniverse, x))).toList();
     return devs;
   }
 
   @protected
-  List<T>? optList<T>(String id, T Function(CatreUniverse, dynamic) fun) {
+  List<T>? optList<T>(
+      String id, T Function(CatreUniverse, dynamic) fun) {
     if (catreData[id] == null) return null;
     List<dynamic>? rdevs = catreData[id] as List<dynamic>?;
     if (rdevs == null) return <T>[];
@@ -345,11 +355,11 @@ class CatreData {
     return hc;
   }
 
-  Future<Map<String, dynamic>?> issueCommand(String cmd, String argname) async {
+  Future<Map<String, dynamic>?> issueCommand(
+      String cmd, String argname) async {
     var body = {
       argname: convert.jsonEncode(getCatreOutput()),
     };
     return await util.postJson(cmd, body);
   }
 }
-

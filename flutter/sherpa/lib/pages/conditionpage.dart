@@ -230,6 +230,8 @@ class _SherpaConditionWidgetState extends State<SherpaConditionWidget> {
     switch (_condType.name) {
       case "Parameter":
       case "Parameter_T":
+      case "Value":
+      case "Value_T":
         rslt = _createParameterWidgets();
         break;
       case "Time":
@@ -1110,7 +1112,7 @@ class _SensorParameter {
   const _SensorParameter(this.device, this.parameter);
 
   get name {
-    return "${device.getLabel()} ${parameter.getLabel()}";
+    return "${device.getName()} ${parameter.getLabel()}";
   }
 
   List<String> getOperators(bool trig) {

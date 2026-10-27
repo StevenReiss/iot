@@ -180,7 +180,7 @@ private void validate()
     }
    
    if (ref_label == null && for_device != null) {
-      ref_label = for_device.getLabel() + "." + parameter_name;
+      ref_label = for_device.getName() + "." + parameter_name;
     }
    
    boolean valid = (for_device != null && for_parameter != null && for_device.isEnabled());

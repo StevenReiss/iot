@@ -438,7 +438,7 @@ private boolean checkCommand(String rslt,String... cmd)
     }
    
    String lbl = getDeviceParameter("label");
-   if (lbl == null || lbl.isEmpty()) lbl= "Monitor status on " + getHostName();
+   if (lbl == null || lbl.isEmpty()) lbl= getHostName() + "Monitor";
      
    JSONObject obj = buildJson("LABEL",lbl,
          "PINGTIME",PING_TIME,

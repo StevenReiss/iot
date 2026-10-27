@@ -443,6 +443,7 @@ class CatreCondition extends CatreData {
   void _setDefaultFields() {
     switch (getCatreType()) {
       case "Parameter":
+      case "Value":
         _paramRef ??= CatreParamRef.create(catreUniverse);
         defaultField("OPERATOR", isTrigger() ? "GEQ" : "EQL");
         defaultField("STATE", "UNKNOWN");
@@ -497,6 +498,7 @@ class CatreCondition extends CatreData {
     String rslt = getString("DESCRIPTION");
     switch (getCatreType()) {
       case "Parameter":
+      case "Value":
         CatreParamRef pmf = getParameterReference();
         rslt =
             "(${pmf.getTitle()} ${getOperator()} ${getTargetValue()})";
@@ -872,9 +874,9 @@ class CatreParamRef extends CatreData {
 
   String getTitle() {
     String? ttl = optString("LABEL");
-    if (ttl != null) return ttl;
+    //  if (ttl != null) return ttl;
     CatreDevice? dev = getDevice();
-    ttl = dev?.getLabel();
+    ttl = dev?.getName();
     ttl ??= getDeviceId();
     ttl += ".${getParameterName()}";
     return ttl;
