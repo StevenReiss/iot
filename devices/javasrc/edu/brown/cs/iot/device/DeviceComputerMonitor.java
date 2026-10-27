@@ -92,8 +92,8 @@ private long    last_idle;
 private WorkOption last_work;
 private ZoomOption last_zoom;
 private long    last_check;
-private Map<String,PresenceOption> last_presence;
-private Map<String,Integer> last_count;
+private PresenceOption last_presence;
+private int     last_count;
 private List<BluetoothDevice> active_devices;
 
 private String  alert_command;
@@ -190,8 +190,8 @@ private DeviceComputerMonitor(String [] args)
    last_work = null;
    last_zoom = null;
    last_check = 0;
-   last_presence = new HashMap<>();
-   last_count = new HashMap<>();
+   last_presence = null;
+   last_count = 0;
    active_devices = new ArrayList<>();
    
    String os = System.getProperty("os.name").toLowerCase();
@@ -427,27 +427,14 @@ private boolean checkCommand(String rslt,String... cmd)
    List<JSONObject> paramlist = new ArrayList<>();
    if (idle_command != null) paramlist.add(param0);
    if (zoom_command != null) paramlist.add(param1);
-   if (bt_command != null) {
-      for (BluetoothDevice bd : active_devices) {
-         JSONObject param2 = null;
-         if (active_devices.size() == 1) {
-            param2 = buildJson("NAME","Presence",
-                  "TYPE","ENUM",
-                  "ISSENSOR",true,
-                  "ISTARGET",false,
-                  "NOPING",PresenceOption.NOT_PRESENT,
-                  "VALUES",List.of(PresenceOption.values()));
-          }
-         else {
-            param2 = buildJson("NAME","Presence-" + bd.getName(),
-               "TYPE","ENUM",
-               "ISSENSOR",true,
-               "ISTARGET",false,
-               "NOPING",PresenceOption.NOT_PRESENT,
-               "VALUES",List.of(PresenceOption.values()));
-          }
-         paramlist.add(param2);
-       }
+   if (bt_command != null && !active_devices.isEmpty()) {
+      JSONObject param2 = buildJson("NAME","Presence",
+            "TYPE","ENUM",
+            "ISSENSOR",true,
+            "ISTARGET",false,
+            "NOPING",PresenceOption.NOT_PRESENT,
+            "VALUES",List.of(PresenceOption.values()));
+      paramlist.add(param2);
     }
    
    String lbl = getDeviceParameter("label");
@@ -479,8 +466,8 @@ private void resetParameters()
    last_work = null;
    last_zoom = null;
    last_check = 0;
-   last_presence.clear();
-   last_count.clear();
+   last_presence = null;;
+   last_count = 0;
 }
 
 
@@ -678,39 +665,29 @@ private void checkStatus()
       last_zoom = zoomval;
     }
    
-   Map<String,PresenceOption> preopts = getDeviceStatus();
-   for (BluetoothDevice bd : active_devices) {
-      String nm = bd.getName();
-      PresenceOption preopt = preopts.get(nm);
-      if (preopt == null) preopt = PresenceOption.NOT_PRESENT;
-      PresenceOption lastpre = last_presence.get(nm);
-      if (preopt == lastpre) {
+   PresenceOption preopt = getDeviceStatus();
+   if (last_presence == preopt) {
+      preopt = null;
+      last_count = 0;
+    }
+   else if (preopt == PresenceOption.NOT_PRESENT && last_presence == PresenceOption.PRESENT) {
+      ++last_count;
+      if (last_count <= 4) {
          preopt = null;
-         last_count.remove(nm);
-       }
-      else if (preopt == PresenceOption.NOT_PRESENT && 
-            lastpre == PresenceOption.PRESENT) {
-         Integer ct0 = last_count.get(nm);
-         int ct = 0;
-         if (ct0 != null) ct = ct0;
-         ++ct;
-         if (ct <= 4) {
-            preopt = null;
-            last_count.put(nm,ct);
-          }
-         else {
-            last_presence.put(nm,preopt);
-            last_count.remove(nm);
-          }
        }
       else {
-         last_presence.put(nm,preopt);
-         last_count.remove(nm);
+         last_presence = preopt;
+         last_count = 0;
        }
-      if (preopt != null) {
-         System.err.println("Note computer monitor " + nm + " status: " + preopt);
-         sendParameterEvent("Presence-" + nm,preopt);
-       }
+    }
+   else {
+      last_presence = preopt;
+      last_count = 0;
+    }
+   
+   if (preopt != null) {
+      System.err.println("Note computer presence status: " + preopt);
+      sendParameterEvent("Presence",preopt);
     }
    
    if (workopt != null) {
@@ -836,9 +813,9 @@ private boolean inPersonalZoom(boolean zoom)
 
 
 
-private Map<String,PresenceOption> getDeviceStatus()
+private PresenceOption getDeviceStatus()
 {
-   Map<String,PresenceOption> rslt = new HashMap<>();
+   PresenceOption rslt = null;
    
    if (need_python_setup) {
       setupPython();
@@ -851,7 +828,6 @@ private Map<String,PresenceOption> getDeviceStatus()
    for (BluetoothDevice bd : active_devices) {
       String m = bd.getBtMac();
       String u = bd.getBtUUID();
-      String nm = bd.getName();
       String cmd = bt_command;
       if (bt_command.contains("$MAC")) {
          if (m == null) cmd = null;
@@ -876,7 +852,7 @@ private Map<String,PresenceOption> getDeviceStatus()
             break;
           }
        }
-      rslt.put(nm,po);
+      if (po != PresenceOption.NOT_PRESENT) rslt = po;
     }
    
    return rslt;
@@ -968,7 +944,6 @@ private final class BluetoothDevice {
       bt_uuid = uuid;
     }
    
-   String getName()                             { return device_name; }
    String getBtMac()                            { return bt_mac; }
    String getBtUUID()                           { return bt_uuid; }
    

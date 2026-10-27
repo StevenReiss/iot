@@ -745,7 +745,7 @@ class CatreConditionType {
 const List<CatreConditionType> ruleConditionTypes = [
   CatreConditionType("No Condition", "UNKNOWN", false),
   CatreConditionType("Shared Condtion", "Reference", false),
-  CatreConditionType("Parameter", "Parameter", false),
+  CatreConditionType("Value", "Parameter", false),
   CatreConditionType("Time Slot", "Time", false),
   CatreConditionType("Parameter for Duration", "Duration", false),
   CatreConditionType("Parameter Latched", "Latch", false),

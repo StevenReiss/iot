@@ -49,7 +49,7 @@ const double buttonFontSize = 14;
 const IconData topMenuIcon = Icons.menu_sharp;
 
 const Color decorationHoverColor = Colors.amber;
-const Color decorationBorderColor = Colors.yellow;
+const Color decorationBorderColor = Color.fromARGB(255, 226, 209, 55);
 const Color decorationInputColor = Colors.white;
 
 // APPLICATION-SPECIFIC Definitions
