@@ -569,7 +569,7 @@ protected String getHostName()
    if (h == null) {
       try {
 	 InetAddress lh = InetAddress.getLocalHost();
-	 h = lh.getCanonicalHostName();
+	 h = lh.getHostName();
        }
       catch (IOException e) { }
     }
